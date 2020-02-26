@@ -36,6 +36,7 @@
 	$(document).ready(function(){
 		var form = document.forms.namedItem("formTournoi");
 		form.addEventListener('submit', function(ev) {
+			$('.lds-ripple').css('display', 'block');
 			$.ajax({
 		        url:$('body').data('base-url')+"admin/tournoi/add/5",
 		        type:"POST",
