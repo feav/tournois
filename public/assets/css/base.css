@@ -1,0 +1,148 @@
+@font-face {font-family: "avenir_next_regular";
+  src: url("../fonts/fonts/avenir_next_regular/f3df85918e3f1ba8a7b13be9b47882ce.eot"); /* IE9*/
+  src: url("../fonts/avenir_next_regular/f3df85918e3f1ba8a7b13be9b47882ce.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+  url("../fonts/avenir_next_regular/f3df85918e3f1ba8a7b13be9b47882ce.woff2") format("woff2"), /* chrome、firefox */
+  url("../fonts/avenir_next_regular/f3df85918e3f1ba8a7b13be9b47882ce.woff") format("woff"), /* chrome、firefox */
+  url("../fonts/avenir_next_regular/f3df85918e3f1ba8a7b13be9b47882ce.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url("../fonts/avenir_next_regular/f3df85918e3f1ba8a7b13be9b47882ce.svg#Avenir Next Regular") format("svg"); /* iOS 4.1- */
+}
+@font-face {font-family: "avenir_next_demi_bold";
+  src: url("./fonts/avenir_next_demi_bold/14bcfcf98e9d42ff3c30c88d332fd7d4.eot"); /* IE9*/
+  src: url("./fonts/avenir_next_demi_bold/14bcfcf98e9d42ff3c30c88d332fd7d4.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+  url("./fonts/avenir_next_demi_bold/14bcfcf98e9d42ff3c30c88d332fd7d4.woff2") format("woff2"), /* chrome、firefox */
+  url("./fonts/avenir_next_demi_bold/14bcfcf98e9d42ff3c30c88d332fd7d4.woff") format("woff"), /* chrome、firefox */
+  url("./fonts/avenir_next_demi_bold/14bcfcf98e9d42ff3c30c88d332fd7d4.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url("./fonts/avenir_next_demi_bold/14bcfcf98e9d42ff3c30c88d332fd7d4.svg#Avenir Next Demi Bold") format("svg"); /* iOS 4.1- */
+}
+@font-face {
+    font-family: 'toms_new_romantom';
+    src: url('./fonts/timeNewRoman/tomnr.woff2') format('woff2'),
+         url('./fonts/timeNewRoman/tomnr.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body{
+	font-family: toms_new_romantom;
+}
+ul{
+	list-style: none;
+	padding: 0;
+	margin:0;
+}
+.score.winner{
+	box-shadow: 0px 0px 8px 3px rgb(255, 255, 255);
+}
+/* start panel-color subs cols-item */
+.cols-list .cols-item:nth-child(4n+1) .sub-col-list .list-item:nth-child(1) .sub-title,
+.list-score .score-item:nth-child(4n+1) .group-equipe >*:nth-child(1),
+.cols-list.finale .cols-item:nth-child(1) .item-title{
+	color: #00b9f2;
+}
+.cols-list .cols-item:nth-child(4n+1) .sub-col-list .list-item:nth-child(2) .sub-title,
+.list-score .score-item:nth-child(4n+1) .group-equipe >*:nth-child(3),
+.cols-list.finale .cols-item:nth-child(2) .item-title{
+	color: #fc7ab9;
+}
+.cols-list .cols-item:nth-child(4n+2) .sub-col-list .list-item:nth-child(1) .sub-title,
+.list-score .score-item:nth-child(4n+2) .group-equipe >*:nth-child(1){
+	color: #ffc934;
+}
+.cols-list .cols-item:nth-child(4n+2) .sub-col-list .list-item:nth-child(2) .sub-title,
+.list-score .score-item:nth-child(4n+2) .group-equipe >*:nth-child(3){
+	color: #80c747;
+}
+.cols-list .cols-item:nth-child(4n+3) .sub-col-list .list-item:nth-child(1) .sub-title,
+.list-score .score-item:nth-child(4n+3) .group-equipe >*:nth-child(1){
+	color: #029284;
+}
+.cols-list .cols-item:nth-child(4n+3) .sub-col-list .list-item:nth-child(2) .sub-title,
+.list-score .score-item:nth-child(4n+3) .group-equipe >*:nth-child(3){
+	color: #ab7576;
+}
+
+.cols-list .cols-item:nth-child(4n+4) .sub-col-list .list-item:nth-child(1) .sub-title,
+.list-score .score-item:nth-child(4n+4) .group-equipe >*:nth-child(1){
+	color: #dc831c;
+}
+.cols-list .cols-item:nth-child(4n+4) .sub-col-list .list-item:nth-child(2) .sub-title,
+.list-score .score-item:nth-child(4n+4) .group-equipe >*:nth-child(3){
+	color: #95a0d2;
+}
+/******* end  panel-color subs cols-item ************/
+
+
+/*********** start bg-color score cols-item ************/
+.cols-list .cols-item:nth-child(4n+1) .sub-col-list .list-item:nth-child(1) .sub-col-foot .score,
+.list-score .score-item:nth-child(4n+1) .groupe-score >*:nth-child(1),
+.cols-list.finale .cols-item:nth-child(1) .score{
+	background: #00b9f2;
+}
+.cols-list .cols-item:nth-child(4n+1) .sub-col-list .list-item:nth-child(2) .sub-col-foot .score,
+.list-score .score-item:nth-child(4n+1) .groupe-score >*:nth-child(2),
+.cols-list.finale .cols-item:nth-child(2) .score{
+	background: #fc7ab9;
+}
+.cols-list .cols-item:nth-child(4n+2) .sub-col-list .list-item:nth-child(1) .sub-col-foot .score,
+.list-score .score-item:nth-child(4n+2) .groupe-score >*:nth-child(1){
+	background: #ffc934;
+}
+.cols-list .cols-item:nth-child(4n+2) .sub-col-list .list-item:nth-child(2) .sub-col-foot .score,
+.list-score .score-item:nth-child(4n+2) .groupe-score >*:nth-child(2){
+	background: #80c747;
+}
+.cols-list .cols-item:nth-child(4n+3) .sub-col-list .list-item:nth-child(1) .sub-col-foot .score,
+.list-score .score-item:nth-child(4n+3) .groupe-score >*:nth-child(1){
+	background: #029284;
+}
+.cols-list .cols-item:nth-child(4n+3) .sub-col-list .list-item:nth-child(2) .sub-col-foot .score,
+.list-score .score-item:nth-child(4n+3) .groupe-score >*:nth-child(2){
+	background: #ab7576;
+}
+
+.cols-list .cols-item:nth-child(4n+4) .sub-col-list .list-item:nth-child(1) .sub-col-foot .score,
+.list-score .score-item:nth-child(4n+4) .groupe-score >*:nth-child(1){
+	background: #dc831c;
+}
+.cols-list .cols-item:nth-child(4n+4) .sub-col-list .list-item:nth-child(2) .sub-col-foot .score,
+.list-score .score-item:nth-child(4n+4) .groupe-score >*:nth-child(2){
+	background: #95a0d2;
+}
+/* end  bg-color subs score cols-item */
+
+
+/*********** start bg-color score cols-item ************/
+.cart-list-elt .cart_list_item:nth-child(4n+1) .round-equipe-avt,
+.cart-body-content .match-item:nth-child(4n+1) .equipe:nth-child(1) .avt-equipe{
+	background: #00b9f2;
+}
+.cart-list-elt .cart_list_item:nth-child(4n+2) .round-equipe-avt,
+.cart-body-content .match-item:nth-child(4n+1) .equipe:nth-child(2) .avt-equipe{
+	background: #fc7ab9;
+}
+.cart-list-elt .cart_list_item:nth-child(4n+3) .round-equipe-avt,
+.cart-body-content .match-item:nth-child(4n+2) .equipe:nth-child(1) .avt-equipe{
+	background: #ffc934;
+}
+.cart-list-elt .cart_list_item:nth-child(4n+4) .round-equipe-avt,
+.cart-body-content .match-item:nth-child(4n+2) .equipe:nth-child(2) .avt-equipe{
+	background: #80c747;
+}
+.cart-list-elt .cart_list_item:nth-child(4n+5) .round-equipe-avt,
+.cart-body-content .match-item:nth-child(4n+3) .equipe:nth-child(1) .avt-equipe{
+	background: #029284;
+}
+.cart-list-elt .cart_list_item:nth-child(4n+6) .round-equipe-avt,
+.cart-body-content .match-item:nth-child(4n+3) .equipe:nth-child(2) .avt-equipe{
+	background: #ab7576;
+}
+
+.cart-list-elt .cart_list_item:nth-child(4n+4) .round-equipe-avt,
+.cart-body-content .match-item:nth-child(4n+4) .equipe:nth-child(1) .avt-equipe{
+	background: #dc831c;
+}
+.cart-list-elt .cart_list_item:nth-child(4n+8) .round-equipe-avt,
+.cart-body-content .match-item:nth-child(4n+4) .equipe:nth-child(2) .avt-equipe{
+	background: #95a0d2;
+}
+/* end  bg-color subs score cols-item */

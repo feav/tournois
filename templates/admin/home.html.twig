@@ -1,0 +1,1152 @@
+
+{% extends 'admin/layout.html.twig' %}
+{% block title %} {{parent()}} - Tableau de bord {% endblock %}
+
+{% block stylesheets %}
+    {{parent()}}
+    <style type="text/css">
+        a, a:hover, a:active, a:focus{color: #7B7575;}
+        .evolution-match a, .evolution-match a:hover, 
+        .evolution-match a:active, .evolution-match a:focus{color: #7B7575;}
+        .evolution-match .card-body{
+            background: url(../assets/img/sidebar-5.jpg) no-repeat;
+            background-size: cover;
+            background-position: center center;
+            position: relative;
+            color: #fff;
+        }
+        .evolution-match .card-body .cart-body-content{position: relative;}
+        .cart-body-content .list-match {
+            max-width: 560px;
+            margin: auto;
+            padding-top: 45px;
+        }
+        .cart-body-content .list-match .status-match {
+            color: #534D4D;
+            text-align: center;
+            padding-bottom: 3px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .cart-body-content .match-item{
+            margin-bottom: 21px;
+            transition: transform .2s;
+        }
+        .cart-body-content .match-item:hover{
+            transform: scale(.9);
+        }
+        .cart-body-content .match-item .match-content{
+            position: relative;
+            display: flex;
+            align-content: center;
+            box-shadow: 9px 12px 14px#a6a6a6;
+            border-radius: 93px 93px 93px 93px;
+        }
+        .cart-body-content .match-item .equipe {
+            flex: 1;
+            position: relative;
+            padding: 10px 2px;
+            background-image: radial-gradient(#5f6e9a, #1f2a55);
+            height: 45px;
+        }
+        .cart-body-content .match-item .equipe:nth-child(1){
+            border-radius: 93px 0 0 90px;
+        }
+        .cart-body-content .match-item .equipe:nth-child(2){
+            border-radius: 0 93px 93px 0;
+        }
+        .cart-body-content .equipe .avt-equipe {
+            background: red;
+            width: 44px;
+            height: 44px;
+            display: ;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            position: absolute;
+            transform: translateY(-50%);
+            top: 50%;
+        }
+        .cart-body-content .equipe:nth-child(1) .avt-equipe{
+            left: -8px;
+        }
+        .cart-body-content .equipe:nth-child(2) .avt-equipe{
+            right: -8px;
+        }
+        .cart-body-content .match-item .equipe .nom-equipe {
+            padding-left: 46px;
+        }
+        .cart-body-content .match-item .score {
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: auto;
+            width: 50px;
+            background: #125DBD;
+            padding: 14px 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .evolution-match .card-body:before {
+            background-image: radial-gradient(#ffffffb3, #fff);
+            position: absolute;
+            content: "";
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        .card-header {position: relative;}
+        .card-header .add-new{
+            position: absolute;
+            bottom: -4px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:#1DC7EA;
+            color:#fff;
+            right: 9px;
+            cursor: pointer;
+            box-shadow: -3px 2px 10px #a6a6a6;
+            color: #fff!important;
+        }
+        .card-title{
+            text-align: center;
+        }
+        .cart-list-elt{
+            padding-left: 15px;
+        }
+        .cart-list-elt .cart_list_item{
+            padding: 11px 0 6px 0;
+            border-top: 1px solid #D7D7D7;
+        }
+        .cart-list-elt .cart_list_item_title .round-equipe-avt{
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: lowercase;
+            margin-right: 16px;
+            margin-left: 10px;
+        }
+        .cart-list-elt .cart_list_item_title .link-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #7B7575;
+        }
+        .cart_list_item_title .link-item  .group-eqp-avt {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        .cart-list-elt .cart_list_item_title .status{
+            font-size: 12px;
+            font-style: italic;
+            display: block;
+            text-transform: lowercase;
+            color: #CC323C;
+        }
+        .cart-list-elt li{
+            position: relative;
+        }
+       
+        .cart-list-elt li .sa_alert_value{
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .cart_list_item_title  .sa_alert_value.btn-edit{
+            font-size: 10px;
+            padding: 3px 11px;
+        }
+        .cart-list-elt .cart_list_item_content > ul{
+            padding-left: 20px;
+            padding-top: 8px;
+        }
+        .cart-list-elt .cart_list_item_content .sub-item-list{
+            font-size: 13px;
+            text-transform: capitalize;
+        }
+        .cart-list-elt .cart_list_item_content .sub-item-list i{
+            font-size: 8px;
+            font-weight: 600;
+            color:gray;
+        }
+        .cart_list_item_content .group-btn-action{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 2px 6px;
+            margin-top: 15px;
+        }
+        .cart-list-elt .btn-action{
+            color:#fff;
+            padding: 4px 16px;
+            border-radius: 15px;
+            font-size: 12px;
+            text-transform: lowercase;
+        }
+        .cart-list-elt .btn-edit{
+            margin-right: 7px;
+            background:#FF9500;
+        }
+        .cart-list-elt .btn-illimine{
+            background:#FF4A55;
+        }
+
+
+        /******* modalForm css *************/
+
+        .box {
+          width: 40%;
+          margin: 0 auto;
+          background: rgba(255,255,255,0.2);
+          padding: 35px;
+          border: 2px solid #fff;
+          border-radius: 20px/50px;
+          background-clip: padding-box;
+          text-align: center;
+        }
+
+        .button {
+          font-size: 1em;
+          padding: 10px;
+          color: #fff;
+          border: 2px solid #06D85F;
+          border-radius: 20px/50px;
+          text-decoration: none;
+          cursor: pointer;
+          transition: all 0.3s ease-out;
+        }
+        .button:hover {
+          background: #06D85F;
+        }
+
+        #modalFormAdd {
+          position: fixed;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: rgba(0, 0, 0, 0.7);
+          transition: opacity 500ms;
+          visibility: hidden;
+          opacity: 0;
+        }
+        #modalFormAdd.open {
+          visibility: visible;
+          opacity: 1;
+        }
+        #modalFormAdd form{
+          margin-top: 40px;
+        }
+        #modalFormAdd form .form-control {
+          border-radius: 4px!important;
+          border: 1px solid #E3E3E3!important;
+        }
+        .popup {
+          margin: 70px auto;
+          padding: 20px;
+          background: #fff;
+          border-radius: 5px;
+          width: 550px;
+          position: relative;
+          transition: all 5s ease-in-out;
+        }
+
+        .popup h2 {
+          margin-top: 0;
+          color: #333;
+          font-family: Tahoma, Arial, sans-serif;
+        }
+        .popup .close {
+          position: absolute;
+          top: 0px;
+          right: 20px;
+          transition: all 200ms;
+          font-size: 30px;
+          font-weight: bold;
+          text-decoration: none;
+          color: #333;
+        }
+        .popup .close:hover {
+          color: #32325d;
+        }
+
+        @media screen and (max-width: 700px){
+          .box{
+            width: 70%;
+          }
+          .popup{
+            width: 70%;
+          }
+        }
+
+        #modalFormAdd button.submit {
+            cursor: pointer;
+            display: inline-block;
+            height: 40px;
+            width: 100%;
+            margin-top: 40px;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 40px;
+            letter-spacing: 0.025em;
+            text-decoration: none;
+            white-space: nowrap;
+            background: #32325d;
+            color: #fff;
+            border: none;
+            outline: none;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, .11), 0 1px 3px rgba(0, 0, 0, .08);
+            -webkit-transition: all 150ms ease;
+            transition: all 150ms ease;
+        }
+        #modalFormAdd .form-head{
+            color: #333;
+            margin: 0;
+            font-size: 22px;
+        }
+        .lds-ripple {
+            display: none;
+            width: 80px;
+            height: 80px;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            margin: auto;
+            transform: translateY(-50%);
+            z-index: 50;
+        }
+        .lds-ripple div {
+          position: absolute;
+          border: 4px solid green;
+          opacity: 1;
+          border-radius: 50%;
+          animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+        }
+        .lds-ripple div:nth-child(2) {
+          animation-delay: -0.5s;
+        }
+        @keyframes lds-ripple {
+          0% {
+            top: 36px;
+            left: 36px;
+            width: 0;
+            height: 0;
+            opacity: 1;
+          }
+          100% {
+            top: 0px;
+            left: 0px;
+            width: 72px;
+            height: 72px;
+            opacity: 0;
+          }
+        }
+
+
+        /**
+         * Extracted from: SweetAlert
+         * Modified by: Istiak Tridip
+         */
+        .success-checkmark {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            z-index: 60;
+          width: 80px;
+          height: 115px;
+          margin: 0 auto;
+          display: none;
+        }
+        .success-checkmark .check-icon {
+          width: 80px;
+          height: 80px;
+          position: relative;
+          border-radius: 50%;
+          box-sizing: content-box;
+          border: 4px solid #4CAF50;
+          display: none;
+        }
+        .success-checkmark .check-icon::before {
+          top: 3px;
+          left: -2px;
+          width: 30px;
+          transform-origin: 100% 50%;
+          border-radius: 100px 0 0 100px;
+        }
+        .success-checkmark .check-icon::after {
+          top: 0;
+          left: 30px;
+          width: 60px;
+          transform-origin: 0 50%;
+          border-radius: 0 100px 100px 0;
+          animation: rotate-circle 4.25s ease-in;
+        }
+        .success-checkmark .check-icon::before, .success-checkmark .check-icon::after {
+          content: '';
+          height: 100px;
+          position: absolute;
+          background: #FFFFFF;
+          transform: rotate(-45deg);
+        }
+        .success-checkmark .check-icon .icon-line {
+          height: 5px;
+          background-color: #4CAF50;
+          display: block;
+          border-radius: 2px;
+          position: absolute;
+          z-index: 10;
+        }
+        .success-checkmark .check-icon .icon-line.line-tip {
+          top: 46px;
+          left: 14px;
+          width: 25px;
+          transform: rotate(45deg);
+          animation: icon-line-tip 0.75s;
+        }
+        .success-checkmark .check-icon .icon-line.line-long {
+          top: 38px;
+          right: 8px;
+          width: 47px;
+          transform: rotate(-45deg);
+          animation: icon-line-long 0.75s;
+        }
+        .success-checkmark .check-icon .icon-circle {
+          top: -4px;
+          left: -4px;
+          z-index: 10;
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          position: absolute;
+          box-sizing: content-box;
+          border: 4px solid rgba(76, 175, 80, 0.5);
+        }
+        .success-checkmark .check-icon .icon-fix {
+          top: 8px;
+          width: 5px;
+          left: 26px;
+          z-index: 1;
+          height: 85px;
+          position: absolute;
+          transform: rotate(-45deg);
+          background-color: #FFFFFF;
+        }
+
+        @keyframes rotate-circle {
+          0% {
+            transform: rotate(-45deg);
+          }
+          5% {
+            transform: rotate(-45deg);
+          }
+          12% {
+            transform: rotate(-405deg);
+          }
+          100% {
+            transform: rotate(-405deg);
+          }
+        }
+        @keyframes icon-line-tip {
+          0% {
+            width: 0;
+            left: 1px;
+            top: 19px;
+          }
+          54% {
+            width: 0;
+            left: 1px;
+            top: 19px;
+          }
+          70% {
+            width: 50px;
+            left: -8px;
+            top: 37px;
+          }
+          84% {
+            width: 17px;
+            left: 21px;
+            top: 48px;
+          }
+          100% {
+            width: 25px;
+            left: 14px;
+            top: 45px;
+          }
+        }
+        @keyframes icon-line-long {
+          0% {
+            width: 0;
+            right: 46px;
+            top: 54px;
+          }
+          65% {
+            width: 0;
+            right: 46px;
+            top: 54px;
+          }
+          84% {
+            width: 55px;
+            right: 0px;
+            top: 35px;
+          }
+          100% {
+            width: 47px;
+            right: 8px;
+            top: 38px;
+          }
+        }
+        .loader-form{display: block;margin: auto;}
+    </style>
+{% endblock %}
+{% block page_title %}Tournoi Famille{% endblock %}
+{% block admin_content %}
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card evolution-match">
+                <div class="card-header ">
+                    <h4 class="card-title">Evolution match</h4>
+                    <p class="card-category" style="display:none">Last Campaign Performance</p>
+                </div>
+                <div class="card-body ">
+                    <div class="cart-body-content">
+                        <ul class="list-match">
+                            <li class="match-item">
+                                <div class="status-match">Terminé</div>
+                                <div class="match-content">
+                                    <div class="equipe equipe-1">
+                                        <span class="avt-equipe">a</span>
+                                        <span class="nom-equipe">Equipe a</span>
+                                    </div>
+                                    <div class="equipe equipe-1">
+                                        <span class="avt-equipe">b</span>
+                                        <span class="nom-equipe">Equipe b</span>
+                                    </div>
+                                    <span class="score">2 - 2</span>
+                                </div>
+                            </li>
+                            <li class="match-item">
+                                <div class="status-match">Terminé</div>
+                                <div class="match-content">
+                                    <div class="equipe equipe-1">
+                                        <span class="avt-equipe">c</span>
+                                        <span class="nom-equipe">Equipe c</span>
+                                    </div>
+                                    <div class="equipe equipe-1">
+                                        <span class="avt-equipe">d</span>
+                                        <span class="nom-equipe">Equipe d</span>
+                                    </div>
+                                    <span class="score">0 - 1</span>
+                                </div>
+                            </li>
+                            <li class="match-item">
+                                <div class="status-match">en cours</div>
+                                <div class="match-content">
+                                    <div class="equipe equipe-1">
+                                        <span class="avt-equipe">e</span>
+                                        <span class="nom-equipe">Equipe e</span>
+                                    </div>
+                                    <div class="equipe equipe-1">
+                                        <span class="avt-equipe">f</span>
+                                        <span class="nom-equipe">Equipe f</span>
+                                    </div>
+                                    <span class="score">0 - 0</span>
+                                </div>
+                            </li>
+                            <li class="match-item">
+                                <div class="status-match">Terminé</div>
+                                <div class="match-content">
+                                    <div class="equipe equipe-1">
+                                        <span class="avt-equipe">g</span>
+                                        <span class="nom-equipe">Equipe g</span>
+                                    </div>
+                                    <div class="equipe equipe-1">
+                                        <span class="avt-equipe">h</span>
+                                        <span class="nom-equipe">Equipe h</span>
+                                    </div>
+                                    <span class="score">3 - 2</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer ">
+                    <hr>
+                    <div class="legend">
+                        <i class="fa fa-circle text-danger"></i> match en attente (0)
+                        <i class="fa fa-circle text-warning"></i> match en cours (0)
+                        <i class="fa fa-circle text-info"></i> match terminé (3)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card ">
+                <div class="card-header ">
+                    <h4 class="card-title">Equipes</h4>
+                    <a href="{{path('admin_add_equipe')}}" class="add-new">+</a>
+                </div>
+                <div class="card-body ">
+                    <ul class="cart-list-elt">
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <a class="link-item" href="javascript:void()" title="">
+                                    <div class="group-eqp-avt">
+                                        <span class="round-equipe-avt">a</span>
+                                        <div>
+                                           <span class="panel_texte">Equipe a</span>
+                                            <span class="status">illiminée</span>
+                                        </div>
+                                    </div>
+                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
+                                </a>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                                <ul>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div class="group-btn-action">
+                                    <div>
+                                        <a href="{{path('admin_add_type_tournoi')}}" class="btn-action btn-edit">editer</a>
+                                        <span class="btn-action btn-illimine">elliminer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <a class="link-item" href="javascript:void()" title="">
+                                    <div class="group-eqp-avt">
+                                        <span class="round-equipe-avt">b</span>
+                                        <div>
+                                           <span class="panel_texte">Equipe b</span>
+                                        </div>
+                                    </div>
+                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
+                                </a>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                                <ul>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div class="group-btn-action">
+                                    <div>
+                                        <a href="{{path('admin_add_type_tournoi')}}" class="btn-action btn-edit">editer</a>
+                                        <span class="btn-action btn-illimine">elliminer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <a class="link-item" href="javascript:void()" title="">
+                                    <div class="group-eqp-avt">
+                                        <span class="round-equipe-avt">c</span>
+                                        <div>
+                                           <span class="panel_texte">Equipe c</span>
+                                        </div>
+                                    </div>
+                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
+                                </a>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                                <ul>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div class="group-btn-action">
+                                    <div>
+                                        <a href="{{path('admin_add_type_tournoi')}}" class="btn-action btn-edit">editer</a>
+                                        <span class="btn-action btn-illimine">elliminer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <a class="link-item" href="javascript:void()" title="">
+                                    <div class="group-eqp-avt">
+                                        <span class="round-equipe-avt">d</span>
+                                        <div>
+                                           <span class="panel_texte">Equipe d</span>
+                                            <span class="status">illiminée</span>
+                                        </div>
+                                    </div>
+                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
+                                </a>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                                <ul>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div class="group-btn-action">
+                                    <div>
+                                        <a href="{{path('admin_add_type_tournoi')}}" class="btn-action btn-edit">editer</a>
+                                        <span class="btn-action btn-illimine">elliminer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <a class="link-item" href="javascript:void()" title="">
+                                    <div class="group-eqp-avt">
+                                        <span class="round-equipe-avt">e</span>
+                                        <div>
+                                           <span class="panel_texte">Equipe e</span>
+                                            <span class="status">illiminée</span>
+                                        </div>
+                                    </div>
+                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
+                                </a>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                                <ul>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div class="group-btn-action">
+                                    <div>
+                                        <a href="{{path('admin_add_type_tournoi')}}" class="btn-action btn-edit">editer</a>
+                                        <span class="btn-action btn-illimine">elliminer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <a class="link-item" href="javascript:void()" title="">
+                                    <div class="group-eqp-avt">
+                                        <span class="round-equipe-avt">f</span>
+                                        <div>
+                                           <span class="panel_texte">Equipe f</span>
+                                            <span class="status">illiminée</span>
+                                        </div>
+                                    </div>
+                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
+                                </a>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                                <ul>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div class="group-btn-action">
+                                    <div>
+                                        <a href="{{path('admin_add_type_tournoi')}}" class="btn-action btn-edit">editer</a href="{{path('admin_add_type_tournoi')}}">
+                                        <span class="btn-action btn-illimine">elliminer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <a class="link-item" href="javascript:void()" title="">
+                                    <div class="group-eqp-avt">
+                                        <span class="round-equipe-avt">g</span>
+                                        <div>
+                                           <span class="panel_texte">Equipe g</span>
+                                            <span class="status">illiminée</span>
+                                        </div>
+                                    </div>
+                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
+                                </a>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                                <ul>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div class="group-btn-action">
+                                    <div>
+                                        <a href="{{path('admin_add_type_tournoi')}}" class="btn-action btn-edit">editer</a>
+                                        <span class="btn-action btn-illimine">elliminer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <a class="link-item" href="javascript:void()" title="">
+                                    <div class="group-eqp-avt">
+                                        <span class="round-equipe-avt">h</span>
+                                        <div>
+                                           <span class="panel_texte">Equipe h</span>
+                                            <span class="status">illiminée</span>
+                                        </div>
+                                    </div>
+                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
+                                </a>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                                <ul>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
+                                        </a>
+                                    </li>
+                                    <li class="sub-item-list">
+                                        <a href="javascript:void()">
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div class="group-btn-action">
+                                    <div>
+                                        <a href="{{path('admin_add_type_tournoi')}}" class="btn-action btn-edit">editer</a>
+                                        <span class="btn-action btn-illimine">elliminer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer ">
+                    <hr>
+                    <div class="legend">
+                        <i class="fa fa-circle text-danger"></i> Equipes illiminées (2)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card ">
+                <div class="card-header ">
+                    <h4 class="card-title">Terrains</h4>
+                    <a href="{{path('admin_add_terrain')}}" class="add-new">+</a>
+                </div>
+                <div class="card-body ">
+                    <ul class="cart-list-elt">
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <span title="" class="link-item">
+                                    <div>
+                                        <span class="panel_texte">Terrain 1</span>
+                                        <span class="status">occupé</span>
+                                    </div>
+                                    <a href="{{path('admin_add_terrain',{'id':'5'})}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                </span>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <span title="" class="link-item">
+                                    <div>
+                                        <span class="panel_texte">Terrain 2</span>
+                                        <span class="status">occupé</span>
+                                    </div>
+                                    <a href="{{path('admin_add_terrain',{'id':'5'})}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                </span>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <span title="" class="link-item">
+                                    <div>
+                                        <span class="panel_texte">Terrain 3</span>
+                                    </div>
+                                    <a href="{{path('admin_add_terrain',{'id':'5'})}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                </span>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <span title="" class="link-item">
+                                    <div>
+                                        <span class="panel_texte">Terrain 4</span>
+                                    </div>
+                                    <a href="{{path('admin_add_terrain',{'id':'5'})}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                </span>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer ">
+                    <hr>
+                    <div class="legend">
+                        <i class="fa fa-circle text-danger"></i> Terrain occupé (2)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card  card-tasks">
+                <div class="card-header ">
+                    <h4 class="card-title">Types tournois</h4>
+                    <a href="{{path('admin_add_type_tournoi')}}" class="add-new">+</a>
+                </div>
+                <div class="card-body ">
+                    <ul class="cart-list-elt">
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <span title="" class="link-item">
+                                    <span class="panel_texte">élimination direct</span>
+                                    <a href="{{path('admin_add_type_tournoi')}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                </span>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">                           
+                                <span title="" class="link-item">
+                                    <span class="panel_texte">deux poules perdant</span>
+                                    <a href="{{path('admin_add_type_tournoi')}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                </span>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <span title="" class="link-item">
+                                    <span class="panel_texte">deux poules vainqueur </span>
+                                    <a href="{{path('admin_add_type_tournoi')}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                </span>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <span title="" class="link-item">
+                                    <span class="panel_texte">deux poules vainqueur </span>
+                                    <a href="{{path('admin_add_type_tournoi')}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                </span>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <span title="" class="link-item">
+                                    <span class="panel_texte">deux poules vainqueur </span>
+                                    <a href="{{path('admin_add_type_tournoi')}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                </span>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                            </div>
+                        </li>
+                        <li class="cart_list_item">
+                            <div class="cart_list_item_title">
+                                <span title="" class="link-item">
+                                    <span class="panel_texte">deux poules vainqueur </span>
+                                    <a href="{{path('admin_add_type_tournoi')}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                </span>
+                            </div>
+                            <div class="cart_list_item_content" style="display:none;">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Start Modal form add module -->
+            
+    <div id="modalFormAdd" class="overlay">
+        <div class="popup">
+            <a class="close" href="#">&times;</a>
+
+            <div class="form-container">
+              <img class="loader-form" src="{{asset('images/eclipse-loader.gif')}}">
+            </div>
+            
+            <div class="lds-ripple"><div></div><div></div></div>
+            <div class="success-checkmark">
+              <div class="check-icon">
+                <span class="icon-line line-tip"></span>
+                <span class="icon-line line-long"></span>
+                <div class="icon-circle"></div>
+                <div class="icon-fix"></div>
+              </div>
+            </div>
+        </div>
+    </div>  
+    <!-- End Modal form add module -->
+
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            function loadForm($url){
+                $.ajax({
+                    url: $url,
+                    type: "GET",
+                    dataType: "json",
+                    async: true,
+                    data: {},
+                    success: function(data, status) {
+                      $("#modalFormAdd .form-container").html(data);
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                      console.log(errorThrown);
+                    }
+                });
+            }
+
+            $('.add-new, .btn-edit, .add-tournoi').click(function(e){
+                $('#modalFormAdd').addClass('open');
+                var $url = $(this).attr("href");
+                loadForm($url, $(this));
+                e.preventDefault();
+            });
+
+
+            $('.cart-list-elt .cart_list_item_title').click(function(e) {
+                if($(this).hasClass('active')){
+                    $(this).removeClass('active').next('.cart_list_item_content').slideUp();
+                }
+                else{
+                    $('.cart-list-elt .cart_list_item_title').removeClass('active');
+                    $('.cart-list-elt .cart_list_item_content').slideUp();
+                    $(this).addClass('active')
+                        .next('.cart_list_item_content')
+                        .slideToggle();
+                }
+                if(!$(this).hasClass('single-menu'))
+                    e.preventDefault();
+            });
+            $('#modalFormAdd .close').click(function(){
+                $('#modalFormAdd').removeClass('open');
+                $("#modalFormAdd .form-container").html('<img class="loader-form" src="{{asset("images/eclipse-loader.gif")}}">');
+            })
+        });
+    </script>
+{% endblock %}

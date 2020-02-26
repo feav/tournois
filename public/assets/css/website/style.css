@@ -1,0 +1,245 @@
+body{
+	background-image: radial-gradient(#5f6e9a, #06103a);
+	color: #fff;
+	padding-bottom: 40px;
+}
+.body-container{
+}
+
+/* Start Header */
+
+.header .header-wrapper{
+    display: flex;
+    align-items: center;
+    margin: auto;
+    padding: 45px 10px 0;
+    max-width: 800px;
+}
+.header .blablacar-wrapper{
+    width: 260px;
+    padding: 0px 36px 0 11px;
+}
+.header-wrapper .logo-v-mobile {
+	display: none;
+}
+.header .timer-wrapper{
+    text-align: center;
+    padding: 0 25px;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #fff;
+}
+.header .timer-wrapper #chronotime{
+	font-size: 91px; 
+	line-height: 0.7
+}
+.header #chronotime{
+	font-size: 95px;
+	line-height: 0.7;
+	font-weight: 900;
+}
+.header .logo-wrapper{
+	width: 185px;
+}
+.header .logo-wrapper .logo-wrapper-content{
+	border-radius: 50%;
+    width: 138px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 110px;
+    /*background: #fff;*/
+    float: right;
+}
+.header .logo-wrapper .logo{
+	max-width: 80%;
+	max-height: 100%;
+	object-fit: cover;
+	margin: auto;
+	display: block;
+}
+
+/* End header */
+
+/*  Main */
+.main{
+	margin-top: 50px;
+	padding: 0 15px
+}
+.cols-list{
+	display: flex;
+	align-content: stretch;
+	flex-wrap: wrap;
+}
+.cols-list .cols-item {
+	flex: 1;
+}
+.cols-list .cols-item{
+	padding: 2px 8px;
+}
+.cols-list .cols-item:not(:last-child){
+	border-right: 3px solid #8b8bff;
+	border-right-style: dotted;
+}
+.cols-list .cols-item .col-title{
+	background: #fff;
+	color: #4d4a4a;
+	text-align: center;
+	margin: 0;
+	padding: 4px 22px;
+	text-align: center;
+	height: 42px;
+	overflow-y: hidden;
+	letter-spacing: -1;
+}
+.cols-list .cols-item .col-title .num{
+	font-weight: 600;
+}
+.cols-list .sub-col-list {
+	display: flex;
+	align-items: stretch;
+	height: calc(100% - 42px);
+}
+.list-item {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+.cols-list .sub-col-list .list-item:first-child{
+	border-right: 2px solid gray;
+	padding-right: 8px;
+}
+.cols-list .sub-col-list .list-item:nth-child(2){
+	padding-left: 8px;
+}
+
+.sub-col-list .sub-title {
+	text-align: center;
+	font-size: 16px;
+	letter-spacing: -1px;
+	margin: 17px 0 30px;
+	font-weight: 600;
+	/*text-transform: uppercase;*/
+}
+/*.equipe-name{
+	text-transform: lowercase;
+	padding-left: 4px;
+}*/
+.sub-col-list .list-elt {
+	flex:1;
+	font-family: avenir_next_regular;
+}
+.sub-col-list .list-elt .item-elt {
+	text-transform: capitalize;
+	padding-bottom: 4px;
+	line-height: 31px;
+	font-weight: bold;
+}
+.sub-col-list .list-elt .item-elt:not(:last-child){
+	border-bottom: 2px solid gray;
+}
+.cols-list .cols-item .sub-col-foot {
+	text-align: center;
+	margin-top: 50px;
+}
+.score {
+	background: #95a0d2;
+	font-size: 66px;
+	padding: 1px 23px;
+	border-radius: 11px;
+	font-weight: bold;
+}
+
+
+
+
+/***** PAGE TABLEAU SCORE  *******/
+
+.page-wrapper{
+	max-width: 900px;
+	margin: auto;
+}
+.page-title {
+	text-align: center;
+	background:#fff;
+	color:#0e369e;
+	font-size: 48px;
+	padding: 4px 2px;
+	font-weight: 800;
+	max-width: 620px;
+	margin: 0 auto;
+}
+.score-wrapper {
+	padding: 15px 15px 0;
+	display: flex;
+	justify-content: center;
+}
+.score-wrapper .score-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.score-item .group-equipe {
+	font-size: 30px;
+	font-weight: 600;
+	max-width: 420px;
+	padding: 6px;
+	width: 420px;
+}
+.score-item .group-equipe .separate {
+	display: inline-block;
+	width: 4px;
+	height: 46px;
+	background: #fff;
+	transform: rotate(20deg);
+	margin: 0 22px -11px;
+}
+.score-item .groupe-score .score:first-child{
+	margin-right: 12px;
+}
+
+
+
+@media(max-width: 850px){
+	.header .header-wrapper{
+		max-width: 500px;
+	}
+	.header .blablacar-wrapper{
+		width: 260px;
+    	padding: 0px 10px 0 11px;
+	}
+	.header .timer-wrapper {
+	    padding: 0 15px;
+	}
+	.header .timer-wrapper #chronotime{
+		font-size: 60px;
+    	line-height: 0.5;
+	}
+	.header .logo-wrapper .logo-wrapper-content{
+		width: 80px;
+		height: 80px;
+	}
+}
+@media(max-width: 530px){
+	.header .header-wrapper{
+		display: block;
+    	padding-top: 20px;
+	}
+	.header-wrapper .blablacar-wrapper{display: none;}
+	.header-wrapper .logo-v-mobile {
+		height: 30px;
+    	margin: auto;
+    	display: block;
+	}
+	.header .timer-wrapper{border:none;}
+	.header .timer-wrapper #chronotime{
+		line-height: 1;
+	    margin-top: 16px;
+	    font-size: 45px;
+	}
+	.header .logo-wrapper{display: none;}
+}
+
+
+
+

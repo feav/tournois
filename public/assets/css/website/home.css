@@ -1,0 +1,6 @@
+
+@media(max-width: 413px){
+	.cols-list .cols-item:not(:last-child){
+		border:none;
+	}			
+}

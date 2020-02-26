@@ -1,0 +1,34 @@
+
+<h2 class="form-head">Ajout d'un terrain</h2>
+<form id="formTerrain" name="formTerrain">
+    <div class="row">
+     	<div class="col-sm-6 form-control">
+     		<input type="text" name="tata">
+     	</div>
+     	<div class="col-sm-6 form-control">
+     		<input type="text" name="toto">
+     	</div>
+    </div> 
+    <button class="submit">Enregistrer</button>
+</form>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		var form = document.forms.namedItem("formTerrain");
+		form.addEventListener('submit', function(ev) {
+			$.ajax({
+		        url:$('body').data('base-url')+"admin/terrain/add/5",
+		        type:"POST",
+		        data:$('#formTerrain').serialize(),
+		        success:function(response) {
+		        	$('#formTerrain')[0].reset();
+		        },
+		        error:function(){
+		        	alert("error");
+			    }
+		   	});
+				
+			ev.preventDefault();
+		}, false);
+	});
+</script>

@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+{% block title %} Tournoi de boule {% endblock %}
+
+{% block stylesheets %}
+    <link href="{{asset('assets/css/website/style.css')}}" rel="stylesheet" />
+{% endblock %}
+
+{% block body %}
+    <div class="body-container">
+        <header class="header">
+            <div class="header-wrapper">
+                <div class="blablacar-wrapper">
+                    <img src="./images/blablacar-logo.png" class="blablacar-logo img-responsive" alt="logo BlaBlaCar">
+                </div>
+                <img src="./images/logo-boevent-small.png" class="logo-v-mobile img-responsive" alt="logo BlaBlaCar">
+                <div class="timer-wrapper">
+                    <form name="chronoForm">
+                        <h3 id="chronotime">0:00:00</h3>
+                        <input type="button" name="startstop" value="start!" onClick="chronoStart()" style="display: none;" />
+                        <input type="button" name="reset" value="reset!" onClick="chronoReset()" style="display: none;" />
+                    </form>
+                </div>
+                <div class="logo-wrapper">
+                    <div class="logo-wrapper-content">
+                        <img src="./images/LOGO-BOEVENT.png" class="logo" alt="notre logo">
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="main">
+            <div class="middle-container">
+                <div class="middle-content">
+                    {% block page %} {% endblock %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{('assets/js/timmer.js')}}"></script>
+{% endblock %}

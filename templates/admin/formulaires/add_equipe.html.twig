@@ -1,0 +1,48 @@
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="{{asset('assets/tagsInput/dist/bootstrap-tagsinput.css')}}">
+<style type="text/css">
+	.bootstrap-tagsinput{width: 100%;}
+</style>
+<h2 class="form-head">Ajout d'une equipe</h2>
+<form id="formEquipe" name="formEquipe">
+    <div class="row">
+		<div class="col-md-12">
+		    <div class="form-group">
+		        <input type="text" class="form-control" placeholder="nom de l'equipe" value="">
+		    </div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+		    <div class="form-group">
+		        <input type="text" class="form-control" value="Matine,Alin,Elodie,Patrice, alex" data-role="tagsinput" />
+		    </div>
+		</div>
+	</div>
+
+    <button class="submit">Enregistrer</button>
+</form>
+<script src="{{asset('assets/tagsInput/dist/bootstrap-tagsinput.min.js')}}"></script>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		var form = document.forms.namedItem("formEquipe");
+		form.addEventListener('submit', function(ev) {
+			$.ajax({
+		        url:$('body').data('base-url')+"admin/equipe/add/5",
+		        type:"POST",
+		        data:$('#formEquipe').serialize(),
+		        success:function(response) {
+
+		        	$('#formEquipe')[0].reset();
+		        },
+		        error:function(){
+		        	alert("error");
+			    }
+		   	});
+				
+			ev.preventDefault();
+		}, false);
+	});
+</script>

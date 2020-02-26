@@ -1,0 +1,18 @@
+@media(max-width: 655px){
+	.page-title{
+		font-size: 30px;
+		padding: 9px 2px;
+	}
+	.score-wrapper{padding: 15px 0 0;}
+	.score-wrapper .score-item{
+	    flex-direction: column;
+	    text-align: center;
+	    margin-top: 30px;
+	    border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+	    padding-bottom: 15px;
+	}
+	.score-item .group-equipe{
+		width: 100%;
+		font-size: 25px;
+	}
+}
