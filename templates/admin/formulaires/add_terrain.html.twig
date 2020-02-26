@@ -2,13 +2,12 @@
 <h2 class="form-head">Ajout d'un terrain</h2>
 <form id="formTerrain" name="formTerrain">
     <div class="row">
-     	<div class="col-sm-6 form-control">
-     		<input type="text" name="tata">
-     	</div>
-     	<div class="col-sm-6 form-control">
-     		<input type="text" name="toto">
-     	</div>
-    </div> 
+		<div class="col-md-12">
+		    <div class="form-group">
+		        <input type="text" class="form-control" placeholder="nom" value="">
+		    </div>
+		</div>
+	</div> 
     <button class="submit">Enregistrer</button>
 </form>
 <script type="text/javascript">
@@ -16,15 +15,22 @@
 	$(document).ready(function(){
 		var form = document.forms.namedItem("formTerrain");
 		form.addEventListener('submit', function(ev) {
+			$('.lds-ripple').css('display', 'block');
 			$.ajax({
 		        url:$('body').data('base-url')+"admin/terrain/add/5",
 		        type:"POST",
 		        data:$('#formTerrain').serialize(),
 		        success:function(response) {
 		        	$('#formTerrain')[0].reset();
+		        	$('.lds-ripple').css('display', 'none');
+		        	$(".success-checkmark").show().delay(3000).fadeOut();
+                	$(".check-icon").show().show().delay(3000).fadeOut();
+                	demo.showNotification();
 		        },
 		        error:function(){
-		        	alert("error");
+		        	$('.lds-ripple').css('display', 'none');
+		        	$(".success-checkmark").show().delay(3000).fadeOut();
+                	$(".check-icon").show().show().delay(3000).fadeOut();
 			    }
 		   	});
 				

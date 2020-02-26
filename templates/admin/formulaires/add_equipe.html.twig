@@ -29,16 +29,22 @@
 	$(document).ready(function(){
 		var form = document.forms.namedItem("formEquipe");
 		form.addEventListener('submit', function(ev) {
+			$('.lds-ripple').css('display', 'block');
 			$.ajax({
 		        url:$('body').data('base-url')+"admin/equipe/add/5",
 		        type:"POST",
 		        data:$('#formEquipe').serialize(),
 		        success:function(response) {
-
 		        	$('#formEquipe')[0].reset();
+		        	$('.lds-ripple').css('display', 'none');
+		        	$(".success-checkmark").show().delay(3000).fadeOut();
+                	$(".check-icon").show().show().delay(3000).fadeOut();
+                	demo.showNotification();
 		        },
 		        error:function(){
-		        	alert("error");
+		        	$('.lds-ripple').css('display', 'none');
+		        	$(".success-checkmark").show().delay(3000).fadeOut();
+                	$(".check-icon").show().show().delay(3000).fadeOut();
 			    }
 		   	});
 				
