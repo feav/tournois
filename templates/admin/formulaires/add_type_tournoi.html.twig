@@ -63,7 +63,8 @@
 		        	$('.lds-ripple').css('display', 'none');
 		        	$(".success-checkmark").show().delay(3000).fadeOut();
                 	$(".check-icon").show().show().delay(3000).fadeOut();
-                	demo.showNotification();
+                	demo.showNotification.success("Enregistrement effectué avec success");
+                	location.reload(true);
 		        },
 		        error:function(){
 		        	demo.showNotification.error("echec enregistrement");

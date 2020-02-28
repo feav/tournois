@@ -578,7 +578,11 @@
         
     </style>
 {% endblock %}
-{% block page_title %}Tournoi Famille{% endblock %}
+{% block page_title %}
+    {% if tournoi %}
+      {{tournoi.nom}} - {{tournoi.type.nom}}
+    {% endif %}
+{% endblock %}
 {% block admin_content %}
   
 
@@ -590,17 +594,21 @@
               <h4 class="card-title" style="text-align: left;font-size: 19px;">Estimation initiale du tournoi</h4>
           </div>
           <div class="card-body head-estimation">
+            {% if tournoi %}
             <div class="legend" style="font-size: 14px">
-                <i class="fa fa-circle text-danger"></i> <b>4 Tours</b> 
-                <i class="fa fa-circle text-warning"></i> <b>20 minutes / tour </b> 
-                <i class="fa fa-circle text-info"></i> <b>14 Matchs</b> 
+                <i class="fa fa-circle text-danger"></i> <b>{{tournoi.getNbrTour}} Tours</b> 
+                <i class="fa fa-circle text-warning"></i> <b>{{dureeTour}} minutes / tour </b> 
+                <i class="fa fa-circle text-info"></i> <b>{{nbrMatch}} Matchs</b> 
             </div>
-            <span class="btn-demarrer-tournoi">Demarrer le tournoi</span>
+            <span class="btn-demarrer-tournoi" 
+              {% if tournoi.getDateDebut is not null %} style="display: none;" {% endif %} 
+            >Demarrer le tournoi</span>
            <form name="chronoForm" class="chronotime-wrapper">
                 <h3 id="chronotime" style="margin-top: 5px">0:00:00</h3>
                 <input type="button" name="startstop" value="start!" onClick="chronoStart()" style="display: none;" />
                 <input type="button" name="reset" value="reset!" onClick="chronoReset()" style="display: none;" />
             </form>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -614,89 +622,53 @@
                 </div>
                 <div class="card-body ">
                     <div class="cart-body-content">
+                      {% if tournoi %}
                         <div class="timmer-tour-wrapper chronotime-wrapper">
                           <span style="font-size: 17px;">
                           <span class="current-tour">
-                            1<sup class="rang">e</sup>
-                          </span>/ 4<span style="font-size: 12px;">tours</span>
+                            {{tournoi.getCurrentTour}}<sup class="rang">e</sup>
+                          </span>/ {{tournoi.getNbrTour}}<span style="font-size: 12px;">tours</span>
                           </span><br>
                           <span class="timmer-tour">
                             <form name="chronoFormTour" class="chronotime">
                               <h3 id="chronotimetour" style="margin-top: 5px;font-size: 20px;">0:00:00</h3>
                               <input type="button" name="startstop" value="start!" onClick="chronoStartT()" style="display: none;" />
                               <input type="button" name="reset" value="reset!" onClick="chronoResetT()" style="display: none;" />
-                          </form>
+                            </form>
                           </span>
                           <span class="btn-next-tour" style="">
                             tour suivant <i class="nc-icon nc-stre-right" style="font-weight: bold"></i>
                           </span>
                         </div>
                         <ul class="list-match">
+                          {% for item in tournoi.matchs2 %}
                             <li class="match-item">
-                                <div class="status-match">Terminé</div>
+                                <div class="status-match">{{item.etat}}</div>
                                 <div class="match-content">
                                     <div class="equipe equipe-1">
-                                        <span class="avt-equipe">a</span>
-                                        <span class="nom-equipe">Equipe a</span>
+                                        <span class="avt-equipe">{{ item.equipes[0].nom|last }}</span>
+                                        <span class="nom-equipe">{{item.equipes[0].nom}}</span>
                                     </div>
                                     <div class="equipe equipe-1">
-                                        <span class="avt-equipe">b</span>
-                                        <span class="nom-equipe">Equipe b</span>
+                                        <span class="avt-equipe">{{ item.equipes[1].nom|last }}</span>
+                                        <span class="nom-equipe">{{ item.equipes[1].nom }}</span>
                                     </div>
-                                    <span class="score">2 - 2</span>
+                                    <span class="score">
+                                      {{ (item.score is null) ? "0 - 0":item.score }}
+                                    </span>
                                 </div>
                             </li>
-                            <li class="match-item">
-                                <div class="status-match">Terminé</div>
-                                <div class="match-content">
-                                    <div class="equipe equipe-1">
-                                        <span class="avt-equipe">c</span>
-                                        <span class="nom-equipe">Equipe c</span>
-                                    </div>
-                                    <div class="equipe equipe-1">
-                                        <span class="avt-equipe">d</span>
-                                        <span class="nom-equipe">Equipe d</span>
-                                    </div>
-                                    <span class="score">0 - 1</span>
-                                </div>
-                            </li>
-                            <li class="match-item">
-                                <div class="status-match">en cours</div>
-                                <div class="match-content">
-                                    <div class="equipe equipe-1">
-                                        <span class="avt-equipe">e</span>
-                                        <span class="nom-equipe">Equipe e</span>
-                                    </div>
-                                    <div class="equipe equipe-1">
-                                        <span class="avt-equipe">f</span>
-                                        <span class="nom-equipe">Equipe f</span>
-                                    </div>
-                                    <span class="score">0 - 0</span>
-                                </div>
-                            </li>
-                            <li class="match-item">
-                                <div class="status-match">Terminé</div>
-                                <div class="match-content">
-                                    <div class="equipe equipe-1">
-                                        <span class="avt-equipe">g</span>
-                                        <span class="nom-equipe">Equipe g</span>
-                                    </div>
-                                    <div class="equipe equipe-1">
-                                        <span class="avt-equipe">h</span>
-                                        <span class="nom-equipe">Equipe h</span>
-                                    </div>
-                                    <span class="score">3 - 2</span>
-                                </div>
-                            </li>
+                          {% endfor %}
                         </ul>
+                      {% endif %}
                     </div>
                 </div>
                 <div class="card-footer ">
                     <hr>
                     <div class="legend">
-                        <i class="fa fa-circle text-danger"></i> match en attente (0)
-                        <i class="fa fa-circle text-warning"></i> match en cours (0)
-                        <i class="fa fa-circle text-info"></i> match terminé (3)
+                        <i class="fa fa-circle text-danger"></i> match en attente ()
+                        <i class="fa fa-circle text-warning"></i> match en cours ()
+                        <i class="fa fa-circle text-info"></i> match terminé ()
                     </div>
                 </div>
             </div>
@@ -708,15 +680,19 @@
                     <a href="{{path('admin_add_equipe')}}" class="add-new">+</a>
                 </div>
                 <div class="card-body ">
+                  {% if tournoi %}
                     <ul class="cart-list-elt">
+                      {% for item in tournoi.equipes %}
                         <li class="cart_list_item">
                             <div class="cart_list_item_title">
                                 <a class="link-item" href="javascript:void()" title="">
                                     <div class="group-eqp-avt">
-                                        <span class="round-equipe-avt">a</span>
+                                        <span class="round-equipe-avt">{{ item.nom|last }}</span>
                                         <div>
-                                           <span class="panel_texte">Equipe a</span>
-                                            <span class="status">illiminée</span>
+                                           <span class="panel_texte">{{item.nom}}</span>
+                                            <span class="status">
+                                              {{ (item.getEnCompetition == 1) ? "":"illiminé" }}
+                                            </span>
                                         </div>
                                     </div>
                                     <i class="sa_alert_value nc-icon nc-stre-right"></i>
@@ -724,308 +700,32 @@
                             </div>
                             <div class="cart_list_item_content" style="display:none;">
                                 <ul>
+                                  {% if item.joueurs is not null %}
+                                  {% for joueur in item.joueurs|split(',') %}
                                     <li class="sub-item-list">
                                         <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
+                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>{{joueur}}
                                         </a>
                                     </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
-                                        </a>
-                                    </li>
+                                  {% endfor %}
+                                  {% endif %}
                                 </ul>
                                 <div class="group-btn-action">
                                     <div>
-                                        <a href="{{path('admin_add_equipe', {'id':5})}}" class="btn-action btn-edit">editer</a>
-                                        <span class="btn-action btn-illimine">elliminer</span>
+                                        <a href="{{path('admin_add_equipe', {'id':item.id})}}" class="btn-action btn-edit">editer</a>
+                                        <a href="javascript:void()" class="btn-action btn-illimine">elliminer</a>
                                     </div>
                                 </div>
                             </div>
                         </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <a class="link-item" href="javascript:void()" title="">
-                                    <div class="group-eqp-avt">
-                                        <span class="round-equipe-avt">b</span>
-                                        <div>
-                                           <span class="panel_texte">Equipe b</span>
-                                        </div>
-                                    </div>
-                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
-                                </a>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                                <ul>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
-                                        </a>
-                                    </li>
-                                </ul>
-                                <div class="group-btn-action">
-                                    <div>
-                                        <a href="{{path('admin_add_equipe', {'id':5})}}" class="btn-action btn-edit">editer</a>
-                                        <span class="btn-action btn-illimine">elliminer</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <a class="link-item" href="javascript:void()" title="">
-                                    <div class="group-eqp-avt">
-                                        <span class="round-equipe-avt">c</span>
-                                        <div>
-                                           <span class="panel_texte">Equipe c</span>
-                                        </div>
-                                    </div>
-                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
-                                </a>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                                <ul>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
-                                        </a>
-                                    </li>
-                                </ul>
-                                <div class="group-btn-action">
-                                    <div>
-                                        <a href="{{path('admin_add_equipe',{'id':5})}}" class="btn-action btn-edit">editer</a>
-                                        <span class="btn-action btn-illimine">elliminer</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <a class="link-item" href="javascript:void()" title="">
-                                    <div class="group-eqp-avt">
-                                        <span class="round-equipe-avt">d</span>
-                                        <div>
-                                           <span class="panel_texte">Equipe d</span>
-                                            <span class="status">illiminée</span>
-                                        </div>
-                                    </div>
-                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
-                                </a>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                                <ul>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
-                                        </a>
-                                    </li>
-                                </ul>
-                                <div class="group-btn-action">
-                                    <div>
-                                        <a href="{{path('admin_add_equipe',{'id':5})}}" class="btn-action btn-edit">editer</a>
-                                        <span class="btn-action btn-illimine">elliminer</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <a class="link-item" href="javascript:void()" title="">
-                                    <div class="group-eqp-avt">
-                                        <span class="round-equipe-avt">e</span>
-                                        <div>
-                                           <span class="panel_texte">Equipe e</span>
-                                            <span class="status">illiminée</span>
-                                        </div>
-                                    </div>
-                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
-                                </a>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                                <ul>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
-                                        </a>
-                                    </li>
-                                </ul>
-                                <div class="group-btn-action">
-                                    <div>
-                                        <a href="{{path('admin_add_equipe',{'id':5})}}" class="btn-action btn-edit">editer</a>
-                                        <span class="btn-action btn-illimine">elliminer</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <a class="link-item" href="javascript:void()" title="">
-                                    <div class="group-eqp-avt">
-                                        <span class="round-equipe-avt">f</span>
-                                        <div>
-                                           <span class="panel_texte">Equipe f</span>
-                                            <span class="status">illiminée</span>
-                                        </div>
-                                    </div>
-                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
-                                </a>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                                <ul>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
-                                        </a>
-                                    </li>
-                                </ul>
-                                <div class="group-btn-action">
-                                    <div>
-                                        <a href="{{path('admin_add_equipe', {'id':5})}}" class="btn-action btn-edit">editer</a href="{{path('admin_add_type_tournoi')}}">
-                                        <span class="btn-action btn-illimine">elliminer</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <a class="link-item" href="javascript:void()" title="">
-                                    <div class="group-eqp-avt">
-                                        <span class="round-equipe-avt">g</span>
-                                        <div>
-                                           <span class="panel_texte">Equipe g</span>
-                                            <span class="status">illiminée</span>
-                                        </div>
-                                    </div>
-                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
-                                </a>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                                <ul>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
-                                        </a>
-                                    </li>
-                                </ul>
-                                <div class="group-btn-action">
-                                    <div>
-                                        <a href="{{path('admin_add_equipe',{'id':5})}}" class="btn-action btn-edit">editer</a>
-                                        <span class="btn-action btn-illimine">elliminer</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <a class="link-item" href="javascript:void()" title="">
-                                    <div class="group-eqp-avt">
-                                        <span class="round-equipe-avt">h</span>
-                                        <div>
-                                           <span class="panel_texte">Equipe h</span>
-                                            <span class="status">illiminée</span>
-                                        </div>
-                                    </div>
-                                    <i class="sa_alert_value nc-icon nc-stre-right"></i>
-                                </a>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                                <ul>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>alex
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>john
-                                        </a>
-                                    </li>
-                                    <li class="sub-item-list">
-                                        <a href="javascript:void()">
-                                        <i class="nc-icon nc-stre-right" style="font-size: 8px;margin-right:10px;"></i>daniel
-                                        </a>
-                                    </li>
-                                </ul>
-                                <div class="group-btn-action">
-                                    <div>
-                                        <a href="{{path('admin_add_equipe', {'id':5})}}" class="btn-action btn-edit">editer</a>
-                                        <span class="btn-action btn-illimine">elliminer</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
+                      {% endfor %}
                     </ul>
+                  {% endif %}
                 </div>
                 <div class="card-footer ">
                     <hr>
                     <div class="legend">
-                        <i class="fa fa-circle text-danger"></i> Equipes illiminées (2)
+                        <i class="fa fa-circle text-danger"></i> Equipes illiminées (0)
                     </div>
                 </div>
             </div>
@@ -1039,63 +739,32 @@
                     <a href="{{path('admin_add_terrain')}}" class="add-new">+</a>
                 </div>
                 <div class="card-body ">
+                  {% if tournoi %}
                     <ul class="cart-list-elt">
+                      {% for item in tournoi.terrains2 %}
                         <li class="cart_list_item">
                             <div class="cart_list_item_title">
                                 <span title="" class="link-item">
                                     <div>
-                                        <span class="panel_texte">Terrain 1</span>
-                                        <span class="status">occupé</span>
+                                        <span class="panel_texte">{{item.nom}}</span>
+                                        <span class="status">
+                                          {{ (item.occupe == 1) ? "":"occupé" }}
+                                        </span>
                                     </div>
-                                    <a href="{{path('admin_add_terrain',{'id':5})}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                    <a href="{{path('admin_add_terrain',{'id':item.id})}}" class="sa_alert_value btn-action btn-edit">editer</a>
                                 </span>
                             </div>
                             <div class="cart_list_item_content" style="display:none;">
                             </div>
                         </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <span title="" class="link-item">
-                                    <div>
-                                        <span class="panel_texte">Terrain 2</span>
-                                        <span class="status">occupé</span>
-                                    </div>
-                                    <a href="{{path('admin_add_terrain',{'id':'5'})}}" class="sa_alert_value btn-action btn-edit">editer</a>
-                                </span>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                            </div>
-                        </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <span title="" class="link-item">
-                                    <div>
-                                        <span class="panel_texte">Terrain 3</span>
-                                    </div>
-                                    <a href="{{path('admin_add_terrain',{'id':'5'})}}" class="sa_alert_value btn-action btn-edit">editer</a>
-                                </span>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                            </div>
-                        </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <span title="" class="link-item">
-                                    <div>
-                                        <span class="panel_texte">Terrain 4</span>
-                                    </div>
-                                    <a href="{{path('admin_add_terrain',{'id':'5'})}}" class="sa_alert_value btn-action btn-edit">editer</a>
-                                </span>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                            </div>
-                        </li>
+                      {% endfor %}
                     </ul>
+                  {% endif %}
                 </div>
                 <div class="card-footer ">
                     <hr>
                     <div class="legend">
-                        <i class="fa fa-circle text-danger"></i> Terrain occupé (2)
+                        <i class="fa fa-circle text-danger"></i> Terrain occupé ()
                     </div>
                 </div>
             </div>

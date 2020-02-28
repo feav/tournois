@@ -1,10 +1,10 @@
 
-<h2 class="form-head">Ajout d'un terrain</h2>
+<h2 class="form-head">{{action}} d'un terrain</h2>
 <form id="formTerrain" name="formTerrain">
     <div class="row">
 		<div class="col-md-12">
 		    <div class="form-group">
-		        <input type="text" class="form-control" placeholder="nom" value="">
+		        <input type="text" class="form-control" placeholder="nom" name="nom" value="{{terrain.nom}}">
 		    </div>
 		</div>
 	</div> 
@@ -17,7 +17,7 @@
 		form.addEventListener('submit', function(ev) {
 			$('.lds-ripple').css('display', 'block');
 			$.ajax({
-		        url:$('body').data('base-url')+"admin/terrain/add/5",
+		        url:"{{url}}",
 		        type:"POST",
 		        data:$('#formTerrain').serialize(),
 		        success:function(response) {
@@ -25,12 +25,12 @@
 		        	$('.lds-ripple').css('display', 'none');
 		        	$(".success-checkmark").show().delay(3000).fadeOut();
                 	$(".check-icon").show().show().delay(3000).fadeOut();
-                	demo.showNotification();
+                	demo.showNotification.success("Enregistrement effectué avec success");
+                	location.reload(true);
 		        },
 		        error:function(){
+		        	demo.showNotification.error("echec enregistrement");
 		        	$('.lds-ripple').css('display', 'none');
-		        	$(".success-checkmark").show().delay(3000).fadeOut();
-                	$(".check-icon").show().show().delay(3000).fadeOut();
 			    }
 		   	});
 				

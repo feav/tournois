@@ -4,19 +4,19 @@
 <style type="text/css">
 	.bootstrap-tagsinput{width: 100%;}
 </style>
-<h2 class="form-head">Ajout d'une equipe</h2>
+<h2 class="form-head">{{action}} d'une equipe</h2>
 <form id="formEquipe" name="formEquipe">
     <div class="row">
 		<div class="col-md-12">
 		    <div class="form-group">
-		        <input type="text" class="form-control" placeholder="nom de l'equipe" value="">
+		        <input type="text" name="nom" class="form-control" placeholder="nom de l'equipe" value="{{equipe.nom}}">
 		    </div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-12">
 		    <div class="form-group">
-		        <input type="text" class="form-control" value="Matine,Alin,Elodie,Patrice, alex" data-role="tagsinput" />
+		        <input type="text" name="joueurs" class="form-control" value="{{equipe.joueurs}}" data-role="tagsinput" />
 		    </div>
 		</div>
 	</div>
@@ -31,7 +31,7 @@
 		form.addEventListener('submit', function(ev) {
 			$('.lds-ripple').css('display', 'block');
 			$.ajax({
-		        url:$('body').data('base-url')+"admin/equipe/add/5",
+		        url:"{{url}}",
 		        type:"POST",
 		        data:$('#formEquipe').serialize(),
 		        success:function(response) {
@@ -39,12 +39,12 @@
 		        	$('.lds-ripple').css('display', 'none');
 		        	$(".success-checkmark").show().delay(3000).fadeOut();
                 	$(".check-icon").show().show().delay(3000).fadeOut();
-                	demo.showNotification();
+                	demo.showNotification.success("Enregistrement effectué avec success");
+                	location.reload(true);
 		        },
 		        error:function(){
+		        	demo.showNotification.error("echec enregistrement");
 		        	$('.lds-ripple').css('display', 'none');
-		        	$(".success-checkmark").show().delay(3000).fadeOut();
-                	$(".check-icon").show().show().delay(3000).fadeOut();
 			    }
 		   	});
 				

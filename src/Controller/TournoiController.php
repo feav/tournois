@@ -41,18 +41,6 @@ class TournoiController extends AbstractController
     }
 
     /**
-     * @Route("/admin", name="tableau_de_bord")
-     */
-    public function index()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $typeTournois = $this->typeTournoiRepository->findAll();
-        return $this->render('admin/home.html.twig', [
-            'typeTournois' => $typeTournois
-        ]);
-    }
-
-    /**
      * @Route("/admin/match/update-score/{id}", name="update_score")
      */
     public function updateScore(Request $request, $id)
@@ -109,6 +97,27 @@ class TournoiController extends AbstractController
     		}
         }
         return  new Response("passer par une requette ajax");
+    }
+
+
+    /**
+     * @Route("/admin/tournoi/{id}", name="tableau_de_bord")
+     */
+    public function index(Request $request, $id=null)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $typeTournois = $this->typeTournoiRepository->findAll();
+        if(!is_null($id))
+            $tournoi = $this->tournoiRepository->find($id);
+        else
+            $tournoi = $this->tournoiRepository->findOneBy([], ['id'=>'DESC'], 0);
+        
+        return $this->render('admin/home.html.twig', [
+            'typeTournois' => $typeTournois,
+            'tournoi'=> $tournoi,
+            'dureeTour'=> is_null($tournoi) ? "" : ($tournoi->getDuree() / $tournoi->getNbrTour()),
+            'nbrMatch'=> is_null($tournoi) ? "" : $this->getNrbMatch($tournoi)
+        ]);
     }
 
     public function getNrbMatch($tournoi){
