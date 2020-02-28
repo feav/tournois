@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200227160259 extends AbstractMigration
+final class Version20200228091541 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -22,7 +22,9 @@ final class Version20200227160259 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE tournoi ADD datedebut DATETIME DEFAULT NULL');
+        $this->addSql('CREATE TABLE equipe_match2 (equipe_id INT NOT NULL, match2_id INT NOT NULL, INDEX IDX_67F277EF6D861B89 (equipe_id), INDEX IDX_67F277EFAB434B30 (match2_id), PRIMARY KEY(equipe_id, match2_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('ALTER TABLE equipe_match2 ADD CONSTRAINT FK_67F277EF6D861B89 FOREIGN KEY (equipe_id) REFERENCES equipe (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE equipe_match2 ADD CONSTRAINT FK_67F277EFAB434B30 FOREIGN KEY (match2_id) REFERENCES match2 (id) ON DELETE CASCADE');
     }
 
     public function down(Schema $schema) : void
@@ -30,6 +32,6 @@ final class Version20200227160259 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE tournoi DROP datedebut');
+        $this->addSql('DROP TABLE equipe_match2');
     }
 }

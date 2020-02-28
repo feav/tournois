@@ -11,8 +11,59 @@
           margin: 0;
         }
         a, a:hover, a:active, a:focus{color: #7B7575;}
+        .card-body.head-estimation{
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+        }
+        .chronotime-wrapper{
+          display: none;
+        }
+        .chronotime-wrapper.launch{
+          display: block;
+        }
+        .btn-demarrer-tournoi {
+          background: #1DC7EA;
+          color: #fff;
+          padding: 7px 9px;
+          border-radius: 4px;
+          font-size: 19px;
+          box-shadow: -1px 0px 5px #a6a6a6;
+          font-weight: 600;
+          letter-spacing: -1px;
+          cursor: pointer;
+        }
+        .evolution-match .card-header{
+          border-bottom: 1px solid #D7D7D7 !important;
+          padding-bottom: 9px;
+        }
         .evolution-match a, .evolution-match a:hover, 
         .evolution-match a:active, .evolution-match a:focus{color: #7B7575;}
+        .timmer-tour-wrapper{
+          position: relative;
+          text-align: center;
+          color: #7B7575;
+          font-size: 16px;
+        }
+        .timmer-tour-wrapper .current-tour{
+          font-size: 24px;
+          font-weight: bold;
+          cursor: no-drop;
+        }
+        .timmer-tour-wrapper .btn-next-tour{
+          top: 0;
+          position: absolute;
+          right: 0;
+          background: #1DC7EA;
+          color: #fff;
+          padding: 7px 9px;
+          border-radius: 4px;
+          font-size: 15px;
+          font-weight: 600;
+          letter-spacing: -1px;
+          cursor: pointer;
+      }
         .evolution-match .card-body{
             background: url(../assets/img/sidebar-5.jpg) no-repeat;
             background-size: cover;
@@ -524,11 +575,36 @@
           }
         }
         .loader-form{display: block;margin: auto;}
+        
     </style>
 {% endblock %}
 {% block page_title %}Tournoi Famille{% endblock %}
 {% block admin_content %}
+  
 
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card" style="margin-bottom:6px">
+          <div class="card-header" style="padding-top: 10px;">
+              <h4 class="card-title" style="text-align: left;font-size: 19px;">Estimation initiale du tournoi</h4>
+          </div>
+          <div class="card-body head-estimation">
+            <div class="legend" style="font-size: 14px">
+                <i class="fa fa-circle text-danger"></i> <b>4 Tours</b> 
+                <i class="fa fa-circle text-warning"></i> <b>20 minutes / tour </b> 
+                <i class="fa fa-circle text-info"></i> <b>14 Matchs</b> 
+            </div>
+            <span class="btn-demarrer-tournoi">Demarrer le tournoi</span>
+           <form name="chronoForm" class="chronotime-wrapper">
+                <h3 id="chronotime" style="margin-top: 5px">0:00:00</h3>
+                <input type="button" name="startstop" value="start!" onClick="chronoStart()" style="display: none;" />
+                <input type="button" name="reset" value="reset!" onClick="chronoReset()" style="display: none;" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row">
         <div class="col-md-7">
             <div class="card evolution-match">
@@ -538,6 +614,23 @@
                 </div>
                 <div class="card-body ">
                     <div class="cart-body-content">
+                        <div class="timmer-tour-wrapper chronotime-wrapper">
+                          <span style="font-size: 17px;">
+                          <span class="current-tour">
+                            1<sup class="rang">e</sup>
+                          </span>/ 4<span style="font-size: 12px;">tours</span>
+                          </span><br>
+                          <span class="timmer-tour">
+                            <form name="chronoFormTour" class="chronotime">
+                              <h3 id="chronotimetour" style="margin-top: 5px;font-size: 20px;">0:00:00</h3>
+                              <input type="button" name="startstop" value="start!" onClick="chronoStartT()" style="display: none;" />
+                              <input type="button" name="reset" value="reset!" onClick="chronoResetT()" style="display: none;" />
+                          </form>
+                          </span>
+                          <span class="btn-next-tour" style="">
+                            tour suivant <i class="nc-icon nc-stre-right" style="font-weight: bold"></i>
+                          </span>
+                        </div>
                         <ul class="list-match">
                             <li class="match-item">
                                 <div class="status-match">Terminé</div>
@@ -1105,5 +1198,75 @@
                 $("#modalFormAdd .form-container").html('<img class="loader-form" src="{{asset("images/eclipse-loader.gif")}}">');
             })
         });
+    </script>
+
+    <script type="text/javascript">
+      var startTime = 0
+      var start = 0
+      var end = 0
+      var diff = 0
+      var timerID = 0
+      /*window.onload = chronoStartT;*/
+      function chronoT(){
+        end = new Date()
+        diff = end - start
+        diff = new Date(diff)
+        var msec = diff.getMilliseconds()
+        var sec = diff.getSeconds()
+        var min = diff.getMinutes()
+        var hr = diff.getHours()-1
+        if (min < 10){
+          min = "0" + min
+        }
+        if (sec < 10){
+          sec = "0" + sec
+        }
+        if(msec < 10){
+          msec = "00" +msec
+        }
+        else if(msec < 100){
+          msec = "0" +msec
+        }
+        document.getElementById("chronotimetour").innerHTML  = hr + ":" + min + ":" + sec/* + ":" + msec*/
+        timerID = setTimeout("chronoT()", 10)
+      }
+      function chronoStartT(){
+        document.chronoFormTour.startstop.value = "stop!"
+        document.chronoFormTour.startstop.onclick = chronoStop
+        document.chronoFormTour.reset.onclick = chronoReset
+        start = new Date()
+        chronoT()
+      }
+      /*chronoStartT();*/
+      function chronoContinueT(){
+        document.chronoFormTour.startstop.value = "stop!"
+        document.chronoFormTour.startstop.onclick = chronoStop
+        document.chronoFormTour.reset.onclick = chronoReset
+        start = new Date()-diff
+        start = new Date(start)
+        chrono()
+      }
+      function chronoResetT(){
+        document.getElementById("chronotimetour").innerHTML  = "0:00:00:000"
+        start = new Date()
+      }
+      function chronoStopResetT(){
+        document.getElementById("chronotimetour").innerHTML  = "0:00:00:000"
+        document.chronoFormTour.startstop.onclick = chronoStart
+      }
+      function chronoStopT(){
+        document.chronoFormTour.startstop.value = "start!"
+        document.chronoFormTour.startstop.onclick = chronoContinue
+        document.chronoFormTour.reset.onclick = chronoStopReset
+        clearTimeout(timerID)
+      }
+    </script>
+    <script type="text/javascript">
+      $('.btn-demarrer-tournoi').click(function(){
+        chronoStartT();
+        chronoStart();
+        $(this).hide();
+        $('.chronotime-wrapper').addClass('launch');
+      })
     </script>
 {% endblock %}

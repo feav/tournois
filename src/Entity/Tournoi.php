@@ -84,6 +84,22 @@ class Tournoi
      */
     private $date_fin;
 
+
+    /**
+    * @ORM\OneToMany(targetEntity="Match2", cascade={"persist", "remove"}, mappedBy="tournoi")
+    */
+    protected $matchs2; 
+
+    /**
+    * @ORM\OneToMany(targetEntity="Terrain2", cascade={"persist", "remove"}, mappedBy="tournoi")
+    */
+    protected $terrains2;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $refresh; 
+
     public function __construct()
     {
         $this->matchs = new ArrayCollection();
@@ -91,6 +107,8 @@ class Tournoi
         $this->equipes = new ArrayCollection();
         $this->current_tour = 1;
         $this->date_create = new \Datetime();
+        $this->matchs2 = new ArrayCollection();
+        $this->terrains2 = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -307,6 +325,80 @@ class Tournoi
     public function setDateFin(?\DateTimeInterface $date_fin): self
     {
         $this->date_fin = $date_fin;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Match2[]
+     */
+    public function getMatchs2(): Collection
+    {
+        return $this->matchs2;
+    }
+
+    public function addMatchs2(Match2 $matchs2): self
+    {
+        if (!$this->matchs2->contains($matchs2)) {
+            $this->matchs2[] = $matchs2;
+            $matchs2->setTournoi($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMatchs2(Match2 $matchs2): self
+    {
+        if ($this->matchs2->contains($matchs2)) {
+            $this->matchs2->removeElement($matchs2);
+            // set the owning side to null (unless already changed)
+            if ($matchs2->getTournoi() === $this) {
+                $matchs2->setTournoi(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Terrain2[]
+     */
+    public function getTerrains2(): Collection
+    {
+        return $this->terrains2;
+    }
+
+    public function addTerrains2(Terrain2 $terrains2): self
+    {
+        if (!$this->terrains2->contains($terrains2)) {
+            $this->terrains2[] = $terrains2;
+            $terrains2->setTournoi($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTerrains2(Terrain2 $terrains2): self
+    {
+        if ($this->terrains2->contains($terrains2)) {
+            $this->terrains2->removeElement($terrains2);
+            // set the owning side to null (unless already changed)
+            if ($terrains2->getTournoi() === $this) {
+                $terrains2->setTournoi(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getRefresh(): ?bool
+    {
+        return $this->refresh;
+    }
+
+    public function setRefresh(?bool $refresh): self
+    {
+        $this->refresh = $refresh;
 
         return $this;
     }

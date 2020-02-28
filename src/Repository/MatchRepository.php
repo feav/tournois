@@ -17,6 +17,7 @@ class MatchRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Match::class);
+        $this->em = $this->getEntityManager()->getConnection();
     }
 
     // /**
@@ -47,4 +48,15 @@ class MatchRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getMatch($id)
+    {
+        $sql = "
+            SELECT *
+                FROM match WHERE  match.id = :id";
+        $commandes = $this->em->prepare($sql);
+        $commandes->execute(['id'=>$id]);
+        $commandes = $commandes->fetch();
+        return $commandes;
+    }
 }

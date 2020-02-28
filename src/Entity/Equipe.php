@@ -44,10 +44,16 @@ class Equipe
      */
     private $tournoi;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Match2", inversedBy="equipes")
+     */
+    private $matchs2;
+
     public function __construct()
     {
         $this->matchs = new ArrayCollection();
         $this->en_competition = true;
+        $this->matchs2 = new ArrayCollection();
     }
 
 
@@ -126,6 +132,32 @@ class Equipe
     public function setTournoi(?Tournoi $tournoi): self
     {
         $this->tournoi = $tournoi;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Match2[]
+     */
+    public function getMatchs2(): Collection
+    {
+        return $this->matchs2;
+    }
+
+    public function addMatchs2(Match2 $matchs2): self
+    {
+        if (!$this->matchs2->contains($matchs2)) {
+            $this->matchs2[] = $matchs2;
+        }
+
+        return $this;
+    }
+
+    public function removeMatchs2(Match2 $matchs2): self
+    {
+        if ($this->matchs2->contains($matchs2)) {
+            $this->matchs2->removeElement($matchs2);
+        }
 
         return $this;
     }
