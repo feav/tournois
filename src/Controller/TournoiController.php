@@ -115,7 +115,7 @@ class TournoiController extends AbstractController
         return $this->render('admin/home.html.twig', [
             'typeTournois' => $typeTournois,
             'tournoi'=> $tournoi,
-            'dureeTour'=> is_null($tournoi) ? "" : ($tournoi->getDuree() / $tournoi->getNbrTour()),
+            'dureeTour'=> is_null($tournoi) ? "" : ceil($tournoi->getDuree() / $tournoi->getNbrTour()),
             'nbrMatch'=> is_null($tournoi) ? "" : $this->getNrbMatch($tournoi)
         ]);
     }
@@ -193,7 +193,7 @@ class TournoiController extends AbstractController
 
                     if(isset($tabTerrain[$j])){
                         $terrain = $this->terrain2Repository->find($tabTerrain[$j]);
-                        $match->setTerrain2($terrain);
+                        //$match->setTerrain2($terrain);
                         $j++;
                     }
                     $em->persist($match);
