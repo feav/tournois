@@ -5,6 +5,11 @@
 {% block stylesheets %}
     {{parent()}}
     <style type="text/css">
+        form label{
+          color:gray;
+          font-size: 17px;
+          margin: 0;
+        }
         a, a:hover, a:active, a:focus{color: #7B7575;}
         .evolution-match a, .evolution-match a:hover, 
         .evolution-match a:active, .evolution-match a:focus{color: #7B7575;}
@@ -1010,66 +1015,18 @@
                 </div>
                 <div class="card-body ">
                     <ul class="cart-list-elt">
+                      {% for item in typeTournois %}
                         <li class="cart_list_item">
                             <div class="cart_list_item_title">
                                 <span title="" class="link-item">
-                                    <span class="panel_texte">élimination direct</span>
-                                    <a href="{{path('admin_add_type_tournoi', {'id':5})}}" class="sa_alert_value btn-action btn-edit">editer</a>
+                                    <span class="panel_texte">{{item.nom}}</span>
+                                    <a href="{{path('admin_add_type_tournoi', {'id':item.id})}}" class="sa_alert_value btn-action btn-edit">editer</a>
                                 </span>
                             </div>
                             <div class="cart_list_item_content" style="display:none;">
                             </div>
                         </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">                           
-                                <span title="" class="link-item">
-                                    <span class="panel_texte">deux poules perdant</span>
-                                    <a href="{{path('admin_add_type_tournoi', {'id':5})}}" class="sa_alert_value btn-action btn-edit">editer</a>
-                                </span>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                            </div>
-                        </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <span title="" class="link-item">
-                                    <span class="panel_texte">deux poules vainqueur </span>
-                                    <a href="{{path('admin_add_type_tournoi', {'id':5})}}" class="sa_alert_value btn-action btn-edit">editer</a>
-                                </span>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                            </div>
-                        </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <span title="" class="link-item">
-                                    <span class="panel_texte">deux poules vainqueur </span>
-                                    <a href="{{path('admin_add_type_tournoi', {'id':5})}}" class="sa_alert_value btn-action btn-edit">editer</a>
-                                </span>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                            </div>
-                        </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <span title="" class="link-item">
-                                    <span class="panel_texte">deux poules vainqueur </span>
-                                    <a href="{{path('admin_add_type_tournoi', {'id':5})}}" class="sa_alert_value btn-action btn-edit">editer</a>
-                                </span>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                            </div>
-                        </li>
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <span title="" class="link-item">
-                                    <span class="panel_texte">deux poules vainqueur </span>
-                                    <a href="{{path('admin_add_type_tournoi', {'id':5})}}" class="sa_alert_value btn-action btn-edit">editer</a>
-                                </span>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                            </div>
-                        </li>
+                      {% endfor %}
                     </ul>
                 </div>
             </div>

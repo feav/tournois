@@ -1,31 +1,46 @@
 
-<h2 class="form-head">Ajout d'un tournoi</h2>
+<h2 class="form-head">{{action}} d'un tournoi</h2>
 <form id="formTournoi" name="formTournoi">
     <div class="row">
+    	<div class="col-md-12">
+		    <div class="form-group">
+		    	<label>Type de tournoi</label>
+		    	<select class="form-control" name="typeTournoi">
+		    		<option disabled="disabled" value="" selected>--Selectionner type de tournoi--</option>
+		    		{% for item in typeTournois %}
+		    			<option value="{{item.id}}">{{item.nom}}</option>
+		    		{% endfor %}
+		    	</select>
+		    </div>
+		</div>
 		<div class="col-md-12">
 		    <div class="form-group">
-		        <input type="text" class="form-control" placeholder="nom" value="">
+		    	<label>Nom</label>
+		        <input type="text" name="nom" class="form-control" placeholder="nom" value="">
 		    </div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-12">
 		    <div class="form-group">
-		        <input type="number" class="form-control" placeholder="nombre equipe" value="">
+		    	<label>Nombre d'equipe</label>
+		        <input type="number" name="nbrEquipe" class="form-control" placeholder="nombre equipe" value="">
 		    </div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-12">
 		    <div class="form-group">
-		        <input type="number" class="form-control" placeholder="nombre terrain" value="">
+		    	<label>Nombre de terrain</label>
+		        <input type="number" name="nbrTerrain" class="form-control" placeholder="nombre terrain" value="">
 		    </div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-12">
 		    <div class="form-group">
-		        <input type="number" class="form-control" placeholder="durrée en minute" value="">
+		    	<label>Durée du tournoi en minute</label>
+		        <input type="number" name="duree" class="form-control" placeholder="durrée en minute" value="">
 		    </div>
 		</div>
 	</div>
@@ -35,10 +50,46 @@
 
 	$(document).ready(function(){
 		var form = document.forms.namedItem("formTournoi");
+		function validate(){
+	        try{
+	            var validator = $('#formTournoi').validate({
+	                rules:{
+	                    'typeTournoi':{
+	                    	required:true
+	                    },
+	                    'nom':{
+	                    	required:true
+	                    },
+	                    'nbrEquipe':{
+	                    	required:true,
+	                    	number: true
+	                    },
+	                    'nbrTerrain':{
+	                    	required:true,
+	                    	number: true
+	                    },
+	                    'duree':{
+	                    	required:true,
+	                    	number: true
+	                    },
+	                }
+	            });
+	            
+	            var $validated = $('#formTournoi').valid();
+	            return $validated;
+	        }catch(error){
+	            console.log(error)
+	        }
+	    }
 		form.addEventListener('submit', function(ev) {
+			if( !validate()){
+				demo.showNotification.error("Veuillez remplir correctement les champs");
+		        ev.preventDefault();
+		        return false;
+		    }
 			$('.lds-ripple').css('display', 'block');
 			$.ajax({
-		        url:$('body').data('base-url')+"admin/tournoi/add/5",
+		        url:"{{url}}",
 		        type:"POST",
 		        data:$('#formTournoi').serialize(),
 		        success:function(response) {
@@ -46,9 +97,10 @@
 		        	$('.lds-ripple').css('display', 'none');
 		        	$(".success-checkmark").show().delay(3000).fadeOut();
                 	$(".check-icon").show().show().delay(3000).fadeOut();
-                	demo.showNotification();
+                	demo.showNotification.success("Enregistrement effectué avec success");
 		        },
 		        error:function(){
+		        	demo.showNotification.error("echec enregistrement");
 		        	$('.lds-ripple').css('display', 'none');
 		        	$(".success-checkmark").show().delay(3000).fadeOut();
                 	$(".check-icon").show().show().delay(3000).fadeOut();

@@ -39,7 +39,7 @@ class Match
     private $date_debut;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $vainqueur;
 
@@ -60,9 +60,20 @@ class Match
      */
     private $tournoi;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $num_tour;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $dateFin;
+
     public function __construct()
     {
         $this->equipes = new ArrayCollection();
+        $this->etat = "en_attente";
     }
 
     public function getId(): ?int
@@ -118,12 +129,12 @@ class Match
         return $this;
     }
 
-    public function getVainqueur(): ?string
+    public function getVainqueur(): ?int
     {
         return $this->vainqueur;
     }
 
-    public function setVainqueur(?string $vainqueur): self
+    public function setVainqueur(?int $vainqueur): self
     {
         $this->vainqueur = $vainqueur;
 
@@ -178,6 +189,30 @@ class Match
     public function setTournoi(?Tournoi $tournoi): self
     {
         $this->tournoi = $tournoi;
+
+        return $this;
+    }
+
+    public function getNumTour(): ?int
+    {
+        return $this->num_tour;
+    }
+
+    public function setNumTour(int $num_tour): self
+    {
+        $this->num_tour = $num_tour;
+
+        return $this;
+    }
+
+    public function getDateFin(): ?\DateTimeInterface
+    {
+        return $this->dateFin;
+    }
+
+    public function setDateFin(\DateTimeInterface $dateFin): self
+    {
+        $this->dateFin = $dateFin;
 
         return $this;
     }

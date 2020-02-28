@@ -37,6 +37,11 @@ class Terrain
      */
     private $tournoi;
 
+    public function __construct()
+    {
+        $this->occupe = false;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

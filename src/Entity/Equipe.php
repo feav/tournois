@@ -24,7 +24,7 @@ class Equipe
     private $nom;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $joueurs;
 
@@ -47,6 +47,7 @@ class Equipe
     public function __construct()
     {
         $this->matchs = new ArrayCollection();
+        $this->en_competition = true;
     }
 
 

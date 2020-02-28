@@ -1,10 +1,23 @@
 
-<h2 class="form-head">Ajout d'un type de tournois</h2>
+<h2 class="form-head">{{action}} d'un type de tournois</h2>
 <form id="formTypeTournoi" name="formTypeTournoi">
     <div class="row">
 		<div class="col-md-12">
 		    <div class="form-group">
-		        <input type="text" class="form-control" placeholder="nom" value="">
+		    	<label>nom</label>
+		        <input type="text" name="nom" class="form-control" placeholder="nom" value="{{typeTournoi.nom}}">
+		    </div>
+		</div>
+		<div class="col-md-12">
+		    <div class="form-group">
+		    	<label>référent</label>
+		    	<select class="form-control" name="referent">
+		    		<option disabled="disabled" value="" selected>--Selectionner un référent--</option>
+		    		<option value="ellimination-direct" 
+		    			{% if typeTournoi.referent == 'ellimination-direct' %} selected {% endif %}>éllimination-direct</option>
+		    		<option value="deux-poules-perdant-vainqueur"
+		    			{% if typeTournoi.referent == 'deux-poules-perdant-vainqueur' %} selected {% endif %}>deux-poules-perdant-et-vainqueur</option>
+		    	</select>
 		    </div>
 		</div>
 	</div>
@@ -14,13 +27,38 @@
 
 	$(document).ready(function(){
 		var form = document.forms.namedItem("formTypeTournoi");
+		function validate(){
+	        try{
+	            var validator = $('#formTypeTournoi').validate({
+	                rules:{
+	                    'nom':{
+	                    	required:true
+	                    },
+	                    'referent':{
+	                    	required:true
+	                    }
+	                }
+	            });
+	            
+	            var $validated = $('#formTypeTournoi').valid();
+	            return $validated;
+	        }catch(error){
+	            console.log(error)
+	        }
+	    }
 		form.addEventListener('submit', function(ev) {
+			if( !validate()){
+				demo.showNotification.error("Veuillez remplir correctement les champs");
+		        ev.preventDefault();
+		        return false;
+		    }
 			$('.lds-ripple').css('display', 'block');
 			$.ajax({
-		        url:$('body').data('base-url')+"admin/type-tournoi/add/5",
+		        url:"{{url}}",
 		        type:"POST",
 		        data:$('#formTypeTournoi').serialize(),
 		        success:function(response) {
+		        	demo.showNotification.success("Enregistrement effectué avec success");
 		        	$('#formTypeTournoi')[0].reset();
 		        	$('.lds-ripple').css('display', 'none');
 		        	$(".success-checkmark").show().delay(3000).fadeOut();
@@ -28,9 +66,8 @@
                 	demo.showNotification();
 		        },
 		        error:function(){
+		        	demo.showNotification.error("echec enregistrement");
 		        	$('.lds-ripple').css('display', 'none');
-		        	$(".success-checkmark").show().delay(3000).fadeOut();
-                	$(".check-icon").show().show().delay(3000).fadeOut();
 			    }
 		   	});
 				

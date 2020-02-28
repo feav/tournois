@@ -64,11 +64,33 @@ class Tournoi
      */
     private $type;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $nbr_tour;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $current_tour;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $date_debut;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $date_fin;
+
     public function __construct()
     {
         $this->matchs = new ArrayCollection();
         $this->terrains = new ArrayCollection();
         $this->equipes = new ArrayCollection();
+        $this->current_tour = 1;
+        $this->date_create = new \Datetime();
     }
 
     public function getId(): ?int
@@ -237,6 +259,54 @@ class Tournoi
     public function setType(?TypeTournoi $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getNbrTour(): ?int
+    {
+        return $this->nbr_tour;
+    }
+
+    public function setNbrTour(int $nbr_tour): self
+    {
+        $this->nbr_tour = $nbr_tour;
+
+        return $this;
+    }
+
+    public function getCurrentTour(): ?int
+    {
+        return $this->current_tour;
+    }
+
+    public function setCurrentTour(int $current_tour): self
+    {
+        $this->current_tour = $current_tour;
+
+        return $this;
+    }
+
+    public function getDateDebut(): ?\DateTimeInterface
+    {
+        return $this->date_debut;
+    }
+
+    public function setDateDebut(?\DateTimeInterface $date_debut): self
+    {
+        $this->date_debut = $date_debut;
+
+        return $this;
+    }
+
+    public function getDateFin(): ?\DateTimeInterface
+    {
+        return $this->date_fin;
+    }
+
+    public function setDateFin(?\DateTimeInterface $date_fin): self
+    {
+        $this->date_fin = $date_fin;
 
         return $this;
     }

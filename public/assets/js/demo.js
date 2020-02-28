@@ -500,23 +500,44 @@ demo = {
         marker.setMap(map);
     },
 
-    showNotification: function(from, align) {
-        color = Math.floor((Math.random() * 4) + 1);
-
-        $.notify({
-            icon: "nc-icon nc-app",
-            message: "Bienvenue sur le panel d'administration."
-
-        }, {
-            type: type[color],
-            timer: 8000,
-            placement: {
-                from: from,
-                align: align
-            }
-        });
-    }
-
+    showNotification:{
+        info: function(message) {
+            $.notify({
+                icon: "nc-icon nc-app",
+                message: message
+            }, {
+                type: "info",
+                timer: 8000
+            });
+        },
+        success: function(message) {
+            $.notify({
+                icon: "nc-icon nc-app",
+                message: message
+            }, {
+                type: "success",
+                timer: 8000
+            });
+        },
+        warning: function(message) {
+            $.notify({
+                icon: "nc-icon nc-app",
+                message: message
+            }, {
+                type: "warning",
+                timer: 8000
+            });
+        },
+        error: function(message) {
+            $.notify({
+                icon: "nc-icon nc-app",
+                message: message
+            }, {
+                type: "danger",
+                timer: 8000
+            });
+        }
+    } 
 
 
 }

@@ -33,6 +33,11 @@ class TypeTournoi
     */
     protected $tournois;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $referent;
+
     public function __construct()
     {
         $this->tournois = new ArrayCollection();
@@ -94,6 +99,18 @@ class TypeTournoi
                 $tournois->setType(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getReferent(): ?string
+    {
+        return $this->referent;
+    }
+
+    public function setReferent(?string $referent): self
+    {
+        $this->referent = $referent;
 
         return $this;
     }
