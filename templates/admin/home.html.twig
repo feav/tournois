@@ -63,7 +63,7 @@
           font-weight: 600;
           letter-spacing: -1px;
           cursor: pointer;
-      }
+        }
         .evolution-match .card-body{
             background: url(../assets/img/sidebar-5.jpg) no-repeat;
             background-size: cover;
@@ -574,13 +574,12 @@
             top: 38px;
           }
         }
-        .loader-form{display: block;margin: auto;}
-        
+        .loader-form{display: block;margin: auto;}    
     </style>
 {% endblock %}
 {% block page_title %}
     {% if tournoi %}
-      {{tournoi.nom}} - {{tournoi.type.nom}}
+      {{tournoi.nom}} <small>- {{tournoi.type.nom}}</small>
     {% endif %}
 {% endblock %}
 {% block admin_content %}
@@ -600,9 +599,9 @@
                 <i class="fa fa-circle text-warning"></i> <b>{{dureeTour}} minutes / tour </b> 
                 <i class="fa fa-circle text-info"></i> <b>{{nbrMatch}} Matchs</b> 
             </div>
-            <span class="btn-demarrer-tournoi" 
+            <a href="" class="btn-demarrer-tournoi" 
               {% if tournoi.getDateDebut is not null %} style="display: none;" {% endif %} 
-            >Demarrer le tournoi</span>
+            >Demarrer le tournoi</a>
            <form name="chronoForm" class="chronotime-wrapper">
                 <h3 id="chronotime" style="margin-top: 5px">0:00:00</h3>
                 <input type="button" name="startstop" value="start!" onClick="chronoStart()" style="display: none;" />
@@ -618,7 +617,7 @@
             <div class="card evolution-match">
                 <div class="card-header ">
                     <h4 class="card-title">Evolution match</h4>
-                    <p class="card-category" style="display:none">Last Campaign Performance</p>
+                    <p class="card-category" style="display:none"></p>
                 </div>
                 <div class="card-body ">
                     <div class="cart-body-content">

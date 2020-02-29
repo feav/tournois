@@ -98,7 +98,12 @@ class Tournoi
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $refresh; 
+    private $refresh;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $etat; 
 
     public function __construct()
     {
@@ -399,6 +404,18 @@ class Tournoi
     public function setRefresh(?bool $refresh): self
     {
         $this->refresh = $refresh;
+
+        return $this;
+    }
+
+    public function getEtat(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(?string $etat): self
+    {
+        $this->etat = $etat;
 
         return $this;
     }

@@ -17,6 +17,7 @@ class EquipeRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Equipe::class);
+        $this->em = $this->getEntityManager()->getConnection();
     }
 
     // /**
@@ -47,4 +48,15 @@ class EquipeRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getNbrEquipeQualifie($idTournoi){
+        $sql = "
+            SELECT COUNT(*) FROM equipe 
+                WHERE  equipe.en_competition = :etat";
+        $nbrEquipe = $this->em->prepare($sql);
+        $nbrEquipe->execute(['etat'=>1]);
+        $nbrEquipe = $nbrEquipe->fetch();
+
+        return $nbrEquipe;
+    }
 }

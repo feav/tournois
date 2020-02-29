@@ -99,7 +99,6 @@ class TournoiController extends AbstractController
         return  new Response("passer par une requette ajax");
     }
 
-
     /**
      * @Route("/admin/tournoi/{id}", name="tableau_de_bord")
      */
@@ -118,6 +117,19 @@ class TournoiController extends AbstractController
             'dureeTour'=> is_null($tournoi) ? "" : ceil($tournoi->getDuree() / $tournoi->getNbrTour()),
             'nbrMatch'=> is_null($tournoi) ? "" : $this->getNrbMatch($tournoi)
         ]);
+    }
+
+    /**
+     * @Route("/admin/tournoi-launch/{id}", name="tournoi_launch")
+     */
+    public function launchTournoi(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $tournoi = $this->tournoiRepository->find($id);
+        $tournoi->setDateDebut(new \Datetime());
+        $em->flush();
+        // mise à ajour des premier match aussi...
+        return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
     }
 
     public function getNrbMatch($tournoi){
@@ -173,12 +185,9 @@ class TournoiController extends AbstractController
     public function generateMatch($tournoi){
         $em = $this->getDoctrine()->getManager();
         $currentTour = $tournoi->getCurrentTour();
-        if( $currentTour <= $tournoi->getNbrTour() ){
+        if( !$this->isEndTournoi($tournoi) ){
+            $terrains = $this->terrain2Repository->findBy(['tournoi'=>$tournoi->getId()]);
 
-            $tabTerrain = [];
-            for ($i=1; $i <= $tournoi->getNbrTerrain(); $i++) { 
-                $tabTerrain[] = $i;
-            }
             /* on fait jouer toutes les equipes */
             if($currentTour == 1){
                 $equipes = $this->equipeRepository->findBy(['tournoi'=>$tournoi->getId()]);
@@ -191,9 +200,8 @@ class TournoiController extends AbstractController
                     $match->addEquipe($equipes[$i]);
                     $match->addEquipe($equipes[$i+1]);
 
-                    if(isset($tabTerrain[$j])){
-                        $terrain = $this->terrain2Repository->find($tabTerrain[$j]);
-                        //$match->setTerrain2($terrain);
+                    if(isset( $terrains[$j] )){
+                        $match->setTerrain2($terrains[$j]);
                         $j++;
                     }
                     $em->persist($match);
@@ -210,6 +218,10 @@ class TournoiController extends AbstractController
                     $equipe2 = $this->equipeRepository->find(array_keys($ArrayNewEquipes)[$i+1]);
                     $match->addEquipe($equipe1);
                     $match->addEquipe($equipe2);
+                    if(isset( $terrains[$j] )){
+                        $match->setTerrain2($terrains[$j]);
+                        $j++;
+                    }
                     $em->persist($match);
                 }
             }
@@ -277,6 +289,17 @@ class TournoiController extends AbstractController
     }
     public function deuxPoules($valeur){
        return $valeur + $this->directIllimination(ceil($valeur/4));
+    }
+    public function isEndTournoi($tournoi){
+        $nbrEquipeQualifie =  $this->equipeRepository->getNbrEquipeQualifie($tournoi->getId());
+        if ($nbrEquipeQualifie > 1)
+           return false;
+        else{
+            $em = $this->getDoctrine()->getManager();
+            $tournoi->setEtat("termine");
+            $em->flush();
+            return true;
+        }
     }
 
 }
