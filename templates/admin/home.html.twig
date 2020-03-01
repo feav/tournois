@@ -591,19 +591,20 @@
           </div>
           <div class="card-body head-estimation">
             {% if tournoi %}
-            <div class="legend" style="font-size: 14px">
-                <i class="fa fa-circle text-danger"></i> <b>{{tournoi.getNbrTour}} Tours</b> 
-                <i class="fa fa-circle text-warning"></i> <b>{{dureeTour}} minutes / tour </b> 
-                <i class="fa fa-circle text-info"></i> <b>{{nbrMatch}} Matchs</b> 
-            </div>
-            {% if tournoi.getDateDebut is null %}
-              <a href="{{path('tournoi_launch',{'id':tournoi.id})}}" class="btn-demarrer-tournoi">Demarrer le tournoi</a>
-              {% else %}
-              <form name="chronoForm" class="chronotime-wrapper">
-                <h3 id="chronotime" style="margin-top: 5px">0:00:00</h3>
-                <input type="button" name="startstop" value="start!" onClick="chronoStart()" style="display: none;" />
-                <input type="button" name="reset" value="reset!" onClick="chronoReset()" style="display: none;" />
-              </form>
+              <div class="legend" style="font-size: 14px">
+                  <i class="fa fa-circle text-danger"></i> <b>{{tournoi.getNbrTour}} Tours</b> 
+                  <i class="fa fa-circle text-warning"></i> <b>{{dureeTour}} minutes / tour </b> 
+                  <i class="fa fa-circle text-info"></i> <b>{{nbrMatch}} Matchs</b> 
+              </div>
+              {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
+                <form name="chronoForm" class="chronotime-wrapper">
+                  <h3 id="chronotime" style="margin-top: 5px">0:00:00</h3>
+                  <input type="button" name="startstop" value="start!" onClick="chronoStart()" style="display: none;" />
+                  <input type="button" name="reset" value="reset!" onClick="chronoReset()" style="display: none;" />
+                </form>
+              {% endif %}
+              {% if tournoi.getDateDebut is null %}
+                <a href="{{path('tournoi_launch',{'id':tournoi.id})}}" class="btn-demarrer-tournoi">Demarrer le tournoi</a>
               {% endif %}
             {% endif %}
           </div>
@@ -620,7 +621,7 @@
                 <div class="card-body ">
                     <div class="cart-body-content">
                       {% if tournoi %}
-                        {% if tournoi.getDateDebut is not null %}
+                        {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
                         <div class="timmer-tour-wrapper chronotime-wrapper">
                           <span style="font-size: 17px;">
                           <span class="current-tour">
@@ -634,13 +635,15 @@
                               <input type="button" name="reset" value="reset!" onClick="chronoResetT()" style="display: none;" />
                             </form>
                           </span>
-                          <span class="btn-next-tour" style="">
+                          <a class="btn-next-tour" style="" href="{{path('goto_next_tour',{'id':tournoi.id})}}">
                             tour suivant <i class="nc-icon nc-stre-right" style="font-weight: bold"></i>
-                          </span>
+                          </a>
                         </div>
+                        {% elseif tournoi.etat == "termine" %}
+                          <h2  style="color:#333;font-size: 23px;text-align: center;">Tournois terminé</h2>
                         {% endif %}
                         <ul class="list-match">
-                          {% for item in tournoi.matchs2 %}
+                          {% for item in matchs %}
                             <li class="match-item">
                                 <div class="status-match">{{item.etat}}</div>
                                 <div class="match-content">
@@ -928,7 +931,7 @@
         clearTimeout(timerID)
       }
 
-      {% if tournoi.getDateDebut is not null %}
+      {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
         chronoStartT();
         chronoStart();
       {% endif %}

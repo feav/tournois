@@ -65,16 +65,16 @@ class Match2
     private $tournoi;
 
     /**
-    * @ORM\OneToOne(targetEntity="App\Entity\Terrain", cascade={"persist"}, inversedBy="match2")
+    * @ORM\OneToOne(targetEntity="App\Entity\Terrain", cascade={"persist"}, inversedBy="match")
     * @ORM\JoinColumn(nullable=true)
     */
     protected $terrain;
 
-    /**
-    * @ORM\OneToOne(targetEntity="App\Entity\Terrain2", cascade={"persist"}, inversedBy="match2")
-    * @ORM\JoinColumn(nullable=true)
-    */
-    protected $terrain2;
+     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Terrain2", inversedBy="matchs2")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $terrain2;
 
     public function __construct()
     {

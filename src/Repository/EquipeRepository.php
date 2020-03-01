@@ -51,12 +51,12 @@ class EquipeRepository extends ServiceEntityRepository
 
     public function getNbrEquipeQualifie($idTournoi){
         $sql = "
-            SELECT COUNT(*) FROM equipe 
+            SELECT COUNT(*) as nbr FROM equipe 
                 WHERE  equipe.en_competition = :etat";
         $nbrEquipe = $this->em->prepare($sql);
         $nbrEquipe->execute(['etat'=>1]);
         $nbrEquipe = $nbrEquipe->fetch();
 
-        return $nbrEquipe;
+        return $nbrEquipe['nbr'];
     }
 }

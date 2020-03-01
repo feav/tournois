@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200229063843 extends AbstractMigration
+final class Version20200301091412 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -22,7 +22,7 @@ final class Version20200229063843 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE tournoi ADD etat VARCHAR(255) DEFAULT NULL');
+        $this->addSql('ALTER TABLE match2 DROP INDEX UNIQ_6AC51147C588DEF0, ADD INDEX IDX_6AC51147C588DEF0 (terrain2_id)');
     }
 
     public function down(Schema $schema) : void
@@ -30,6 +30,6 @@ final class Version20200229063843 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE tournoi DROP etat');
+        $this->addSql('ALTER TABLE match2 DROP INDEX IDX_6AC51147C588DEF0, ADD UNIQUE INDEX UNIQ_6AC51147C588DEF0 (terrain2_id)');
     }
 }

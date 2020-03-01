@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -33,13 +35,14 @@ class Terrain2
     private $tournoi;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Match2", cascade={"persist"}, mappedBy="terrain2")
+    * @ORM\OneToMany(targetEntity="App\Entity\Match2", cascade={"persist", "remove"}, mappedBy="terrain2")
     */
-    protected $match2;
+    protected $matchs2;
 
     public function __construct()
     {
         $this->occupe = false;
+        $this->matchs2 = new ArrayCollection();
     }
     
     public function getId(): ?int
@@ -83,19 +86,32 @@ class Terrain2
         return $this;
     }
 
-    public function getMatch2(): ?Match2
+    /**
+     * @return Collection|Match2[]
+     */
+    public function getMatchs2(): Collection
     {
-        return $this->match2;
+        return $this->matchs2;
     }
 
-    public function setMatch2(?Match2 $match2): self
+    public function addMatchs2(Match2 $matchs2): self
     {
-        $this->match2 = $match2;
+        if (!$this->matchs2->contains($matchs2)) {
+            $this->matchs2[] = $matchs2;
+            $matchs2->setTerrain2($this);
+        }
 
-        // set (or unset) the owning side of the relation if necessary
-        $newTerrain2 = null === $match2 ? null : $this;
-        if ($match2->getTerrain2() !== $newTerrain2) {
-            $match2->setTerrain2($newTerrain2);
+        return $this;
+    }
+
+    public function removeMatchs2(Match2 $matchs2): self
+    {
+        if ($this->matchs2->contains($matchs2)) {
+            $this->matchs2->removeElement($matchs2);
+            // set the owning side to null (unless already changed)
+            if ($matchs2->getTerrain2() === $this) {
+                $matchs2->setTerrain2(null);
+            }
         }
 
         return $this;

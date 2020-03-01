@@ -109,9 +109,12 @@ class TournoiController extends AbstractController
             $tournoi = $this->tournoiRepository->find($id);
         else
             $tournoi = $this->tournoiRepository->findOneBy([], ['id'=>'DESC'], 0);
+
+        $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()]);
         
         return $this->render('admin/home.html.twig', [
             'typeTournois' => $typeTournois,
+            'matchs' => $matchs,
             'tournoi'=> $tournoi,
             'dureeTour'=> is_null($tournoi) ? "" : ceil($tournoi->getDuree() / $tournoi->getNbrTour()),
             'nbrMatch'=> is_null($tournoi) ? "" : $this->getNrbMatch($tournoi)
@@ -137,6 +140,38 @@ class TournoiController extends AbstractController
         }
 
         $em->flush();
+        return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
+    }
+
+    /**
+     * @Route("/admin/goto-next-tour/{id}", name="goto_next_tour")
+     */
+    public function nextTour(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $tournoi = $this->tournoiRepository->find($id);
+        $currentTour = $tournoi->getCurrentTour()+1;
+        $tournoi->setCurrentTour($currentTour);
+        $isGenerate = $this->generateMatch($tournoi);
+
+        /* aucun nouveau match generé (fin du match)*/
+        if(!$isGenerate){
+            $tournoi->setEtat('termine');
+            $em->flush();
+            return new Response('Fin du match');
+        }
+
+        $matchCurrentTour = $this->match2Repository->findBy(['num_tour'=>$currentTour, 'tournoi'=>$tournoi->getId()]);
+        foreach ($matchCurrentTour as $key => $value) {
+            $value->setEtat('en_cours');
+            $value->setDateDebut(new \Datetime());
+            $currentDate = new \Datetime();
+            $currentDate->add(new \DateInterval('PT'.$value->getDuree().'M'));
+            $dateFin = $currentDate->format('Y-m-d H:i:s');
+            $value->setDateFin((new \DateTime($dateFin)));
+        }
+        $em->flush();
+        
         return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
     }
 
@@ -193,6 +228,7 @@ class TournoiController extends AbstractController
     public function generateMatch($tournoi){
         $em = $this->getDoctrine()->getManager();
         $currentTour = $tournoi->getCurrentTour();
+
         if( !$this->isEndTournoi($tournoi) ){
             $terrains = $this->terrain2Repository->findBy(['tournoi'=>$tournoi->getId()]);
 
@@ -216,16 +252,19 @@ class TournoiController extends AbstractController
                 }
             }
             else{
+                $terrains = $this->terrain2Repository->findBy(['tournoi'=>$tournoi->getId()]);
                 $ArrayNewEquipes = $this->regroupeEquipe($tournoi, $currentTour);
+                $j=0;
                 for ($i=0; $i< count($ArrayNewEquipes); ($i=$i+2) ) { 
-                    $match = new Match();
+                    $match = new Match2();
                     $match->setDuree($tournoi->getDuree() / $this->getNbrTour($tournoi->getNbrEquipe()));
                     $match->setNumTour($currentTour);
                     $match->setTournoi($tournoi);
-                    $equipe1 = $this->equipeRepository->find(array_keys($ArrayNewEquipes)[$i]);
-                    $equipe2 = $this->equipeRepository->find(array_keys($ArrayNewEquipes)[$i+1]);
+                    $equipe1 = $this->equipeRepository->find($ArrayNewEquipes[$i]);
+                    $equipe2 = $this->equipeRepository->find($ArrayNewEquipes[$i+1]);
                     $match->addEquipe($equipe1);
                     $match->addEquipe($equipe2);
+
                     if(isset( $terrains[$j] )){
                         $match->setTerrain2($terrains[$j]);
                         $j++;
@@ -234,23 +273,23 @@ class TournoiController extends AbstractController
                 }
             }
             $em->flush();
+
+            return true;
         }
         else
-            return new Response('fin du tournoi');
-
-        return 1;
+            return false;
     }
     public function regroupeEquipe($tournoi, $currentTour){
         $em = $this->getDoctrine()->getManager();
         $matchLastTour = $this->match2Repository->findBy(['num_tour'=>($currentTour -1), 'tournoi'=>$tournoi->getId()]); 
         $ArrPerdant = $arrGagnant = [];
 
-        foreach ($matchLastTour as $key => $value) {
+        foreach ($matchLastTour as $key => $valeur) {
             $tabScore = explode("-", $valeur->getScore());
             rsort($tabScore);
 
             /* match different de match null */
-            if($tabScore[0] != $tabScore[1]){
+            if(!is_null($valeur->getScore()) && ($tabScore[0] != $tabScore[1]) ){
                 $gagnant = $valeur->getVainqueur();// id vainqueur
                 $arrGagnant[$gagnant] = abs($tabScore[1] - $tabScore[0]); // gagné avec un ecart de x but
                 if (($valeur->getEquipes()[0])->getId() == $gagnant){
@@ -271,19 +310,21 @@ class TournoiController extends AbstractController
         arsort($arrGagnant);
         /* trie du meilleur perdant au pire perdant */
         asort($ArrPerdant);
-
+        
+        /* en cas d'equipe impair, on complete avec le meilleur perdant */
         if(count($arrGagnant)%2 !=0 && count($ArrPerdant)%2 != 0){
             $firstKeyPerdant = array_keys($ArrPerdant)[0];
-            $arrGagnant[$firstKeyPerdant] = $array[$firstKeyPerdant];
-            array_shift($ArrPerdant);
+            $arrGagnant[$firstKeyPerdant] = $ArrPerdant[$firstKeyPerdant];
+            unset($ArrPerdant[$firstKeyPerdant]); 
         }
-
+        
         /* 2 poules gagnant et vainqueur */
-        if($currentTour >=3)
+        if( (($currentTour == 2) && ($tournoi->getType()->getReferent()=="ellimination-direct")) || ($currentTour >=3) ){
             $ArrPerdant = [];
-        $ArrayNewEquipes = array_merge($arrGagnant, $ArrPerdant);
+        }
+        $ArrayNewEquipes = array_merge(array_keys($arrGagnant), array_keys($ArrPerdant));
 
-        return $ArrayNewEquipes;
+        return $ArrayNewEquipes;    
     }
 
     public function directIllimination($valeur){
