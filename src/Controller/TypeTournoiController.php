@@ -24,6 +24,19 @@ class TypeTournoiController extends AbstractController
     }
 
     /**
+     * @Route("/admin/type-tournois", name="tableau_type_tournois_list")
+     */
+    public function typeTounoisList(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $typetournois = $this->typeTournoiRepository->findAll();
+        
+        return $this->render('admin/type_tournoi.html.twig', [
+            'typetournois' => $typetournois
+        ]);
+    }
+
+    /**
      * @Route("/type-tournoi/add/{id}", name="admin_add_type_tournoi")
      */
     public function new(Request $request, $id = null)
@@ -58,4 +71,6 @@ class TypeTournoiController extends AbstractController
         }
         return  new Response("passer par une requette ajax");
     }
+
+
 }

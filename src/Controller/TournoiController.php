@@ -46,9 +46,43 @@ class TournoiController extends AbstractController
     public function updateScore(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
-
         $match = $this->match2Repository->find($id);
-        return 1;
+        if ($request->isXmlHttpRequest()) {
+            if ($request->isMethod('POST')) {
+                $newScore = $request->get('score1')."-".$request->get('score2');
+                $newScore = str_replace(" ", "", $newScore);
+                $match->setScore($newScore);
+                if( (int)$request->get('score1') > (int)$request->get('score2') )
+                    $match->setVainqueur($match->getEquipes()[0]->getId());
+                elseif((int)$request->get('score1') < (int)$request->get('score2'))
+                    $match->setVainqueur($match->getEquipes()[1]->getId());
+                else
+                    $match->setVainqueur(null);
+
+                $em->persist($match);
+                $em->flush();
+
+                return new Response("Enregistrement effectué avec succès", 200);
+            }
+            else{
+                if(is_null($match->getScore()))
+                    $tabScore = [0,0];
+                else
+                    $tabScore = explode("-", $match->getScore());
+
+                $tabEquipe = [ $match->getEquipes()[0]->getNom(), $match->getEquipes()[1]->getNom() ];
+                $html = $this->renderView('admin/formulaires/score_update.html.twig', [
+                    'tabScore'=>$tabScore,
+                    'tabEquipe'=>$tabEquipe,
+                    'url'=> $this->generateUrl('update_score', ['id'=>$id], UrlGenerator::ABSOLUTE_URL)
+                ]);
+                $response = new Response(json_encode($html));
+                $response->headers->set('Content-Type', 'application/json');
+
+                return $response;
+            }
+        }
+        return  new Response("passer par une requette ajax");
     }
 
     /**
@@ -70,10 +104,7 @@ class TournoiController extends AbstractController
                 $tournoi->setNbrTerrain($request->get('nbrTerrain'));
                 $tournoi->setDuree($request->get('duree'));
                 $tournoi->setNbrTour( $this->getNbrTour($tournoi->getNbrEquipe()) );
-                /*if($request->get('date_debut')){
-                    $tournoi->setDateDebut(new \Datetime());
-                    $tournoi->setDateFin(new \Datetime());// dateDebut + duree
-                }*/
+
                 $em->persist($tournoi);
                 $em->flush();
                 $this->createEquipe($tournoi);
@@ -99,6 +130,19 @@ class TournoiController extends AbstractController
     }
 
     /**
+     * @Route("/admin/tournois", name="tableau_tournois_list")
+     */
+    public function tounoisList(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $tournois = $this->tournoiRepository->findAll();
+        
+        return $this->render('admin/tournois_list.html.twig', [
+            'tournois' => $tournois
+        ]);
+    }
+
+    /**
      * @Route("/admin/tournoi/{id}", name="tableau_de_bord")
      */
     public function index(Request $request, $id=null)
@@ -111,11 +155,19 @@ class TournoiController extends AbstractController
             $tournoi = $this->tournoiRepository->findOneBy([], ['id'=>'DESC'], 0);
 
         $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()]);
-        
+
+        $nbrEquipeQualifie =  $this->equipeRepository->getNbrEquipeQualifie($tournoi->getId());
+        if($nbrEquipeQualifie == 4)
+            $demieFinale_finale = "demie_finale";
+        if($nbrEquipeQualifie == 2)
+            $demieFinale_finale = "finale";
+
         return $this->render('admin/home.html.twig', [
             'typeTournois' => $typeTournois,
             'matchs' => $matchs,
             'tournoi'=> $tournoi,
+            'winner'=> ($tournoi->getEtat() == "termine") ? $this->equipeRepository->findOneBy(['en_competition'=> true]) : "" ,
+            'demieFinale_finale'=> isset($demieFinale_finale) ? $demieFinale_finale : "",
             'dureeTour'=> is_null($tournoi) ? "" : ceil($tournoi->getDuree() / $tournoi->getNbrTour()),
             'nbrMatch'=> is_null($tournoi) ? "" : $this->getNrbMatch($tournoi)
         ]);
@@ -150,29 +202,38 @@ class TournoiController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
         $tournoi = $this->tournoiRepository->find($id);
-        $currentTour = $tournoi->getCurrentTour()+1;
-        $tournoi->setCurrentTour($currentTour);
-        $isGenerate = $this->generateMatch($tournoi);
+        $currentTour = $tournoi->getCurrentTour();
+        $tournoi->setCurrentTour($currentTour+1);
 
-        /* aucun nouveau match generé (fin du match)*/
-        if(!$isGenerate){
-            $tournoi->setEtat('termine');
-            $em->flush();
-            return new Response('Fin du match');
-        }
+        $arrJoeurQualifie = $this->regroupeEquipe($tournoi);
 
-        $matchCurrentTour = $this->match2Repository->findBy(['num_tour'=>$currentTour, 'tournoi'=>$tournoi->getId()]);
-        foreach ($matchCurrentTour as $key => $value) {
-            $value->setEtat('en_cours');
-            $value->setDateDebut(new \Datetime());
-            $currentDate = new \Datetime();
-            $currentDate->add(new \DateInterval('PT'.$value->getDuree().'M'));
-            $dateFin = $currentDate->format('Y-m-d H:i:s');
-            $value->setDateFin((new \DateTime($dateFin)));
+        /* mise à jour des infos des match et equipe du tour precedent */
+        $matchLastTour = $this->match2Repository->findBy(['num_tour'=>$currentTour, 'tournoi'=>$tournoi->getId()]);
+        foreach ($matchLastTour as $key => $value) {
+            $value->setEtat('termine');
+            $equipesMatch = $value->getEquipes();
+            if(!in_array($equipesMatch[0]->getId() , $arrJoeurQualifie)){
+                $equipe = $this->equipeRepository->find($equipesMatch[0]->getId());
+                $equipe->setEnCompetition(false);
+            }
+            if(!in_array($equipesMatch[1]->getId() , $arrJoeurQualifie)){
+                $equipe = $this->equipeRepository->find($equipesMatch[1]->getId());
+                $equipe->setEnCompetition(false);
+            }
         }
         $em->flush();
+
+
+        if(count($arrJoeurQualifie) >=2)
+            $this->generateMatch($tournoi, $arrJoeurQualifie);
+        else{
+            $tournoi->setEtat('termine');
+            $tournoi->setCurrentTour($currentTour);
+            $em->flush();
+            return $this->redirectToRoute('tableau_de_bord', ['id'=>$id]);
+        }
         
-        return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
+        return $this->redirectToRoute('tableau_de_bord', ['id'=>$id]);
     }
 
     public function getNrbMatch($tournoi){
@@ -225,65 +286,65 @@ class TournoiController extends AbstractController
         return 1;
     }
 
-    public function generateMatch($tournoi){
+    public function generateMatch($tournoi, $arrJoeurQualifie = null){
         $em = $this->getDoctrine()->getManager();
         $currentTour = $tournoi->getCurrentTour();
+        $terrains = $this->terrain2Repository->findBy(['tournoi'=>$tournoi->getId()]);
 
-        if( !$this->isEndTournoi($tournoi) ){
-            $terrains = $this->terrain2Repository->findBy(['tournoi'=>$tournoi->getId()]);
+        /* on fait jouer toutes les equipes */
+        if($currentTour == 1){
+            $equipes = $this->equipeRepository->findBy(['tournoi'=>$tournoi->getId()]);
+            $j=0;
+            for ($i=0; $i< count($equipes); ($i=$i+2) ) { 
+                $match = new Match2();
+                $match->setDuree($tournoi->getDuree() / $this->getNbrTour($tournoi->getNbrEquipe()));
+                $match->setNumTour($currentTour);
+                $match->setTournoi($tournoi);
+                $match->addEquipe($equipes[$i]);
+                $match->addEquipe($equipes[$i+1]);
 
-            /* on fait jouer toutes les equipes */
-            if($currentTour == 1){
-                $equipes = $this->equipeRepository->findBy(['tournoi'=>$tournoi->getId()]);
-                $j=0;
-                for ($i=0; $i< count($equipes); ($i=$i+2) ) { 
-                    $match = new Match2();
-                    $match->setDuree($tournoi->getDuree() / $this->getNbrTour($tournoi->getNbrEquipe()));
-                    $match->setNumTour($currentTour);
-                    $match->setTournoi($tournoi);
-                    $match->addEquipe($equipes[$i]);
-                    $match->addEquipe($equipes[$i+1]);
-
-                    if(isset( $terrains[$j] )){
-                        $match->setTerrain2($terrains[$j]);
-                        $j++;
-                    }
-                    $em->persist($match);
+                if(isset( $terrains[$j] )){
+                    $match->setTerrain2($terrains[$j]);
+                    $j++;
                 }
+                $em->persist($match);
             }
-            else{
-                $terrains = $this->terrain2Repository->findBy(['tournoi'=>$tournoi->getId()]);
-                $ArrayNewEquipes = $this->regroupeEquipe($tournoi, $currentTour);
-                $j=0;
-                for ($i=0; $i< count($ArrayNewEquipes); ($i=$i+2) ) { 
-                    $match = new Match2();
-                    $match->setDuree($tournoi->getDuree() / $this->getNbrTour($tournoi->getNbrEquipe()));
-                    $match->setNumTour($currentTour);
-                    $match->setTournoi($tournoi);
-                    $equipe1 = $this->equipeRepository->find($ArrayNewEquipes[$i]);
-                    $equipe2 = $this->equipeRepository->find($ArrayNewEquipes[$i+1]);
-                    $match->addEquipe($equipe1);
-                    $match->addEquipe($equipe2);
-
-                    if(isset( $terrains[$j] )){
-                        $match->setTerrain2($terrains[$j]);
-                        $j++;
-                    }
-                    $em->persist($match);
-                }
-            }
-            $em->flush();
-
-            return true;
         }
-        else
-            return false;
+        else{
+            $terrains = $this->terrain2Repository->findBy(['tournoi'=>$tournoi->getId()]);
+            $j=0;
+            for ($i=0; $i< count($arrJoeurQualifie); ($i=$i+2) ) { 
+                $match = new Match2();
+                $match->setDuree($tournoi->getDuree() / $this->getNbrTour($tournoi->getNbrEquipe()));
+                $match->setNumTour($currentTour);
+                $match->setEtat('en_cours');
+                $match->setDateDebut(new \Datetime());
+                $currentDate = new \Datetime();
+                $currentDate->add(new \DateInterval('PT'.$match->getDuree().'M'));
+                $dateFin = $currentDate->format('Y-m-d H:i:s');
+                $match->setDateFin((new \DateTime($dateFin)));
+                $match->setTournoi($tournoi);
+                $equipe1 = $this->equipeRepository->find($arrJoeurQualifie[$i]);
+                $equipe2 = $this->equipeRepository->find($arrJoeurQualifie[$i+1]);
+                $match->addEquipe($equipe1);
+                $match->addEquipe($equipe2);
+
+                if(isset( $terrains[$j] )){
+                    $match->setTerrain2($terrains[$j]);
+                    $j++;
+                }
+                $em->persist($match);
+            }
+        }
+        $em->flush();
+
+        return 1;
     }
-    public function regroupeEquipe($tournoi, $currentTour){
+    public function regroupeEquipe($tournoi){
         $em = $this->getDoctrine()->getManager();
+        $currentTour = $tournoi->getCurrentTour();
         $matchLastTour = $this->match2Repository->findBy(['num_tour'=>($currentTour -1), 'tournoi'=>$tournoi->getId()]); 
         $ArrPerdant = $arrGagnant = [];
-
         foreach ($matchLastTour as $key => $valeur) {
             $tabScore = explode("-", $valeur->getScore());
             rsort($tabScore);
@@ -306,20 +367,22 @@ class TournoiController extends AbstractController
                 $arrGagnant[ ($valeur->getEquipes()[1])->getId() ] = 0;
             }
         }
+
         /* trie du meilleur gagnant au mauvais gagnant */
         arsort($arrGagnant);
         /* trie du meilleur perdant au pire perdant */
         asort($ArrPerdant);
         
         /* en cas d'equipe impair, on complete avec le meilleur perdant */
-        if(count($arrGagnant)%2 !=0 && count($ArrPerdant)%2 != 0){
+        if( (count($arrGagnant)%2 !=0 && count($ArrPerdant)%2 != 0) && (count($arrGagnant) >=2 ) ){
             $firstKeyPerdant = array_keys($ArrPerdant)[0];
             $arrGagnant[$firstKeyPerdant] = $ArrPerdant[$firstKeyPerdant];
             unset($ArrPerdant[$firstKeyPerdant]); 
         }
         
-        /* 2 poules gagnant et vainqueur */
-        if( (($currentTour == 2) && ($tournoi->getType()->getReferent()=="ellimination-direct")) || ($currentTour >=3) ){
+        /* elliminer les perdant apres le 2ieme tour ou en cas l'ellimination direct */
+        //if( (($currentTour == 2) && ($tournoi->getType()->getReferent()=="ellimination-direct")) || ($currentTour >=3) ){
+        if( ($tournoi->getType()->getReferent() == "ellimination-direct") || ($currentTour >= 3) ){
             $ArrPerdant = [];
         }
         $ArrayNewEquipes = array_merge(array_keys($arrGagnant), array_keys($ArrPerdant));
@@ -344,9 +407,9 @@ class TournoiController extends AbstractController
         if ($nbrEquipeQualifie > 1)
            return false;
         else{
-            $em = $this->getDoctrine()->getManager();
+            /*$em = $this->getDoctrine()->getManager();
             $tournoi->setEtat("termine");
-            $em->flush();
+            $em->flush();*/
             return true;
         }
     }

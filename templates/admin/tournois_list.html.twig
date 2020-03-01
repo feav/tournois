@@ -1,0 +1,78 @@
+
+{% extends 'admin/layout.html.twig' %}
+{% block title %} {{parent()}} - Tableau de bord {% endblock %}
+
+{% block stylesheets %}
+    {{parent()}}
+    <link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <style type="text/css">
+      a.paginate_button.current {
+          background: #1DC7EA !important;
+          color: white !important;
+      }
+    </style>
+{% endblock %}
+{% block page_title %}
+    List tournois
+{% endblock %}
+{% block admin_content %}
+
+  <div class="table-responsive">
+    <table class="table" id="table-data">
+      <thead class=" text-primary">
+        <th>
+          Date debut
+        </th>
+        <th>
+          Nom
+        </th>
+        <th>
+          Type tournois
+        </th>
+        <th>
+          Nbre equipes
+        </th>
+        <th>
+          Nbre terrains
+        </th>
+        <th>
+          Durée (<small>mn</small>)
+        </th>
+        <th>
+          Status
+        </th>
+        <th>
+            Action
+        </th>
+      </thead>
+      <tbody>
+        {% for item in tournois %}
+        <tr>
+          <td>{{item.getDateDebut|date('Y-i-d H:i')}}</td>
+          <td>{{item.nom}}</td>
+          <td>{{item.type.nom}}</td>
+          <td>{{item.getNbrEquipe}}</td>
+          <td>{{item.getNbrTerrain}}</td>
+          <td>{{item.getDuree}}</td>
+          <td style="text-transform: capitalize;">{{item.etat|replace({'_': " "})}}</td>
+          <td>
+            <a href="{{path('tableau_de_bord', {'id':item.id})}}">Voir</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+      $('.sidebar-wrapper .nav li').removeClass('active');
+      $('.sidebar-wrapper .nav li.tournoi').addClass('active');
+      $(document).ready(function() {
+          $('#table-data').DataTable();
+      } );
+    </script>
+{% endblock %}

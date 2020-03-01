@@ -5,6 +5,7 @@
 {% block stylesheets %}
     {{parent()}}
     <style type="text/css">
+      .add-tournoi{display: inline-block;}
         form label{
           color:gray;
           font-size: 17px;
@@ -48,7 +49,7 @@
           font-weight: bold;
           cursor: no-drop;
         }
-        .timmer-tour-wrapper .btn-next-tour{
+        .timmer-tour-wrapper .btn-next-tour, .timmer-tour-wrapper .btn-next-tour:hover{
           top: 0;
           position: absolute;
           right: 0;
@@ -80,6 +81,7 @@
             padding-bottom: 3px;
             font-size: 14px;
             font-weight: 600;
+            text-transform: capitalize;
         }
         .cart-body-content .match-item{
             margin-bottom: 21px;
@@ -94,6 +96,7 @@
             align-content: center;
             box-shadow: 9px 12px 14px#a6a6a6;
             border-radius: 93px 93px 93px 93px;
+            color: #fff
         }
         .cart-body-content .match-item .equipe {
             flex: 1;
@@ -107,6 +110,11 @@
         }
         .cart-body-content .match-item .equipe:nth-child(2){
             border-radius: 0 93px 93px 0;
+            text-align: right;
+            padding-right: 46px;
+        }
+        .cart-body-content .match-item .equipe .nom-equipe{
+          padding-left: 2px;
         }
         .cart-body-content .equipe .avt-equipe {
             background: red;
@@ -147,7 +155,13 @@
             font-size: 14px;
             font-weight: 600;
         }
-
+        .evolution-match .demiefinale-finale{
+          text-align: center;
+          font-size: 19px;
+          color: #00BBE1;
+          font-weight: 600;
+          text-transform: capitalize;
+        }
         .evolution-match .card-body:before {
             background-image: radial-gradient(#ffffffb3, #fff);
             position: absolute;
@@ -616,7 +630,11 @@
             <div class="card evolution-match">
                 <div class="card-header ">
                     <h4 class="card-title">Evolution match</h4>
-                    <p class="card-category" style="display:none"></p>
+                    {% if demieFinale_finale %}
+                      <p class="card-category demiefinale-finale">
+                        {{ demieFinale_finale|replace({'_': " "})}}
+                      </p>
+                    {% endif %}
                 </div>
                 <div class="card-body ">
                     <div class="cart-body-content">
@@ -636,17 +654,29 @@
                             </form>
                           </span>
                           <a class="btn-next-tour" style="" href="{{path('goto_next_tour',{'id':tournoi.id})}}">
-                            tour suivant <i class="nc-icon nc-stre-right" style="font-weight: bold"></i>
+                            {% if demieFinale_finale == "finale" %}
+                              terminer le tournois
+                            {% else %}
+                              tour suivant 
+                            {% endif %}
+                            <i class="nc-icon nc-stre-right" style="font-weight: bold"></i>
                           </a>
                         </div>
                         {% elseif tournoi.etat == "termine" %}
                           <h2  style="color:#333;font-size: 23px;text-align: center;">Tournois terminé</h2>
+                          <div class="winner-wrapper" style="color: #333333">
+                            <img src="{{asset('images/trophee.png')}}" style="display: block;margin: auto;max-width: 200px;">
+                            <div class="equipe-winner-name" style="font-size: 18px; text-align: center;">
+                              Vainqueur: <b style="text-transform: uppercase;">{{ winner.nom }}</b>
+                              <div class="score"></div>
+                            </div>
+                          </div>
                         {% endif %}
                         <ul class="list-match">
                           {% for item in matchs %}
                             <li class="match-item">
-                                <div class="status-match">{{item.etat}}</div>
-                                <div class="match-content">
+                                <div class="status-match">{{ item.etat |replace({'_': " "}) }}</div>
+                                <a class="match-content goto-update-score" href="{{path('update_score', {'id':item.id})}}" data-score="{{item.score}}" data-equipe="{{item.equipes[0].nom}}-{{item.equipes[1].nom}}">
                                     <div class="equipe equipe-1">
                                         <span class="avt-equipe">{{ item.equipes[0].nom|last }}</span>
                                         <span class="nom-equipe">{{item.equipes[0].nom}}</span>
@@ -658,7 +688,7 @@
                                     <span class="score">
                                       {{ (item.score is null) ? "0 - 0":item.score }}
                                     </span>
-                                </div>
+                                </a>
                             </li>
                           {% endfor %}
                         </ul>
@@ -799,7 +829,7 @@
             
     <div id="modalFormAdd" class="overlay">
         <div class="popup">
-            <a class="close" href="#">&times;</a>
+            <a class="close" href="javascript:void()">&times;</a>
 
             <div class="form-container">
               <img class="loader-form" src="{{asset('images/eclipse-loader.gif')}}">
@@ -824,6 +854,9 @@
     {{parent()}}
     <script type="text/javascript">
         $(document).ready(function(){
+          $('.sidebar-wrapper .nav li').removeClass('active');
+          $('.sidebar-wrapper .nav li.dashboard').addClass('active');
+
 
             function loadForm($url){
                 $.ajax({
@@ -841,7 +874,7 @@
                 });
             }
 
-            $('.add-new, .btn-edit, .add-tournoi').click(function(e){
+            $('.add-new, .btn-edit, .add-tournoi, .goto-update-score').click(function(e){
                 $('#modalFormAdd').addClass('open');
                 var $url = $(this).attr("href");
                 loadForm($url, $(this));
@@ -876,7 +909,7 @@
       var end = 0
       var diff = 0
       var timerID = 0
-      /*window.onload = chronoStartT;*/
+      {#/*window.onload = chronoStartT;*/#}
       function chronoT(){
         end = new Date()
         diff = end - start
@@ -907,7 +940,6 @@
         start = new Date()
         chronoT()
       }
-      chronoStartT();
       function chronoContinueT(){
         document.chronoFormTour.startstop.value = "stop!"
         document.chronoFormTour.startstop.onclick = chronoStop
@@ -931,9 +963,17 @@
         clearTimeout(timerID)
       }
 
-      {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
-        chronoStartT();
-        chronoStart();
-      {% endif %}
+      $(document).ready(function(){
+        {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
+          chronoStartT();
+          chronoStart();
+        {% endif %}
+        {% if demieFinale_finale %}
+          demo.showNotification.info("{{ demieFinale_finale|replace({'_': " "})}}");
+        {% endif %}
+        {% if tournoi.etat == "termine" %}
+          demo.showNotification.info("Ce tournoi est terminé");
+        {% endif %}
+      });
     </script>
 {% endblock %}

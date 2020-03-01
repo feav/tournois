@@ -1,0 +1,81 @@
+<style type="text/css">
+	#formScore .label-field{
+		text-align: center;
+		display: block;
+		font-size: 22px;
+		margin-bottom: 6px;
+	}
+</style>
+
+<h2 class="form-head">Mise à jour du score</h2>
+<form id="formScore" name="formScore">
+    <div class="row">
+		<div class="col-md-6">
+		    <div class="form-group">
+		    	<label class="label-field" for="score1">{{tabEquipe[0]}}</label>
+		        <input type="integer" name="score1" class="form-control" id="score1" value="{{tabScore[0]}}">
+		    </div>
+		</div>
+		<div class="col-md-6">
+		    <div class="form-group">
+		    	<label class="label-field">{{tabEquipe[1]}}</label>
+		        <input type="integer" name="score2" class="form-control" value="{{tabScore[1]}}">
+		    </div>
+		</div>
+	</div>
+    <button class="submit">Enregistrer</button>
+</form>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		var form = document.forms.namedItem("formScore");
+		function validate(){
+	        try{
+	            var validator = $('#formScore').validate({
+	                rules:{
+	                    'score1':{
+	                    	required:true,
+	                    	number:true
+	                    },
+	                    'score2':{
+	                    	required:true,
+	                    	number:true
+	                    }
+	                }
+	            });
+	            
+	            var $validated = $('#formScore').valid();
+	            return $validated;
+	        }catch(error){
+	            console.log(error)
+	        }
+	    }
+		form.addEventListener('submit', function(ev) {
+			if( !validate()){
+				demo.showNotification.error("Veuillez remplir correctement les champs");
+		        ev.preventDefault();
+		        return false;
+		    }
+			$('.lds-ripple').css('display', 'block');
+			$.ajax({
+		        url:"{{url}}",
+		        type:"POST",
+		        data:$('#formScore').serialize(),
+		        success:function(response) {
+		        	demo.showNotification.success("Score mis à jour avec success");
+		        	$('#formScore')[0].reset();
+		        	$('.lds-ripple').css('display', 'none');
+		        	$(".success-checkmark").show().delay(3000).fadeOut();
+                	$(".check-icon").show().show().delay(3000).fadeOut();
+                	window.location.reload(true);
+		        },
+		        error:function(){
+		        	demo.showNotification.error("echec mise à jour du score");
+		        	$('.lds-ripple').css('display', 'none');
+			    }
+		   	});
+				
+			ev.preventDefault();
+		}, false);
+	});
+</script>

@@ -135,12 +135,12 @@ class Match2
         return $this;
     }
 
-    public function getVainqueur(): ?int
+    public function getVainqueur()
     {
         return $this->vainqueur;
     }
 
-    public function setVainqueur(?int $vainqueur): self
+    public function setVainqueur($vainqueur): self
     {
         $this->vainqueur = $vainqueur;
 

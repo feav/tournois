@@ -111,6 +111,7 @@ class Tournoi
         $this->terrains = new ArrayCollection();
         $this->equipes = new ArrayCollection();
         $this->current_tour = 1;
+        $this->etat = 'en_attente';
         $this->date_create = new \Datetime();
         $this->matchs2 = new ArrayCollection();
         $this->terrains2 = new ArrayCollection();
