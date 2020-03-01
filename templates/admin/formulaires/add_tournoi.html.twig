@@ -98,7 +98,8 @@
 		        	$(".success-checkmark").show().delay(3000).fadeOut();
                 	$(".check-icon").show().show().delay(3000).fadeOut();
                 	demo.showNotification.success("Enregistrement effectué avec success");
-                	window.location.reload(true);
+                	response = JSON.parse(response);
+                	window.location.href = response.url;
 		        },
 		        error:function(){
 		        	demo.showNotification.error("echec enregistrement");

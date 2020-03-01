@@ -79,8 +79,7 @@ class TournoiController extends AbstractController
                 $this->createEquipe($tournoi);
                 $this->createTerrain($tournoi);
                 $this->generateMatch($tournoi);
-
-    			return new Response("Enregistrement effectué avec succès", 200);
+    			return new Response(json_encode(array('url'=> $this->generateUrl('tableau_de_bord', ['id'=>$tournoi->getId()], UrlGenerator::ABSOLUTE_URL))));
     		}
     		else{
                 $action = is_null($id) ? "Ajout" : "Edition";
@@ -127,8 +126,17 @@ class TournoiController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $tournoi = $this->tournoiRepository->find($id);
         $tournoi->setDateDebut(new \Datetime());
+        $matchCurrentTour = $this->match2Repository->findBy(['num_tour'=>1, 'tournoi'=>$tournoi->getId()]);
+        foreach ($matchCurrentTour as $key => $value) {
+            $value->setEtat('en_cours');
+            $value->setDateDebut(new \Datetime());
+            $currentDate = new \Datetime();
+            $currentDate->add(new \DateInterval('PT'.$value->getDuree().'M'));
+            $dateFin = $currentDate->format('Y-m-d H:i:s');
+            $value->setDateFin((new \DateTime($dateFin)));
+        }
+
         $em->flush();
-        // mise à ajour des premier match aussi...
         return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
     }
 

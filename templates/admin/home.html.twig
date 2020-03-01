@@ -17,12 +17,6 @@
           justify-content: space-between;
           flex-wrap: wrap;
         }
-        .chronotime-wrapper{
-          display: none;
-        }
-        .chronotime-wrapper.launch{
-          display: block;
-        }
         .btn-demarrer-tournoi {
           background: #1DC7EA;
           color: #fff;
@@ -33,6 +27,9 @@
           font-weight: 600;
           letter-spacing: -1px;
           cursor: pointer;
+        }
+        .btn-demarrer-tournoi:hover{
+          color: #fff;
         }
         .evolution-match .card-header{
           border-bottom: 1px solid #D7D7D7 !important;
@@ -599,14 +596,15 @@
                 <i class="fa fa-circle text-warning"></i> <b>{{dureeTour}} minutes / tour </b> 
                 <i class="fa fa-circle text-info"></i> <b>{{nbrMatch}} Matchs</b> 
             </div>
-            <a href="" class="btn-demarrer-tournoi" 
-              {% if tournoi.getDateDebut is not null %} style="display: none;" {% endif %} 
-            >Demarrer le tournoi</a>
-           <form name="chronoForm" class="chronotime-wrapper">
+            {% if tournoi.getDateDebut is null %}
+              <a href="{{path('tournoi_launch',{'id':tournoi.id})}}" class="btn-demarrer-tournoi">Demarrer le tournoi</a>
+              {% else %}
+              <form name="chronoForm" class="chronotime-wrapper">
                 <h3 id="chronotime" style="margin-top: 5px">0:00:00</h3>
                 <input type="button" name="startstop" value="start!" onClick="chronoStart()" style="display: none;" />
                 <input type="button" name="reset" value="reset!" onClick="chronoReset()" style="display: none;" />
-            </form>
+              </form>
+              {% endif %}
             {% endif %}
           </div>
         </div>
@@ -622,6 +620,7 @@
                 <div class="card-body ">
                     <div class="cart-body-content">
                       {% if tournoi %}
+                        {% if tournoi.getDateDebut is not null %}
                         <div class="timmer-tour-wrapper chronotime-wrapper">
                           <span style="font-size: 17px;">
                           <span class="current-tour">
@@ -639,6 +638,7 @@
                             tour suivant <i class="nc-icon nc-stre-right" style="font-weight: bold"></i>
                           </span>
                         </div>
+                        {% endif %}
                         <ul class="list-match">
                           {% for item in tournoi.matchs2 %}
                             <li class="match-item">
@@ -927,13 +927,10 @@
         document.chronoFormTour.reset.onclick = chronoStopReset
         clearTimeout(timerID)
       }
-    </script>
-    <script type="text/javascript">
-      $('.btn-demarrer-tournoi').click(function(){
+
+      {% if tournoi.getDateDebut is not null %}
         chronoStartT();
         chronoStart();
-        $(this).hide();
-        $('.chronotime-wrapper').addClass('launch');
-      })
+      {% endif %}
     </script>
 {% endblock %}
