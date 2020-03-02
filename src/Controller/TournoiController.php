@@ -166,7 +166,7 @@ class TournoiController extends AbstractController
             'typeTournois' => $typeTournois,
             'matchs' => $matchs,
             'tournoi'=> $tournoi,
-            'winner'=> ($tournoi->getEtat() == "termine") ? $this->equipeRepository->findOneBy(['en_competition'=> true]) : "" ,
+            'winner'=> ($tournoi->getEtat() == "termine") ? $this->equipeRepository->findOneBy(['en_competition'=> true, 'tournoi'=>$tournoi->getId()]) : "" ,
             'demieFinale_finale'=> isset($demieFinale_finale) ? $demieFinale_finale : "",
             'dureeTour'=> is_null($tournoi) ? "" : ceil($tournoi->getDuree() / $tournoi->getNbrTour()),
             'nbrMatch'=> is_null($tournoi) ? "" : $this->getNrbMatch($tournoi)
