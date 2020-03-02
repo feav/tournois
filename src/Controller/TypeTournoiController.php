@@ -24,7 +24,7 @@ class TypeTournoiController extends AbstractController
     }
 
     /**
-     * @Route("/admin/type-tournois", name="tableau_type_tournois_list")
+     * @Route("/type-tournois", name="tableau_type_tournois_list")
      */
     public function typeTounoisList(Request $request)
     {
