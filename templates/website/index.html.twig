@@ -135,5 +135,30 @@
 
 {% block javascripts %}
     {{parent()}}
+    <script type="text/javascript">
+        /*var chrono ="00:00:00";
+        var storageDate = {};
+        function initCrono(){
+            if(localStorage.getItem("2")){
+                storageDate = JSON.parse(localStorage.getItem("2"));
+                var date_debut = storageDate.date_debut;
+                var diffDate = new Date(new Date() - new Date(date_debut));
+                chrono = (diffDate.getHours()-1) + ":"  
+                    + diffDate.getMinutes() + ":" 
+                    + diffDate.getSeconds();
+            }
+            else{
+                var dataInfo = {tournoi:"2", date_debut: "2020-03-02 13:30", date_fin: "2020-03-02 22:30"};
+                localStorage.setItem("2", JSON.stringify(dataInfo));  
+            }
+        }
+        initCrono();
+        console.log(chrono);
+
+        if(new Date() < new Date(storageDate.date_fin)){
+            console.log('expiré');
+            localStorage.removeItem("2");
+        }*/
+    </script>
 {% endblock %}
 

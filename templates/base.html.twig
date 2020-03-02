@@ -23,12 +23,33 @@
 
     <script src="{{asset('assets/js/core/jquery.3.2.1.min.js')}}" type="text/javascript"></script>
     <script type="text/javascript">
-		var startTime = 0
+
+
 		var start = 0
 		var end = 0
 		var diff = 0
 		var timerID = 0
-		/*window.onload = chronoStart;*/
+        var storageDate = {};
+		
+		localStorage.removeItem("2");
+		
+		$(window).bind("load", function() {
+		   chronoStart();
+		   intervalId = setInterval(chrono, 1000);
+		});
+
+        function initCrono(){
+            if(localStorage.getItem("2")){
+                storageDate = JSON.parse(localStorage.getItem("2"));
+                start = new Date(storageDate.date_debut);
+                end = new Date();
+            }
+            else{
+                var dataInfo = {tournoi:"2", date_debut: new Date(), date_fin: "2020-03-02 22:30"};
+                localStorage.setItem("2", JSON.stringify(dataInfo)); 
+                start = new Date();
+            }
+        }
 		function chrono(){
 			end = new Date()
 			diff = end - start
@@ -37,6 +58,9 @@
 			var sec = diff.getSeconds()
 			var min = diff.getMinutes()
 			var hr = diff.getHours()-1
+			if (hr < 10){
+				hr = "0" + hr
+			}
 			if (min < 10){
 				min = "0" + min
 			}
@@ -50,16 +74,18 @@
 				msec = "0" +msec
 			}
 			document.getElementById("chronotime").innerHTML  = hr + ":" + min + ":" + sec/* + ":" + msec*/
-			timerID = setTimeout("chrono()", 10)
+			if(new Date() >= new Date(storageDate.date_fin)){
+				localStorage.removeItem("2");
+				clearInterval(intervalId);
+			}
 		}
 		function chronoStart(){
+			initCrono();
 			document.chronoForm.startstop.value = "stop!"
 			document.chronoForm.startstop.onclick = chronoStop
 			document.chronoForm.reset.onclick = chronoReset
-			start = new Date()
 			chrono()
 		}
-		/*chronoStart();*/
 		function chronoContinue(){
 			document.chronoForm.startstop.value = "stop!"
 			document.chronoForm.startstop.onclick = chronoStop
@@ -80,7 +106,7 @@
 			document.chronoForm.startstop.value = "start!"
 			document.chronoForm.startstop.onclick = chronoContinue
 			document.chronoForm.reset.onclick = chronoStopReset
-			clearTimeout(timerID)
+			clearInterval(intervalId);
 		}
     </script>
     {% block javascripts %}{% endblock %}
