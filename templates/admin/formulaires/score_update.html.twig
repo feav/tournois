@@ -63,7 +63,6 @@
 		        data:$('#formScore').serialize(),
 		        success:function(response) {
 		        	demo.showNotification.success("Score mis à jour avec success");
-		        	$('#formScore')[0].reset();
 		        	$('.lds-ripple').css('display', 'none');
 		        	$(".success-checkmark").show().delay(3000).fadeOut();
                 	$(".check-icon").show().show().delay(3000).fadeOut();
