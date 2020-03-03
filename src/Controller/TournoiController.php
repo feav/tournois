@@ -412,7 +412,7 @@ class TournoiController extends AbstractController
         return $ArrayNewEquipes;    
     }
     public function calculDureePassage($tournoi){
-        return ceil($tournoi->getDuree()/$this->getNrbMatch($tournoi)/$tournoi->getNbrTerrain());
+        return ceil( $tournoi->getDuree() / ($this->getNrbMatch($tournoi)/$tournoi->getNbrTerrain()) );
     }
     public function directIllimination($valeur){
         if ($valeur == 2)
