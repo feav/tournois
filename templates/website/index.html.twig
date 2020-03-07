@@ -11,124 +11,39 @@
 {% block page %}        
     <!-- Start Homepage -->
     <div class="cols-list">
-        <div class="cols-item">
-            <h2 class="col-title">TERRAIN <span class="num">1</span></h2>
-            <div class="sub-col-list">
-                <div class="list-item">
-                    <h3 class="sub-title">EQUIPE  A</h3>
-                    <ul class="list-elt">
-                        <li class="item-elt">Matine</li>
-                        <li class="item-elt">Alin</li>
-                        <li class="item-elt">Elodie</li>
-                        <li class="item-elt">Patrice</li>
-                    </ul>
-                    <div class="sub-col-foot">
-                        <span class="score winner">2</span>
-                    </div>  
-                </div>
-                <div class="list-item">
-                    <h3 class="sub-title">EQUIPE  b</h3>
-                    <ul class="list-elt">
-                        <li class="item-elt">Matine</li>
-                        <li class="item-elt">Alin</li>
-                        <li class="item-elt">Elodie</li>
-                        <li class="item-elt">Patrice</li>
-                    </ul>
-                    <div class="sub-col-foot">
-                        <span class="score">1</span>
+        {% for item in matchs %}
+            <div class="cols-item">
+                <h2 class="col-title">{{item.terrain2.nom}}</h2>
+                <div class="sub-col-list">
+                    <div class="list-item">
+                        <h3 class="sub-title">{{item.equipes[0].nom}}</h3>
+                        <ul class="list-elt">
+                            {% for joueur in item.equipes[0].joueurs|split(',') %}
+                                <li class="item-elt">{{joueur}}</li>
+                            {% endfor %}
+                        </ul>
+                        <div class="sub-col-foot">
+                            <span class="score winner">
+                                {{ (item.score is null) ? "0": (item.score|split('-'))[0] }}
+                            </span>
+                        </div>  
+                    </div>
+                    <div class="list-item">
+                        <h3 class="sub-title">{{item.equipes[1].nom}}</h3>
+                        <ul class="list-elt">
+                            {% for joueur in item.equipes[1].joueurs|split(',') %}
+                                <li class="item-elt">{{joueur}}</li>
+                            {% endfor %}
+                        </ul>
+                        <div class="sub-col-foot">
+                            <span class="score">
+                                {{ (item.score is null) ? "0":(item.score|split('-'))[1] }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="cols-item">
-            <h2 class="col-title">TERRAIN <span class="num">2</span></h2>
-            <div class="sub-col-list">
-                <div class="list-item">
-                    <h3 class="sub-title">EQUIPE  c</h3>
-                    <ul class="list-elt">
-                        <li class="item-elt">Matine</li>
-                        <li class="item-elt">Alin</li>
-                        <li class="item-elt">Elodie</li>
-                        <li class="item-elt">Patrice</li>
-                        <li class="item-elt">Patrice</li>
-                        <li class="item-elt">Patrice</li>
-                    </ul>
-                    <div class="sub-col-foot">
-                        <span class="score winner">5</span>
-                    </div>  
-                </div>
-                <div class="list-item">
-                    <h3 class="sub-title">EQUIPE  d</h3>
-                    <ul class="list-elt">
-                        <li class="item-elt">Matine</li>
-                        <li class="item-elt">Alin</li>
-                        <li class="item-elt">Elodie</li>
-                        <li class="item-elt">Patrice</li>
-                    </ul>
-                    <div class="sub-col-foot">
-                        <span class="score">0</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="cols-item">
-            <h2 class="col-title">TERRAIN <span class="num">3</span></h2>
-            <div class="sub-col-list">
-                <div class="list-item">
-                    <h3 class="sub-title">EQUIPE  e</h3>
-                    <ul class="list-elt">
-                        <li class="item-elt">Matine</li>
-                        <li class="item-elt">Alin</li>
-                        <li class="item-elt">Elodie</li>
-                        <li class="item-elt">Patrice</li>
-                    </ul>
-                    <div class="sub-col-foot">
-                        <span class="score">2</span>
-                    </div>  
-                </div>
-                <div class="list-item">
-                    <h3 class="sub-title">EQUIPE  f</h3>
-                    <ul class="list-elt">
-                        <li class="item-elt">Matine</li>
-                        <li class="item-elt">Alin</li>
-                        <li class="item-elt">Elodie</li>
-                        <li class="item-elt">Patrice</li>
-                    </ul>
-                    <div class="sub-col-foot">
-                        <span class="score">2</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="cols-item">
-            <h2 class="col-title">TERRAIN <span class="num">4</span></h2>
-            <div class="sub-col-list">
-                <div class="list-item">
-                    <h3 class="sub-title">EQUIPE  g</h3>
-                    <ul class="list-elt">
-                        <li class="item-elt">Matine</li>
-                        <li class="item-elt">Alin</li>
-                        <li class="item-elt">Elodie</li>
-                        <li class="item-elt">Patrice</li>
-                    </ul>
-                    <div class="sub-col-foot">
-                        <span class="score">1</span>
-                    </div>  
-                </div>
-                <div class="list-item">
-                    <h3 class="sub-title">EQUIPE  h</h3>
-                    <ul class="list-elt">
-                        <li class="item-elt">Matine</li>
-                        <li class="item-elt">Alin</li>
-                        <li class="item-elt">Elodie</li>
-                        <li class="item-elt">Patrice</li>
-                    </ul>
-                    <div class="sub-col-foot">
-                        <span class="score winner">3</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
     <!-- End Homepage -->
 {% endblock %}

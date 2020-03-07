@@ -15,7 +15,12 @@
 	    </style>
 	    {% block stylesheets %}{% endblock %}
     </head>
-    <body data-base-url="{{url('client_homepage')}}">
+    <body data-base-url="{{url('client_homepage')}}" 
+    	  data-tournoi-id="{% block id_tournoi %}{% endblock %}"
+    	  data-tournoi-etat="{% block tournoi_etat %}{% endblock %}"
+    	  data-date-end="{% block date_end %}{% endblock %}"
+    	  data-date-debut="{% block date_debut %}{% endblock %}"
+    	 >
 
     	{% block body %}{% endblock %}
 
@@ -24,6 +29,10 @@
     <script src="{{asset('assets/js/core/jquery.3.2.1.min.js')}}" type="text/javascript"></script>
     <script type="text/javascript">
 
+    	$idTournoi = $('body').data('tournoi-id');
+    	$etatTournoi = $('body').data('tournoi-etat');
+    	$dateEnd = $('body').data('date-end');
+    	$dateDebut = $('body').data('date-debut');
 
 		var start = 0
 		var end = 0
@@ -31,23 +40,25 @@
 		var timerID = 0
         var storageDate = {};
 		
-		localStorage.removeItem("2");
+		{#/*localStorage.removeItem("tournoi_"+$idTournoi);*/#}
 		
 		$(window).bind("load", function() {
-		   chronoStart();
-		   intervalId = setInterval(chrono, 1000);
+		   	if($etatTournoi == "en_cours"){
+		   		chronoStart();
+		   		intervalId = setInterval(chrono, 1000);
+		   	}
 		});
 
         function initCrono(){
-            if(localStorage.getItem("2")){
-                storageDate = JSON.parse(localStorage.getItem("2"));
+            if(localStorage.getItem("tournoi_"+$idTournoi)){
+                storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi));
                 start = new Date(storageDate.date_debut);
                 end = new Date();
             }
             else{
-                var dataInfo = {tournoi:"2", date_debut: new Date(), date_fin: "2020-03-02 22:30"};
-                localStorage.setItem("2", JSON.stringify(dataInfo)); 
-                start = new Date();
+                var dataInfo = {tournoi:"tournoi_"+$idTournoi, date_debut: $dateDebut, date_fin: $dateEnd};
+                localStorage.setItem("tournoi_"+$idTournoi, JSON.stringify(dataInfo)); 
+                start = $dateDebut;
             }
         }
 		function chrono(){
@@ -75,7 +86,7 @@
 			}
 			document.getElementById("chronotime").innerHTML  = hr + ":" + min + ":" + sec/* + ":" + msec*/
 			if(new Date() >= new Date(storageDate.date_fin)){
-				localStorage.removeItem("2");
+				localStorage.removeItem("tournoi_"+$idTournoi);
 				clearInterval(intervalId);
 			}
 		}

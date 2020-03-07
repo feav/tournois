@@ -49,18 +49,24 @@
           font-weight: bold;
           cursor: no-drop;
         }
-        .timmer-tour-wrapper .btn-next-tour, .timmer-tour-wrapper .btn-next-tour:hover{
+        .timmer-tour-wrapper .btn-next-tour, .timmer-tour-wrapper .btn-next-tour, .view-screen,
+        .timmer-tour-wrapper .btn-next-tour:focus, .timmer-tour-wrapper .btn-next-tour:focus, .view-screen:focus,
+        .timmer-tour-wrapper .btn-next-tour:active, .timmer-tour-wrapper .btn-next-tour:active, .view-screen:active{
           top: 0;
           position: absolute;
           right: 0;
           background: #1DC7EA;
-          color: #fff;
+          color: #fff!important;
           padding: 7px 9px;
           border-radius: 4px;
           font-size: 15px;
           font-weight: 600;
           letter-spacing: -1px;
           cursor: pointer;
+        }
+        .view-screen{
+          margin-top: 12px;
+          margin-right: 7px;
         }
         .evolution-match .card-body{
             background: url(../assets/img/sidebar-5.jpg) no-repeat;
@@ -594,6 +600,11 @@
       {{tournoi.nom}} <small>- {{tournoi.type.nom}}</small>
     {% endif %}
 {% endblock %}
+{% block id_tournoi %}{{tournoi.id}}{% endblock %}
+{% block tournoi_etat %}{{tournoi.etat}}{% endblock %}
+{% block date_debut %}{{tournoi.dateDebut|date('Y-m-d H:i:s')}}{% endblock %}
+{% block date_end %}{{dateFin}}{% endblock %}
+
 {% block admin_content %}
   
 
@@ -602,13 +613,13 @@
       <div class="col-md-12">
         <div class="card" style="margin-bottom:6px">
           <div class="card-header" style="padding-top: 10px;">
-              <h4 class="card-title" style="text-align: left;font-size: 19px;">Estimation initiale du tournoi</h4>
+              <h4 class="card-title" style="text-align: left;font-size: 19px;">Estimation initiale du tournoi <a href="{{path('client_homepage',{'id':tournoi.id})}}" target="_blank" class="view-screen">vue ecran <i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a> </h4>
           </div>
           <div class="card-body head-estimation">
             {% if tournoi %}
               <div class="legend" style="font-size: 14px">
                   <i class="fa fa-circle text-danger"></i> <b>{{tournoi.getNbrTour}} Tours</b> 
-                  <i class="fa fa-circle text-warning"></i> <b>{{dureeTour}} minutes / match </b> 
+                  <i class="fa fa-circle text-warning"></i> <b>{{dureePassage}} minutes / match </b> 
                   <i class="fa fa-circle text-info"></i> <b>{{nbrMatch}} Matchs</b> 
               </div>
               {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
@@ -630,7 +641,9 @@
         <div class="col-md-7">
             <div class="card evolution-match">
                 <div class="card-header ">
-                    <h4 class="card-title">Evolution match</h4>
+                    <h4 class="card-title">
+                      <span>Evolution match</span>
+                    </h4>
                     {% if demieFinale_finale %}
                       <p class="card-category demiefinale-finale">
                         {{ demieFinale_finale|replace({'_': " "})}}
@@ -647,7 +660,7 @@
                             {{tournoi.getCurrentTour}}<sup class="rang">e</sup>
                           </span>/ {{tournoi.getNbrTour}}<span style="font-size: 12px;">tours</span>
                           </span><br>
-                          <span class="timmer-tour">
+                          <span class="timmer-tour" style="display:none">
                             <form name="chronoFormTour" class="chronotime">
                               <h3 id="chronotimetour" style="margin-top: 5px;font-size: 20px;">0:00:00</h3>
                               <input type="button" name="startstop" value="start!" onClick="chronoStartT()" style="display: none;" />
@@ -779,9 +792,9 @@
                                 <span title="" class="link-item">
                                     <div>
                                         <span class="panel_texte">{{item.nom}}</span>
-                                        <span class="status">
+                                        {#<span class="status">
                                           {{ (item.occupe == 1) ? "":"occupé" }}
-                                        </span>
+                                        </span>#}
                                     </div>
                                     <a href="{{path('admin_add_terrain',{'id':item.id})}}" class="sa_alert_value btn-action btn-edit">editer</a>
                                 </span>
@@ -964,14 +977,17 @@
       }
 
       $(document).ready(function(){
-        {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
-          chronoStartT();
-          chronoStart();
-        {% endif %}
+        $(window).bind("load", function() {
+          {% if tournoi and (tournoi.etat == "en_cours") %}
+            /*chronoStartT();*/
+            chronoStart();
+          {% endif %}
+        });
+
         {% if demieFinale_finale %}
           demo.showNotification.info("{{ demieFinale_finale|replace({'_': " "})}}");
         {% endif %}
-        {% if tournoi.etat == "termine" %}
+        {% if tournoi and (tournoi.etat == "termine") %}
           demo.showNotification.info("Ce tournoi est terminé");
         {% endif %}
       });
