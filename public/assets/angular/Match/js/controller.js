@@ -50,6 +50,6 @@ MatchModule
         return size;
     };
 
-    intervalId1 = setInterval($scope.getMatchCours, 5000);
+    intervalId1 = setInterval($scope.getMatchCours, 8000);
 }])
 
