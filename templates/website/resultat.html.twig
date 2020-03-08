@@ -10,6 +10,35 @@
             text-align: center;
             width: 100%;
         }
+        .historique-wrapper{
+            text-align: center;
+            margin-top: 60px;
+            font-size: 16px;
+        }
+        .historique-wrapper img.chevron{
+            height: 16px;
+            display: block;
+            margin: auto;
+            cursor: pointer;
+        }
+        .separate-match-end {
+            border-top: 1px solid gray;
+            margin-top: 25px;
+            padding-top: 5px;
+        }
+        .historique-wrapper .row-separate {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .historique-wrapper .separate-item {
+            border: 1px solid #fff;
+            width: 8%;
+            background: #fff;
+            display: block;
+            height: 1px;
+        }
     </style>
 {% endblock %}
 
@@ -27,7 +56,7 @@
                 <h2 class="no-beguin" ng-if="tournoi.etat == 'en_attente' ">Ce Tournoi n'a pas encore commencé</h2>
                 <div class="score-wrapper">
                     <ul class="list-score">
-                        <li class="score-item" ng-repeat="item in matchs | orderBy: '-date_debut' ">
+                        <li class="score-item" ng-repeat="item in matchs">
                             <div class="group-equipe">
                                 <span ng-cloak>[[item.equipes[0].nom]]</span> 
                                 <span class="separate"></span>
@@ -39,6 +68,29 @@
                             </div>
                         </li>
                     </ul>
+                </div>
+                <div class="historique-wrapper">
+                    <h1 class="row-separate">
+                        <span class="separate-item"></span>
+                        <span class="historique-title" style="padding: 0 14px;">Historiques scores precedents match</span>
+                        <span class="separate-item"></span>
+                    </h1>
+
+                    <div class="score-wrapper" style="padding-top: 0">
+                        <ul class="list-score">
+                            <li class="score-item" ng-repeat="item in matchsTermine" ng-class=" (item.new_tour != '' ) ? 'separate-match-end' : '' ">
+                                <div class="group-equipe">
+                                    <span ng-cloak>[[item.equipes[0].nom]]</span> 
+                                    <span class="separate"></span>
+                                    <span ng-cloak>[[item.equipes[1].nom]]</span>
+                                </div> 
+                                <div class="groupe-score">
+                                    <span class="score" ng-class="(item.vainqueur == item.equipes[0].id) ? 'winner' : ''" ng-cloak>[[ item.score[0] ]]</span>
+                                    <span class="score" ng-class="(item.vainqueur == item.equipes[1].id) ? 'winner' : ''" ng-cloak>[[ item.score[1] ]]</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

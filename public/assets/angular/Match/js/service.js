@@ -22,6 +22,18 @@ MatchModule.factory('MatchService', ['$http', '$resource', '$q', function ($http
                                 console.error('Error while listing infos user');
                                 return $q.reject(errResponse);
                             });
+            },
+            getMatchTermine: function () {
+                return $http.get(REQUEST_URL_MATCH.findUrl("match_termine", [{name:'id', value:$('body').data('tournoi-id')}]))
+                        .then(
+                            function (response) {
+                                console.log(response.data);
+                                return response.data;
+                            },
+                            function (errResponse) {
+                                console.error('Error while listing infos user');
+                                return $q.reject(errResponse);
+                            });
             }
         };
     }]);

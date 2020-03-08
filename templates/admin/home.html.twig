@@ -1003,7 +1003,7 @@
           demo.showNotification.info("{{ demieFinale_finale|replace({'_': " "})}}");
         {% endif %}
         {% if tournoi and (tournoi.etat == "termine") %}
-          demo.showNotification.info("Ce tournoi est terminé");
+          toastr.info("Ce tournoi est terminé");
         {% endif %}
       });
     </script>
