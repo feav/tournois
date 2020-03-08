@@ -160,7 +160,7 @@ class TournoiController extends AbstractController
         $matchs = [];
         if(!is_null($tournoi)){
             if($tournoi->getEtat() == "termine")
-                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()],null , $tournoi->getNbrTerrain());
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
             else{
                 $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , $tournoi->getNbrTerrain());
             }
@@ -173,7 +173,7 @@ class TournoiController extends AbstractController
         }
 
        $dateFinTournoi = "";
-        if(!is_null($tournoi)){
+        if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
             $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
             $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
         }
@@ -198,6 +198,7 @@ class TournoiController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $tournoi = $this->tournoiRepository->find($id);
         $tournoi->setDateDebut(new \Datetime());
+        $tournoi->setEtat('en_cours');
         $matchCurrentTour = $this->match2Repository->findBy(['num_tour'=>1, 'tournoi'=>$tournoi->getId()],null, $tournoi->getNbrTerrain());
         foreach ($matchCurrentTour as $key => $value) {
             $value->setEtat('en_cours');

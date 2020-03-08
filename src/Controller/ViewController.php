@@ -40,43 +40,104 @@ class ViewController extends AbstractController
       $this->match2Repository = $match2Repository;
     }
 
+    /**
+     * @Route("/get-match-en-cours", name="get_match_en_cours_xhr")
+     */
+    public function getMatchEncoursXhr(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();       
+        $tournoi = $this->tournoiRepository->find($request->get('id'));
+        if($tournoi->getEtat() == "termine"){
+          $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
+        }
+        else{
+          $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , $tournoi->getNbrTerrain());
+        }
+
+        $matchsArr = [];
+        foreach ($matchs as $key => $value) {
+            $equipeArr = []; 
+            foreach ($value->getEquipes() as $key => $eqp) {
+                $equipeArr[] = [
+                    'id'=>$eqp->getId(),
+                    'nom'=>$eqp->getNom(),
+                    'joueurs'=>explode(',', $eqp->getJoueurs())
+                ];
+            }
+
+            $matchsArr[]= [
+                'vainqueur'=>$value->getVainqueur(),
+                'terrain'=>$value->getTerrain2()->getNom(),
+                'equipes'=> $equipeArr,
+                'score'=> is_null($value->getScore()) ? [0,0] : explode('-', str_replace(" ", "", $value->getScore())),
+                'date_debut'=>$value->getDateDebut()
+            ];
+        }
+
+        $tournoiArr = [
+          'id'=>$tournoi->getId(),
+          'etat'=>$tournoi->getEtat(),
+          'num_tour'=>$tournoi->getCurrentTour()
+        ];
+
+        return new Response(json_encode(['matchs'=>$matchsArr, "tournoi"=>$tournoiArr]));
+    }
 
     /**
-     * @Route("/tournoi/{id}", name="client_homepage")
+     * @Route("/scores-tournoi/{id}", name="client_resultat_tournoi")
      */
-    public function index( Request $Request, $id = null)
+    public function resultat(Request $request, $id = null)
     {
-        $em = $this->getDoctrine()->getManager();
-        $typeTournois = $this->typeTournoiRepository->findAll();
-       
+        $em = $this->getDoctrine()->getManager();       
         $tournoi = $this->tournoiRepository->find($id);
-        $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'etat'=>'en_cours']);
-
        $dateFinTournoi = "";
-        if(!is_null($tournoi)){
+        if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
             $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
             $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
         }
         
-        return $this->render('website/index.html.twig', [
-            'matchs' => $matchs,
+        return $this->render('website/resultat.html.twig', [
+            'tournoi'=> $tournoi,
+            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi
+        ]);
+    }
+    /**
+     * @Route("/finale-tournoi/{id}", name="client_finale_tournoi")
+     */
+    public function finale(Request $request, $id = null)
+    {
+        $em = $this->getDoctrine()->getManager();       
+        $tournoi = $this->tournoiRepository->find($id);
+
+       $dateFinTournoi = "";
+        if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
+            $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
+            $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
+        }
+        
+        return $this->render('website/finale.html.twig', [
             'tournoi'=> $tournoi,
             'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi
         ]);
     }
 
+
     /**
-     * @Route("/resultat", name="client_resultat_tournoi")
+     * @Route("/{id}", name="client_homepage")
      */
-    public function resultat()
+    public function index( Request $Request, $id = null)
     {
-        return $this->render('website/resultat.html.twig', []);
-    }
-    /**
-     * @Route("/finale", name="client_finale_tournoi")
-     */
-    public function finale()
-    {
-        return $this->render('website/finale.html.twig', []);
+        $em = $this->getDoctrine()->getManager();       
+        $tournoi = $this->tournoiRepository->find($id);
+        $dateFinTournoi = "";
+        if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
+            $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
+            $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
+        }
+        
+        return $this->render('website/index.html.twig', [
+            'tournoi'=> $tournoi,
+            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi
+        ]);
     }
 }

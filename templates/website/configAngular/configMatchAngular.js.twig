@@ -1,0 +1,39 @@
+
+<script>
+    var PATH_ANGULAR_MATCH = "{{app.request.getSchemeAndHttpHost() ~ asset('assets/angular')}}";
+    var PATH_ASSET = "{{app.request.getSchemeAndHttpHost() ~ asset('assets/')}}";
+    //var PATH_LOCATE = "{{app.request.getSchemeAndHttpHost()}}";
+    var ROUTE_MATCH = [
+        {
+            link: '/',
+            controller: 'Match',
+        }   
+    ];
+    var REQUEST_URL_MATCH = [     
+        {
+            relativeUrl: "match_playing",
+            absoluteUrl: "{{path('get_match_en_cours_xhr')}}"
+        }
+    ];
+
+    REQUEST_URL_MATCH.findUrl = function (value, attr) {
+        var element = "/";
+        var attribut = "?";
+        //console.log(attr);
+        if (typeof (attr) == 'undefined') {
+            attribut = "";
+        } else {
+            attr.forEach(function (item, index) {
+                attribut += item.name + "=" + item.value + "&";
+            });
+        }
+
+        REQUEST_URL_MATCH.forEach(function (item, index) {
+            if (item.relativeUrl == value) {
+                element = item.absoluteUrl;
+                return item.absoluteUrl;
+            }
+        });
+        return element + attribut;
+    }
+</script>

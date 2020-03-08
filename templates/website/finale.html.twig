@@ -8,46 +8,54 @@
     <style type="text/css"></style>
 {% endblock %}
 
+{% block id_tournoi %}{{tournoi.id}}{% endblock %}
+{% block tournoi_etat %}{{tournoi.etat}}{% endblock %}
+{% block date_debut %}{{tournoi.dateDebut|date('Y-m-d H:i:s')}}{% endblock %}
+{% block date_end %}{{dateFin}}{% endblock %}
+
+
 {% block page %}   
-    <h1 class="page-title-finale">FINALE</h1>
-    <div class="terrain-wrapper">
-        <span class="terrain-name">TARRAIN 1</span>
-    </div>
-    <div class="cols-list finale">
-        <div class="cols-item">
-            <h3 class="item-title">EQUIPE  A</h3>
-            <div class="list-elt-container">
-                <ul class="list-elt">
-                    <li class="item-elt">Matine</li>
-                    <li class="item-elt">Alin</li>
-                    <li class="item-elt">Elodie</li>
-                    <li class="item-elt">Patrice</li>
-                    <li class="item-elt">Patrice</li>
-                </ul>
+    <div ng-app="MatchModule">
+        <div ng-controller="Match" class="controller" data-page="finale">  
+            <h1 class="page-title-finale">FINALE</h1>
+            <div class="terrain-wrapper">
+                <span class="terrain-name">[[ matchs[0].terrain ]]</span>
             </div>
-            <div class="sub-col-foot">
-                <span class="score">2</span>
-            </div>  
-        </div>
-        <div class="cols-item">
-            <h3 class="item-title">EQUIPE  e</h3>
-            <div class="list-elt-container">
-                <ul class="list-elt">
-                    <li class="item-elt">Matine</li>
-                    <li class="item-elt">Alin</li>
-                    <li class="item-elt">Elodie</li>
-                    <li class="item-elt">Patrice</li>
-                    <li class="item-elt">Patrice</li>
-                </ul>
+            <div class="cols-list finale">
+                <div class="cols-item" ng-repeat="item in matchs[0].equipes track by $index">
+                    <h3 class="item-title" ng-cloak>[[item.nom]]</h3>
+                    <div class="list-elt-container">
+                        <ul class="list-elt">
+                            <li class="item-elt" ng-repeat="joueur in item.joueurs" ng-cloak>
+                                [[joueur]]
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="sub-col-foot">
+                        <span class="score" ng-cloak>[[ matchs[0].score[$index] ]]</span>
+                    </div>  
+                </div>
             </div>
-            <div class="sub-col-foot">
-                <span class="score winner">5</span>
-            </div>  
         </div>
     </div>
 {% endblock %}
 
 {% block javascripts %}
     {{parent()}}
+    {{ include('website/configAngular/configMatchAngular.js.twig') }}
+    <script src="{{asset('assets/angular/Match/js/module.js') }}" type="text/javascript"></script>
+    <script src="{{asset('assets/angular/Match/js/directive.js') }}" type="text/javascript"></script>
+    <script src="{{asset('assets/angular/Match/js/service.js') }}" type="text/javascript"></script>
+    <script src="{{asset('assets/angular/Match/js/controller.js') }}" type="text/javascript"></script>
+    <script src="{{asset('assets/angular/Match/js/route.js') }}" type="text/javascript"></script> 
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(window).bind("load", function() {
+              {% if tournoi and (tournoi.etat == "en_cours") %}
+                chronoStart();
+              {% endif %}
+            });
+        })
+    </script>
 {% endblock %}
 

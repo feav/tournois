@@ -3,6 +3,19 @@ body{
 	color: #fff;
 	padding-bottom: 40px;
 }
+.pop-end-tournoi {
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	margin: auto;
+	text-align: center;
+	width: 289px;
+	background: #1DC7EA;
+	color: #fff;
+	padding: 8px 3px;
+	font-weight: bold;
+}
 .body-container{
 }
 
