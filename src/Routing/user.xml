@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+    <import
+        resource="user/security.xml" />
+    <import
+        resource="user/profile.xml"
+        prefix="/profile" />
+    <import
+        resource="user/registration.xml"
+        prefix="/register" />
+    <import
+        resource="user/resetting.xml"
+        prefix="/resetting" />
+    <import
+        resource="user/change_password.xml"
+        prefix="/profile" />
+
+
+    <import
+        resource="user/profile.xml"/>
+</routes>

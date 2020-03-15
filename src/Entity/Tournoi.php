@@ -103,7 +103,22 @@ class Tournoi
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $etat; 
+    private $etat;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $nbr_joueur;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $logo;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $nbrJoueur_equipe; 
 
     public function __construct()
     {
@@ -417,6 +432,42 @@ class Tournoi
     public function setEtat(?string $etat): self
     {
         $this->etat = $etat;
+
+        return $this;
+    }
+
+    public function getNbrJoueur(): ?int
+    {
+        return $this->nbr_joueur;
+    }
+
+    public function setNbrJoueur(int $nbr_joueur): self
+    {
+        $this->nbr_joueur = $nbr_joueur;
+
+        return $this;
+    }
+
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?string $logo): self
+    {
+        $this->logo = $logo;
+
+        return $this;
+    }
+
+    public function getNbrJoueurEquipe(): ?int
+    {
+        return $this->nbrJoueur_equipe;
+    }
+
+    public function setNbrJoueurEquipe(int $nbrJoueur_equipe): self
+    {
+        $this->nbrJoueur_equipe = $nbrJoueur_equipe;
 
         return $this;
     }

@@ -17,7 +17,7 @@
 	    </style>
 	    {% block stylesheets %}{% endblock %}
     </head>
-    <body data-base-url="{{url('client_homepage')}}" 
+    <body data-base-url="{{url('base_url')}}" 
     	  data-tournoi-id="{% block id_tournoi %}{% endblock %}"
     	  data-tournoi-etat="{% block tournoi_etat %}{% endblock %}"
     	  data-date-end="{% block date_end %}{% endblock %}"

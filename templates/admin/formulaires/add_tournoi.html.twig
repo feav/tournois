@@ -23,8 +23,16 @@
 	<div class="row">
 		<div class="col-md-12">
 		    <div class="form-group">
-		    	<label>Nombre d'equipe</label>
-		        <input type="number" name="nbrEquipe" class="form-control" min="0" placeholder="nombre equipe" value="">
+		    	<label>Nombre de joueurs</label>
+		        <input type="number" name="nbrJoueur" class="form-control" min="0" placeholder="nombre de joueurs" value="">
+		    </div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+		    <div class="form-group">
+		    	<label>Nombre de joueur par equipe</label>
+		        <input type="number" name="nbrJoueurEquipe" class="form-control" min="0"  placeholder="nombre de joueurs par equipe" value="">
 		    </div>
 		</div>
 	</div>
@@ -44,6 +52,14 @@
 		    </div>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-md-12">
+		    <div class="form-group">
+		    	<label>Logo compagnie</label>
+		        <input type="file" name="logo" class="form-control" value="">
+		    </div>
+		</div>
+	</div>
     <button class="submit">Enregistrer</button>
 </form>
 <script type="text/javascript">
@@ -60,7 +76,11 @@
 	                    'nom':{
 	                    	required:true
 	                    },
-	                    'nbrEquipe':{
+	                    'nbrJoueur':{
+	                    	required:true,
+	                    	number: true
+	                    },
+	                    'nbrJoueurEquipe':{
 	                    	required:true,
 	                    	number: true
 	                    },
@@ -91,7 +111,12 @@
 			$.ajax({
 		        url:"{{url}}",
 		        type:"POST",
-		        data:$('#formTournoi').serialize(),
+		        data: new FormData(this),
+	            dataType: 'json',
+	            contentType: false,
+	            cache: false,
+	            processData:false,
+		        //data:$('#formTournoi').serialize(),
 		        success:function(response) {
 		        	$('#formTournoi')[0].reset();
 		        	$('.lds-ripple').css('display', 'none');

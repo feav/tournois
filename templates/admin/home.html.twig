@@ -656,9 +656,10 @@
         <div class="col-md-7">
             <div class="card evolution-match">
                 <div class="card-header ">
-                    <h4 class="card-title">
+                    <h4 class="card-title" style="text-align: left;display: inline-block;">
                       <span>Evolution match</span>
                     </h4>
+                    <a href="{{path('client_match_en_attente',{'id':tournoi.id})}}" target="_blank" class="call-action" style="float: right;">Prochains matchs<i class="nc-icon nc-stre-right" style="font-weight: bold;"></i></a>
                     {% if demieFinale_finale %}
                       <p class="card-category demiefinale-finale">
                         {{ demieFinale_finale|replace({'_': " "})}}

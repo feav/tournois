@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -100,10 +101,18 @@ class TournoiController extends AbstractController
                 $typeTournoi = $this->typeTournoiRepository->find($request->get('typeTournoi'));
                 $tournoi->setType($typeTournoi);
                 $tournoi->setNom($request->get('nom'));
-                $tournoi->setNbrEquipe($request->get('nbrEquipe'));
+                $tournoi->setNbrJoueur($request->get('nbrJoueur'));
+                $tournoi->setNbrJoueurEquipe($request->get('nbrJoueurEquipe'));
+                $tournoi->setNbrEquipe( ceil($request->get('nbrJoueur')/$request->get('nbrJoueurEquipe')) );
                 $tournoi->setNbrTerrain($request->get('nbrTerrain'));
                 $tournoi->setDuree($request->get('duree'));
                 $tournoi->setNbrTour( $this->getNbrTour($tournoi->getNbrEquipe()) );
+                $assetFile = "/images/logo/";
+                if (!file_exists($request->server->get('DOCUMENT_ROOT') . $assetFile)) {
+                    mkdir($request->server->get('DOCUMENT_ROOT') . $assetFile, 0755);
+                }
+                $fullAssetFile = $request->server->get('DOCUMENT_ROOT') . $assetFile;
+                $tournoi->setLogo( $this->buildFiles([$request->files->get('logo')], ['jpg', 'png', 'jpeg'], 100000000, $fullAssetFile, false)[0] );
 
                 $em->persist($tournoi);
                 $em->flush();
@@ -127,6 +136,37 @@ class TournoiController extends AbstractController
     		}
         }
         return  new Response("passer par une requette ajax");
+    }
+
+    public function buildFiles($files, $tabExtension, $maxSize, $directorySave, $save_originalName){
+        $filesArray = array();
+        foreach ($files as $key => $value) {
+            if( ($value instanceof UploadedFile) && ($value->getError()=="0")){
+                if($value->getSize() < $maxSize){
+                    $originalName=$value->getClientOriginalName();
+                    $name_array = explode('.',$originalName);
+                    $file_type=$name_array[sizeof($name_array)-1];
+                    $nameWithoutExt = str_replace(".".$file_type, "", $originalName);
+                    $valid_filetypes=  $tabExtension;
+                    
+                    if(in_array(strtolower($file_type),$valid_filetypes)){
+                        if($save_originalName)
+                            $name = $originalName;
+                        else
+                            $name=$nameWithoutExt.'-'.Date("Yds").'.'.$file_type;
+                        $value->move($directorySave, $name);
+                        $filesArray[] = $name;
+                    }else{
+                        print_r("Entrez votre image avec une extension valide");
+                    }
+                }else{
+                    print_r("Fichier trop lourd".$value->getSize());
+                }
+            }else{
+                print_r("Erreur de chargement du fichier");
+            }            
+        }
+        return $filesArray;
     }
 
     /**
@@ -434,7 +474,13 @@ class TournoiController extends AbstractController
         return $ArrayNewEquipes;    
     }
     public function calculDureePassage($tournoi){
-        return ceil( $tournoi->getDuree() / ($this->getNrbMatch($tournoi)/$tournoi->getNbrTerrain()) );
+        $dureePassage = ceil( $tournoi->getDuree() / ($this->getNrbMatch($tournoi)/$tournoi->getNbrTerrain()) );
+        if($dureePassage > 12 )
+            $dureePassage = 12;
+        elseif($dureePassage < 8)
+            $dureePassage = 8;
+
+        return $dureePassage;
     }
     public function directIllimination($valeur){
         if ($valeur == 2)
