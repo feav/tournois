@@ -110,9 +110,10 @@ class TournoiController extends AbstractController
                 $tournoi->setDuree($request->get('duree'));
                 $tournoi->setNbrTour( $this->getNbrTour($tournoi->getNbrEquipe()) );
                 $assetFile = "/images/logo/";
-                if (!file_exists($request->server->get('DOCUMENT_ROOT') . $assetFile)) {
-                    mkdir($request->server->get('DOCUMENT_ROOT') . $assetFile, 0755);
+                if (!file_exists($request->server->get('DOCUMENT_ROOT').$request->getBasePath() . $assetFile)) {
+                    mkdir($request->server->get('DOCUMENT_ROOT').$request->getBasePath() . $assetFile, 0755);
                 }
+                
                 $fullAssetFile = $request->server->get('DOCUMENT_ROOT') . $assetFile;
                 $tournoi->setLogo( $this->buildFiles([$request->files->get('logo')], ['jpg', 'png', 'jpeg'], 100000000, $fullAssetFile, false)[0] );
 
