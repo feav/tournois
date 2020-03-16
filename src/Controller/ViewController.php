@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,8 +31,10 @@ class ViewController extends AbstractController
     private $terrainRepository;
     private $terrain2Repository;
     private $match2Repository;
+    private $params;
     
-    public function __construct(TypeTournoiRepository $typeTournoiRepository, TournoiRepository $tournoiRepository, EquipeRepository $equipeRepository, TerrainRepository $terrainRepository, Match2Repository $match2Repository, Terrain2Repository $terrain2Repository){
+    public function __construct(ParameterBagInterface $params, TypeTournoiRepository $typeTournoiRepository, TournoiRepository $tournoiRepository, EquipeRepository $equipeRepository, TerrainRepository $terrainRepository, Match2Repository $match2Repository, Terrain2Repository $terrain2Repository){
+        $this->params = $params;
       $this->typeTournoiRepository = $typeTournoiRepository;
       $this->tournoiRepository = $tournoiRepository;
       $this->equipeRepository = $equipeRepository;
@@ -240,7 +243,9 @@ class ViewController extends AbstractController
      * @Route("/", name="base_url")
      */
     public function BaseUrl()
-    {
+    {   
+        var_dump($this->params->get('kernel.project_dir'));
+        die();
         return new Response('Bienvenue dans le tournoi de boule');
     }
 }
