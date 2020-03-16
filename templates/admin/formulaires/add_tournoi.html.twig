@@ -56,7 +56,7 @@
 		<div class="col-md-12">
 		    <div class="form-group">
 		    	<label>Logo compagnie</label>
-		        <input type="file" name="logo" class="form-control" value="" accept="image/png, image/jpeg">
+		        <input type="file" name="logo" class="form-control" value="" accept="image/png, image/jpeg" required>
 		    </div>
 		</div>
 	</div>
@@ -64,7 +64,7 @@
 		<div class="col-md-12">
 		    <div class="form-group">
 		    	<label>Fichier de joueurs <small>xls</small></label>
-		        <input type="file" name="fichier_joueurs" class="form-control" value="" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+		        <input type="file" name="fichier_joueurs" class="form-control" value="" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
 		    </div>
 		</div>
 	</div>
@@ -131,7 +131,7 @@
 		        	$(".success-checkmark").show().delay(3000).fadeOut();
                 	$(".check-icon").show().show().delay(3000).fadeOut();
                 	demo.showNotification.success("Enregistrement effectué avec success");
-                	response = JSON.parse(response);
+                	response = response;
                 	window.location.href = response.url;
 		        },
 		        error:function(){
