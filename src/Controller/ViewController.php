@@ -244,8 +244,6 @@ class ViewController extends AbstractController
      */
     public function BaseUrl()
     {   
-        var_dump($this->params->get('kernel.project_dir'));
-        die();
         return new Response('Bienvenue dans le tournoi de boule');
     }
 }

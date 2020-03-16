@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Routing\Annotation\Route;
@@ -31,8 +32,10 @@ class TournoiController extends AbstractController
     private $terrainRepository;
     private $terrain2Repository;
     private $match2Repository;
+    private $params;
     
-    public function __construct(TypeTournoiRepository $typeTournoiRepository, TournoiRepository $tournoiRepository, EquipeRepository $equipeRepository, TerrainRepository $terrainRepository, Match2Repository $match2Repository, Terrain2Repository $terrain2Repository){
+    public function __construct(ParameterBagInterface $params, TypeTournoiRepository $typeTournoiRepository, TournoiRepository $tournoiRepository, EquipeRepository $equipeRepository, TerrainRepository $terrainRepository, Match2Repository $match2Repository, Terrain2Repository $terrain2Repository){
+        $this->params = $params;
       $this->typeTournoiRepository = $typeTournoiRepository;
       $this->tournoiRepository = $tournoiRepository;
       $this->equipeRepository = $equipeRepository;
@@ -109,12 +112,12 @@ class TournoiController extends AbstractController
                 $tournoi->setNbrTerrain($request->get('nbrTerrain'));
                 $tournoi->setDuree($request->get('duree'));
                 $tournoi->setNbrTour( $this->getNbrTour($tournoi->getNbrEquipe()) );
-                $assetFile = "/cameroun/tournois/public/images/logo/";
-                if (!file_exists($request->server->get('DOCUMENT_ROOT'). $assetFile)) {
-                    mkdir($request->server->get('DOCUMENT_ROOT') . $assetFile, 0755);
+                $assetFile = "/public/images/logo/";
+                if (!file_exists($this->params->get('kernel.project_dir'). $assetFile)) {
+                    mkdir($this->params->get('kernel.project_dir') . $assetFile, 0755);
                 }
 
-                $fullAssetFile = $request->server->get('DOCUMENT_ROOT') . $assetFile;
+                $fullAssetFile = $this->params->get('kernel.project_dir') . $assetFile;
                 $tournoi->setLogo( $this->buildFiles([$request->files->get('logo')], ['jpg', 'png', 'jpeg'], 100000000, $fullAssetFile, false)[0] );
 
                 $em->persist($tournoi);
