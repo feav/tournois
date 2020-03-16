@@ -1,11 +1,24 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-<form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="fos_user_resetting_request">
-    <div>
-        <label for="username">{{ 'resetting.request.username'|trans }}</label>
-        <input type="text" id="username" name="username" required="required" />
-    </div>
-    <div>
-        <input type="submit" value="{{ 'resetting.request.submit'|trans }}" />
+<form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="fos_user_resetting_request col-md-9">
+	<div class="AppForm shadow-lg">
+        <div class="row">
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <div class="AppFormLeft">
+                	<h1>Reset password</h1>
+				    <div class="form-group position-relative mb-4">
+				        <input type="text" id="username" class="form-control border-top-0 border-right-0 border-left-0 rounded-0 shadow-none" name="username" required="required" placeholder="username ou password" /><i class="fa fa-user-o"></i>
+				    </div>
+				    <button class="btn btn-success btn-block shadow border-0 py-2 text-uppercase " type="submit">{{ 'resetting.request.submit'|trans }}</button>
+				</div>
+
+            </div>
+            <div class="col-md-6">
+                <div class="AppFormRight position-relative d-flex justify-content-center flex-column align-items-center text-center p-5 text-white">
+                    <h2 class="position-relative px-4 pb-3 mb-4">Welcome</h2>
+                    <p>Lorem ipsuing elit. Molomos totam est voluptatum i omos totam est voluptatum i ure sit consectetur ill</p>
+                </div>
+            </div>
+        </div>
     </div>
 </form>

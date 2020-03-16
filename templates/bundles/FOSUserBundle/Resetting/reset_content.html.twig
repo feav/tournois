@@ -1,8 +1,33 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-{{ form_start(form, { 'action': path('fos_user_resetting_reset', {'token': token}), 'attr': { 'class': 'fos_user_resetting_reset' } }) }}
-    {{ form_widget(form) }}
-    <div>
-        <input type="submit" value="{{ 'resetting.reset.submit'|trans }}" />
+{{ form_start(form, { 'action': path('fos_user_resetting_reset', {'token': token}), 'attr': { 'class': 'fos_user_resetting_reset col-md-9' } }) }}
+	<div class="AppForm shadow-lg">
+        <div class="row">
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <div class="AppFormLeft">
+                	<h1>Reset password</h1>
+    				
+    				<div class="form-group position-relative mb-4">
+                	{{ form_widget(form.plainPassword.first, { 'attr': {'class': 'form-control border-top-0 border-right-0 border-left-0 rounded-0 shadow-none', 'placeholder': "Nouveau mot de passe", 'required':'required'}} ) }}
+	                </div>
+	                <div>
+	                	{{ form_errors(form.plainPassword.first) }}
+	                </div>
+	                <div class="form-group position-relative mb-4">
+	                	{{ form_widget(form.plainPassword.second, { 'attr': {'class': 'form-control border-top-0 border-right-0 border-left-0 rounded-0 shadow-none', 'placeholder': "confirmer le mot de passe", 'required':'required'}} ) }}
+	                </div>
+	                <div>
+	                	{{ form_errors(form.plainPassword.second) }}
+	                </div>
+    				<button class="btn btn-success btn-block shadow border-0 py-2 text-uppercase " type="submit">{{ 'resetting.reset.submit'|trans }}</button>
+    			</div>
+    		</div>
+            <div class="col-md-6">
+                <div class="AppFormRight position-relative d-flex justify-content-center flex-column align-items-center text-center p-5 text-white">
+                    <h2 class="position-relative px-4 pb-3 mb-4">Welcome</h2>
+                    <p>Lorem ipsuing elit. Molomos totam est voluptatum i omos totam est voluptatum i ure sit consectetur ill</p>
+                </div>
+            </div>
+        </div>
     </div>
 {{ form_end(form) }}

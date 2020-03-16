@@ -103,7 +103,9 @@ class TournoiController extends AbstractController
                 $tournoi->setNom($request->get('nom'));
                 $tournoi->setNbrJoueur($request->get('nbrJoueur'));
                 $tournoi->setNbrJoueurEquipe($request->get('nbrJoueurEquipe'));
-                $tournoi->setNbrEquipe( ceil($request->get('nbrJoueur')/$request->get('nbrJoueurEquipe')) );
+                $nbrEquipe = ceil($request->get('nbrJoueur')/$request->get('nbrJoueurEquipe'));
+                $nbrEquipe = ($nbrEquipe%2 != 0) ? ($nbrEquipe-1) : $nbrEquipe ;
+                $tournoi->setNbrEquipe($nbrEquipe);
                 $tournoi->setNbrTerrain($request->get('nbrTerrain'));
                 $tournoi->setDuree($request->get('duree'));
                 $tournoi->setNbrTour( $this->getNbrTour($tournoi->getNbrEquipe()) );
@@ -119,6 +121,8 @@ class TournoiController extends AbstractController
                 $this->createEquipe($tournoi);
                 $this->createTerrain($tournoi);
                 $this->generateMatch($tournoi);
+                $tmpPathJoueur = $request->files->get('fichier_joueurs')->getRealPath();
+                $this->addJoueursEquipe($tournoi, $tmpPathJoueur);
     			return new Response(json_encode(array('url'=> $this->generateUrl('tableau_de_bord', ['id'=>$tournoi->getId()], UrlGenerator::ABSOLUTE_URL))));
     		}
     		else{
@@ -186,7 +190,7 @@ class TournoiController extends AbstractController
      * @Route("/admin/tournoi/{id}", name="tableau_de_bord")
      */
     public function index(Request $request, $id=null)
-    {
+    {   
         $em = $this->getDoctrine()->getManager();
         $typeTournois = $this->typeTournoiRepository->findAll();
         
@@ -337,6 +341,42 @@ class TournoiController extends AbstractController
             return 1 + $this->getNbrTour( ($nbrEquipe/2) );
         }
     }
+
+    public function addJoueursEquipe($tournoi, $tmpPathJoueur){
+        $em = $this->getDoctrine()->getManager();
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+        $reader->setReadDataOnly(true);
+        $spreadsheet = $reader->load($tmpPathJoueur);
+        $spreadsheet = $spreadsheet->getActiveSheet();
+        $nbrRows = (int)$spreadsheet->getHighestRow();
+        $joueurs = [];
+        for($i=1; $i <= $nbrRows ; $i++) { 
+            $joueurs[] = $spreadsheet->getCellByColumnAndRow(1, $i)->getValue();
+        }
+        //$joueurs = $spreadsheet->toArray(); // all datas rows and cells
+        $equipes = $this->equipeRepository->findBy(['tournoi'=>$tournoi->getId()]);
+        $nbrJoueurPerEquipe = (($nbrRows/$tournoi->getNbrEquipe()) > $tournoi->getNbrJoueurEquipe()) ? $tournoi->getNbrJoueurEquipe() : ($nbrRows/$tournoi->getNbrEquipe());
+        //$nbrJoueurPerEquipe = ($nbrRows/$tournoi->getNbrEquipe()) on fait jouer tout le monde
+
+        $count = 0;
+        foreach ($equipes as $key => $value) {
+            $joueursEquipe = "";
+            for ($i=0; $i < ceil($nbrJoueurPerEquipe); $i++) { 
+                if($count < $nbrRows)
+                    $joueursEquipe .= $joueurs[$count].",";
+                $count++;
+            }
+            $joueursEquipe = rtrim($joueursEquipe, ",");
+            if($joueursEquipe != "")
+                $value->setJoueurs($joueursEquipe);
+
+            if($i >= $nbrRows)
+                break;
+        }
+        $em->flush();
+        return 1;
+    }
+
     public function createEquipe($tournoi){
         $em = $this->getDoctrine()->getManager();
         $letter = "a b c d e f g h i j k l m n o p q r s t u v w x y z";

@@ -3,6 +3,11 @@ body{
 	color: #fff;
 	padding-bottom: 40px;
 }
+img.blablacar-logo{
+	max-width: 100%;
+	margin: auto;
+	max-height: 82px;
+}
 .pop-end-tournoi {
 	position: fixed;
 	left: 0;
@@ -31,6 +36,7 @@ body{
 .header .blablacar-wrapper{
     width: 260px;
     padding: 0px 36px 0 11px;
+    text-align: center;
 }
 .header-wrapper .logo-v-mobile {
 	display: none;

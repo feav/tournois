@@ -1,22 +1,63 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-{% if error %}
-    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-{% endif %}
+<form action="{{ path("fos_user_security_check") }}" method="post" class="col-md-9">
+    <div class="AppForm shadow-lg">
+        <div class="row">
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <div class="AppFormLeft">
+                    {% if error %}
+                        <div style="color:#ff1919;">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
 
-<form action="{{ path("fos_user_security_check") }}" method="post">
-    {% if csrf_token %}
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
-    {% endif %}
+                    <h1>Login</h1>
+                    {% if csrf_token %}
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+                    {% endif %}
+                    <div class="form-group position-relative mb-4">
+                        <input type="text" class="form-control border-top-0 border-right-0 border-left-0 rounded-0 shadow-none" id="username" name="_username" value="{{ last_username }}" required="required" autocomplete="username" placeholder="nom d'utilisateur">
+                            <i class="fa fa-user-o"></i>
+                    </div>
+                    <div class="form-group position-relative mb-4">
+                        <input type="password" class="form-control border-top-0 border-right-0 border-left-0 rounded-0 shadow-none" id="password"
+                            placeholder="mot de passe" name="_password" required="required" autocomplete="current-password">
+                            <i class="fa fa-key"></i>
 
-    <label for="username">{{ 'security.login.username'|trans }}</label>
-    <input type="text" id="username" name="_username" value="{{ last_username }}" required="required" autocomplete="username" />
+                    </div>
+                    <div class="row  mt-4 mb-4">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" name="_remember_me" value="on">
+                                <label class="form-check-label" for="defaultCheck1">
+                                    Se rappeler de moi
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <a href="{{path('fos_user_resetting_request')}}">mot de passe oublié?</a>
+                        </div>
+                    </div>
 
-    <label for="password">{{ 'security.login.password'|trans }}</label>
-    <input type="password" id="password" name="_password" required="required" autocomplete="current-password" />
+                    <button class="btn btn-success btn-block shadow border-0 py-2 text-uppercase " id="_submit" name="_submit" >
+                        Login
+                    </button>
 
-    <input type="checkbox" id="remember_me" name="_remember_me" value="on" />
-    <label for="remember_me">{{ 'security.login.remember_me'|trans }}</label>
+                    <!--<p class="text-center mt-5">
+                        Don't have an account?
+                        <span>
+                            Create your account
+                        </span>
 
-    <input type="submit" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
+                    </p>-->
+
+                </div>
+
+            </div>
+            <div class="col-md-6">
+                <div class="AppFormRight position-relative d-flex justify-content-center flex-column align-items-center text-center p-5 text-white">
+                    <h2 class="position-relative px-4 pb-3 mb-4">Welcome</h2>
+                    <p>Lorem ipsuing elit. Molomos totam est voluptatum i omos totam est voluptatum i ure sit consectetur ill</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </form>

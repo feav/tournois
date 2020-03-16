@@ -25,7 +25,7 @@
         <div ng-controller="Match" class="controller" data-page="match_attente">
             <h1 class="no-beguin">Matchs en attentes</h1>
             <h2 class="no-beguin" ng-if="tournoi.etat == 'en_attente' ">Ce Tournoi n'a pas encore commencé</h2>
-            <h2 class="no-beguin" ng-if="(tournoi.etat != 'en_attente) && !(matchs.length)">Attente du prochain tour</h2>
+            <h2 class="no-beguin" ng-if="(tournoi.etat != 'en_attente') && !(matchs.length)">Pas de matchs en attentes</h2>
 
             <div class="cols-list" ng-if="(matchs.length)">
                 <div class="cols-item" ng-repeat="item in matchs | orderBy: '+terrain'  ">
