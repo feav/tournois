@@ -1,18 +1,90 @@
-
+<style type="text/css">
+	.estimation-wrapper {
+		max-height: 90vh;
+		max-width: 589px;
+		background: #fff;
+		position: fixed;
+		z-index: 9999;
+		top: 50%;
+		transform: translateY(-50%);
+		left: 0;
+		right: 0;
+		margin: auto;
+		padding: 19px;
+		border-radius: 9px;
+		box-shadow: 2px 2px 2px 1px rgba(140, 140, 140, 0.2);
+		overflow-y: auto;
+		text-align: center;
+		color: #666;
+		display: none;
+	}
+	.estimation-wrapper {
+		text-align: center;
+		color: #666;
+	}
+	.delimit {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 26px 0 12px;
+	}
+	.tiret {
+		height: 1px;
+		display: block;
+		width: 13%;
+		background: grey;
+	}
+	.type-name {
+		padding: 0 11px;
+		font-weight: bold;
+	}
+	.estimation-wrapper .item-option {
+		font-weight: bold;
+		font-size: 14px;
+	}
+	.point {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		background: green;
+		border-radius: 50%;
+		margin-left: 14px;
+		margin-right: 3px;
+	}
+	.wrap-validate {
+		border-bottom: 1px solid #c6c2c2;
+		padding-bottom: 5px;
+		max-width: 469px;
+		margin: auto;
+		margin-bottom: 25px;
+	}
+	.wrap-validate .validate {
+		margin-top: 20px;
+		padding: 5px 48px;
+		background: green;
+		border: none;
+		color: #fff;
+		cursor: pointer;
+		font-size: 14px;
+		margin-bottom: ;
+	}
+	.btn.annuler {
+		margin: 0px 0 29px;
+		padding: 11px 55px;
+		background: #2d2929;
+		color: #fff;
+		border: none;
+		cursor: pointer;
+	}
+	input.no-select{
+		background: #F5F5F5;
+		color: #a6a3a3;
+		pointer-events: none;
+	}
+</style>
 <h2 class="form-head">{{action}} d'un tournoi</h2>
 <form id="formTournoi" name="formTournoi">
     <div class="row">
-    	<div class="col-md-12">
-		    <div class="form-group">
-		    	<label>Type de tournoi</label>
-		    	<select class="form-control" name="typeTournoi">
-		    		<option disabled="disabled" value="" selected>--Selectionner type de tournoi--</option>
-		    		{% for item in typeTournois %}
-		    			<option value="{{item.id}}">{{item.nom}}</option>
-		    		{% endfor %}
-		    	</select>
-		    </div>
-		</div>
 		<div class="col-md-12">
 		    <div class="form-group">
 		    	<label>Nom</label>
@@ -25,14 +97,6 @@
 		    <div class="form-group">
 		    	<label>Nombre de joueurs</label>
 		        <input type="number" name="nbrJoueur" class="form-control" min="0" placeholder="nombre de joueurs" value="">
-		    </div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-12">
-		    <div class="form-group">
-		    	<label>Nombre de joueur par equipe</label>
-		        <input type="number" name="nbrJoueurEquipe" class="form-control" min="0"  placeholder="nombre de joueurs par equipe" value="">
 		    </div>
 		</div>
 	</div>
@@ -56,7 +120,7 @@
 		<div class="col-md-12">
 		    <div class="form-group">
 		    	<label>Logo compagnie</label>
-		        <input type="file" name="logo" class="form-control" value="" accept="image/png, image/jpeg" required>
+		        <input type="file" name="logo" class="form-control" value="" accept="image/png, image/jpeg">
 		    </div>
 		</div>
 	</div>
@@ -64,12 +128,37 @@
 		<div class="col-md-12">
 		    <div class="form-group">
 		    	<label>Fichier de joueurs <small>xls</small></label>
-		        <input type="file" name="fichier_joueurs" class="form-control" value="" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
+		        <input type="file" name="fichier_joueurs" class="form-control" value="" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
 		    </div>
 		</div>
 	</div>
-    <button class="submit">Enregistrer</button>
+	<div class="row">
+	    <div class="col-md-12">
+		    <div class="form-group">
+		    	<label>Type de tournoi</label>
+		    	<input type="text" name="typeTournoi" class="form-control no-select" placeholder="nom" value="">
+		    </div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+		    <div class="form-group">
+		    	<label>Nombre de joueur par equipe</label>
+		        <input type="number" name="nbrJoueurEquipe" class="form-control no-select" min="0"  placeholder="nombre de joueurs par equipe" value="">
+		    </div>
+		</div>
+	</div>
+    <button class="submit estimation">Estimation</button>
+    <button class="submit enregistrer" style="display:none;">Enregistrer</button>
 </form>
+
+<div class="estimation-wrapper">
+	<h3>Estimations possible</h3>
+	<div class="estimation-container">
+
+	</div>
+</div>
+
 <script type="text/javascript">
 
 	$(document).ready(function(){
@@ -78,17 +167,10 @@
 	        try{
 	            var validator = $('#formTournoi').validate({
 	                rules:{
-	                    'typeTournoi':{
-	                    	required:true
-	                    },
 	                    'nom':{
 	                    	required:true
 	                    },
 	                    'nbrJoueur':{
-	                    	required:true,
-	                    	number: true
-	                    },
-	                    'nbrJoueurEquipe':{
 	                    	required:true,
 	                    	number: true
 	                    },
@@ -109,6 +191,10 @@
 	            console.log(error)
 	        }
 	    }
+	    $url_post = "{{url}}";
+		$url_estimation = "{{url_estimation}}";
+		$url = $url_estimation;
+
 		form.addEventListener('submit', function(ev) {
 			if( !validate()){
 				demo.showNotification.error("Veuillez remplir correctement les champs");
@@ -116,8 +202,9 @@
 		        return false;
 		    }
 			$('.lds-ripple').css('display', 'block');
+			
 			$.ajax({
-		        url:"{{url}}",
+		        url:$url,
 		        type:"POST",
 		        data: new FormData(this),
 	            dataType: 'json',
@@ -126,13 +213,42 @@
 	            processData:false,
 		        //data:$('#formTournoi').serialize(),
 		        success:function(response) {
-		        	$('#formTournoi')[0].reset();
 		        	$('.lds-ripple').css('display', 'none');
 		        	$(".success-checkmark").show().delay(3000).fadeOut();
                 	$(".check-icon").show().show().delay(3000).fadeOut();
-                	demo.showNotification.success("Enregistrement effectué avec success");
-                	response = response;
-                	window.location.href = response.url;
+
+                	if($url == $url_estimation){
+	                	$('.estimation-wrapper').css('display','block');
+	                	$data_append = "";
+	                	$.each(response, function (index, item) {
+				          $data_append +=  
+				          	'<div class="delimit"><span class="tiret"></span>'+
+								'<span class="type-name">'+index+'</span>'+
+								'<span class="tiret"></span>'+
+							'</div>'+
+							'<div class="estimation-list">';
+								$.each(item, function (idx, value) {
+									$data_append += '<ul class="list-inline inline-list estim-item"><li class="item-option">'+
+										'<span class="point"></span>'+value.nbr_equipe+' Equipes'+
+										'<span class="point"></span>'+value.nbr_joueur_equipe+' joueurs/eqp'+
+										'<span class="point"></span>'+value.nbr_match+' Match'+
+										'<span class="point"></span>'+value.dureePassage+' mn/match'+
+										'<span class="point"></span>'+value.nbr_tour+' Tours'+
+									'</li></ul>'+
+									'<div class="wrap-validate"> <span class="btn validate" data-joueur-equip="'+value.nbr_joueur_equipe+'" data-type-tounois="'+index+'">Valider</span></div>';
+								});
+							$data_append += '</div>';
+				        });
+				        $data_append += '<div> <span class="btn annuler">Annuler</span></div>';
+	                	$('.estimation-container').html($data_append);
+	                	demo.showNotification.success("Estimations generées");
+	                }
+	                else{
+					    $('#formTournoi')[0].reset();
+	                	demo.showNotification.success("Enregistrement effectué avec success");
+	                	window.location.href = response.url;	                	
+	                }
+
 		        },
 		        error:function(){
 		        	demo.showNotification.error("echec enregistrement");
@@ -142,5 +258,17 @@
 				
 			ev.preventDefault();
 		}, false);
+
+		$(".estimation-container" ).on( "click", " .btn.validate", function() {
+		 	$('.estimation-wrapper').css('display','none');
+		 	$('input[name=nbrJoueurEquipe]').val($(this).data('joueur-equip'));
+		 	$('input[name=typeTournoi]').val($(this).data('type-tounois'));
+		 	$url = $url_post;
+		 	$('.submit.estimation').css('display', 'none');
+		 	$('.submit.enregistrer').css('display', 'block');
+		});
+		$(".estimation-container" ).on( "click", " .btn.annuler", function() {
+		 	$('.estimation-wrapper').css('display','none');
+		});
 	});
 </script>

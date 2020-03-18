@@ -101,32 +101,38 @@ class TournoiController extends AbstractController
 
     	if ($request->isXmlHttpRequest()) {
     		if ($request->isMethod('POST')) {
-                $typeTournoi = $this->typeTournoiRepository->find($request->get('typeTournoi'));
+                $typeTournoi = $this->typeTournoiRepository->findOneBy(['referent'=>$request->get('typeTournoi')]);
                 $tournoi->setType($typeTournoi);
                 $tournoi->setNom($request->get('nom'));
                 $tournoi->setNbrJoueur($request->get('nbrJoueur'));
                 $tournoi->setNbrJoueurEquipe($request->get('nbrJoueurEquipe'));
                 $nbrEquipe = ceil($request->get('nbrJoueur')/$request->get('nbrJoueurEquipe'));
-                $nbrEquipe = ($nbrEquipe%2 != 0) ? ($nbrEquipe-1) : $nbrEquipe ;
+                $nbrEquipe = ($nbrEquipe%2 != 0) ? ($nbrEquipe+1) : $nbrEquipe ;
                 $tournoi->setNbrEquipe($nbrEquipe);
                 $tournoi->setNbrTerrain($request->get('nbrTerrain'));
                 $tournoi->setDuree($request->get('duree'));
                 $tournoi->setNbrTour( $this->getNbrTour($tournoi->getNbrEquipe()) );
-                $assetFile = "/public/images/logo/";
-                if (!file_exists($this->params->get('kernel.project_dir'). $assetFile)) {
-                    mkdir($this->params->get('kernel.project_dir') . $assetFile, 0755);
+
+                if( ($request->files->get('logo') instanceof UploadedFile) && 
+                    (($request->files->get('logo'))->getError()=="0")){
+                    $assetFile = "/public/images/logo/";
+                    if (!file_exists($this->params->get('kernel.project_dir'). $assetFile)) {
+                        mkdir($this->params->get('kernel.project_dir') . $assetFile, 0755);
+                    }
+
+                    $fullAssetFile = $this->params->get('kernel.project_dir') . $assetFile;
+                    $tournoi->setLogo( $this->buildFiles([$request->files->get('logo')], ['jpg', 'png', 'jpeg'], 100000000, $fullAssetFile, false)[0] );
                 }
-
-                $fullAssetFile = $this->params->get('kernel.project_dir') . $assetFile;
-                $tournoi->setLogo( $this->buildFiles([$request->files->get('logo')], ['jpg', 'png', 'jpeg'], 100000000, $fullAssetFile, false)[0] );
-
                 $em->persist($tournoi);
                 $em->flush();
                 $this->createEquipe($tournoi);
                 $this->createTerrain($tournoi);
                 $this->generateMatch($tournoi);
-                $tmpPathJoueur = $request->files->get('fichier_joueurs')->getRealPath();
-                $this->addJoueursEquipe($tournoi, $tmpPathJoueur);
+                if( ($request->files->get('fichier_joueurs') instanceof UploadedFile) && 
+                    (($request->files->get('fichier_joueurs'))->getError()=="0")){
+                    $tmpPathJoueur = $request->files->get('fichier_joueurs')->getRealPath();
+                    $this->addJoueursEquipe($tournoi, $tmpPathJoueur);
+                }
     			return new Response(json_encode(array('url'=> $this->generateUrl('tableau_de_bord', ['id'=>$tournoi->getId()], UrlGenerator::ABSOLUTE_URL))));
     		}
     		else{
@@ -135,13 +141,45 @@ class TournoiController extends AbstractController
     			$html = $this->renderView('admin/formulaires/add_tournoi.html.twig', [
                     'action'=>$action,
                     'typeTournois' => $typeTournois,
-                    'url'=> $this->generateUrl('admin_add_tournoi', ['id'=>$id], UrlGenerator::ABSOLUTE_URL)
+                    'url'=> $this->generateUrl('admin_add_tournoi', ['id'=>$id], UrlGenerator::ABSOLUTE_URL),
+                    'url_estimation'=> $this->generateUrl('admin_estimation_tournoi', [], UrlGenerator::ABSOLUTE_URL),
             	]);
             	$response = new Response(json_encode($html));
 	            $response->headers->set('Content-Type', 'application/json');
 
 	            return $response;
     		}
+        }
+        return  new Response("passer par une requette ajax");
+    }
+
+    /**
+     * @Route("/admin/tournoi/estimation", name="admin_estimation_tournoi")
+     */
+    public function calculEstimation(Request $request)
+    {
+        if ($request->isXmlHttpRequest()) {
+            if ($request->isMethod('POST')) {
+                $typeTournois = $this->typeTournoiRepository->findAll();
+                $ESTIMATION = [];
+                foreach ($typeTournois as $key => $value) {
+                    $referent = $value->getReferent();
+                    $ESTIMATION[$referent] = [];
+                    for($i = 2; $i<=4; $i++){
+                        $datas = [];
+                        $nbrEquipe = ceil($request->get('nbrJoueur')/$i);
+                        $nbrEquipe = ($nbrEquipe%2 != 0) ? ($nbrEquipe+1) : $nbrEquipe ;
+                        $datas['nbr_joueur_equipe'] = $i;
+                        $datas['nbr_equipe'] = $nbrEquipe;
+                        $datas['nbr_tour'] = $this->getNbrTour($nbrEquipe);
+                        $datas['nbr_match'] = $this->getNrbMatchEstimation($nbrEquipe, $referent);
+                        $datas['dureePassage'] = $this->calculDureePassageEstimation($request->get('duree'), $datas['nbr_match'], $request->get('nbrTerrain'));
+                        $ESTIMATION[$referent][] = $datas;
+                    }
+                }
+                
+                return new Response(json_encode($ESTIMATION));
+            }
         }
         return  new Response("passer par une requette ajax");
     }
@@ -336,6 +374,14 @@ class TournoiController extends AbstractController
             return $this->deuxPoules($tournoi->getNbrEquipe());
         }
     }
+    public function getNrbMatchEstimation($nbrEquipe, $typeTournoi){
+        if($typeTournoi == "ellimination-direct"){
+            return $this->directIllimination($nbrEquipe);
+        }
+        elseif($typeTournoi == "deux-poules-perdant-vainqueur"){
+            return $this->deuxPoules($nbrEquipe);
+        }
+    }
     public function getNbrTour($nbrEquipe){
         if ($nbrEquipe == 2)
             return 1;
@@ -359,8 +405,9 @@ class TournoiController extends AbstractController
         }
         //$joueurs = $spreadsheet->toArray(); // all datas rows and cells
         $equipes = $this->equipeRepository->findBy(['tournoi'=>$tournoi->getId()]);
-        $nbrJoueurPerEquipe = (($nbrRows/$tournoi->getNbrEquipe()) > $tournoi->getNbrJoueurEquipe()) ? $tournoi->getNbrJoueurEquipe() : ($nbrRows/$tournoi->getNbrEquipe());
+        //$nbrJoueurPerEquipe = (($nbrRows/$tournoi->getNbrEquipe()) > $tournoi->getNbrJoueurEquipe()) ? $tournoi->getNbrJoueurEquipe() : ($nbrRows/$tournoi->getNbrEquipe());
         //$nbrJoueurPerEquipe = ($nbrRows/$tournoi->getNbrEquipe()) on fait jouer tout le monde
+        $nbrJoueurPerEquipe = $tournoi->getNbrJoueurEquipe();
 
         $count = 0;
         foreach ($equipes as $key => $value) {
@@ -526,8 +573,17 @@ class TournoiController extends AbstractController
 
         return $dureePassage;
     }
+    public function calculDureePassageEstimation($dureeTournoi, $nbrMatch, $nbrTerrain){
+        $dureePassage = ceil( $dureeTournoi / ceil(($nbrMatch/$nbrTerrain)) );
+        if($dureePassage > 12 )
+            $dureePassage = 12;
+        elseif($dureePassage < 8)
+            $dureePassage = 8;
+
+        return $dureePassage;
+    }
     public function directIllimination($valeur){
-        if ($valeur == 2)
+        if ($valeur <= 2)
             return 1;
         else{
             if($valeur%2 != 0)
