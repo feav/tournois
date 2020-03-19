@@ -15,7 +15,6 @@ MatchModule.factory('MatchService', ['$http', '$resource', '$q', function ($http
                 return $http.get(REQUEST_URL_MATCH.findUrl("match_playing", [{name:'id', value:$('body').data('tournoi-id')}]))
                         .then(
                             function (response) {
-                                console.log(response.data);
                                 return response.data;
                             },
                             function (errResponse) {
@@ -27,7 +26,6 @@ MatchModule.factory('MatchService', ['$http', '$resource', '$q', function ($http
                 return $http.get(REQUEST_URL_MATCH.findUrl("match_termine", [{name:'id', value:$('body').data('tournoi-id')}]))
                         .then(
                             function (response) {
-                                console.log(response.data);
                                 return response.data;
                             },
                             function (errResponse) {
@@ -39,7 +37,6 @@ MatchModule.factory('MatchService', ['$http', '$resource', '$q', function ($http
                 return $http.get(REQUEST_URL_MATCH.findUrl("match_attente", [{name:'id', value:$('body').data('tournoi-id')}]))
                         .then(
                             function (response) {
-                                console.log(response.data);
                                 return response.data;
                             },
                             function (errResponse) {

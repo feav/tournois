@@ -272,7 +272,10 @@ class TournoiController extends AbstractController
             'demieFinale_finale'=> isset($demieFinale_finale) ? $demieFinale_finale : "",
             'dureePassage'=> is_null($tournoi) ? "" : $this->calculDureePassage($tournoi),
             'nbrMatch'=> is_null($tournoi) ? "" : $this->getNrbMatch($tournoi),
-            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi
+            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi,
+            'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
+            'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
+            'page'=>'dashboard'
         ]);
     }
 

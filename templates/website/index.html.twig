@@ -16,8 +16,10 @@
 {% block id_tournoi %}{{tournoi.id}}{% endblock %}
 {% block tournoi_etat %}{{tournoi.etat}}{% endblock %}
 {% block logo_compagnie %}{{tournoi.logo}}{% endblock %}
-{% block date_debut %}{{tournoi.dateDebut|date('Y-m-d H:i:s')}}{% endblock %}
-{% block date_end %}{{dateFin}}{% endblock %}
+{#{% block date_debut %}{{tournoi.dateDebut|date('Y-m-d H:i:s')}}{% endblock %}
+{% block date_end %}{{dateFin}}{% endblock %}#}
+{% block date_debut %}{{debutPassage|date('Y-m-d H:i:s')}}{% endblock %}
+{% block date_end %}{{FinPassage|date('Y-m-d H:i:s')}}{% endblock %}
 
 {% block page %}        
     <!-- Start Homepage -->
@@ -57,14 +59,6 @@
     <script src="{{asset('assets/angular/Match/js/service.js') }}" type="text/javascript"></script>
     <script src="{{asset('assets/angular/Match/js/controller.js') }}" type="text/javascript"></script>
     <script src="{{asset('assets/angular/Match/js/route.js') }}" type="text/javascript"></script> 
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $(window).bind("load", function() {
-              {% if tournoi and (tournoi.etat == "en_cours") %}
-                chronoStart();
-              {% endif %}
-            });
-        })
-    </script>
+
 {% endblock %}
 

@@ -5,6 +5,16 @@
 {% block stylesheets %}
     {{parent()}}
     <style type="text/css">
+      .blinking{
+          animation:blinkingText 1.4s infinite;
+      }
+      @keyframes blinkingText{
+          0%{     color: #000;    }
+          79%{    color: #000; }
+          80%{    color: transparent; }
+          99%{    color:transparent;  }
+          100%{   color: #000;    }
+      }
       .call-action, .call-action:hover, .call-action:focus, .call-action:active  {
         color: #fff!important;
         text-decoration: none;
@@ -613,8 +623,11 @@
 {% endblock %}
 {% block id_tournoi %}{{tournoi.id}}{% endblock %}
 {% block tournoi_etat %}{{tournoi.etat}}{% endblock %}
-{% block date_debut %}{{tournoi.dateDebut|date('Y-m-d H:i:s')}}{% endblock %}
-{% block date_end %}{{dateFin}}{% endblock %}
+{% block current_page %}{{page}}{% endblock %}
+{#{% block date_debut %}{{tournoi.dateDebut|date('Y-m-d H:i:s')}}{% endblock %}
+{% block date_end %}{{dateFin}}{% endblock %}#}
+{% block date_debut %}{{debutPassage|date('Y-m-d H:i:s')}}{% endblock %}
+{% block date_end %}{{FinPassage|date('Y-m-d H:i:s')}}{% endblock %}
 
 {% block admin_content %}
   
@@ -640,8 +653,6 @@
               {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
                 <form name="chronoForm" class="chronotime-wrapper">
                   <h3 id="chronotime" style="margin-top: 5px">0:00:00</h3>
-                  <input type="button" name="startstop" value="start!" onClick="chronoStart()" style="display: none;" />
-                  <input type="button" name="reset" value="reset!" onClick="chronoReset()" style="display: none;" />
                 </form>
               {% endif %}
               {% if tournoi.getDateDebut is null %}
@@ -888,6 +899,11 @@
           $('.sidebar-wrapper .nav li').removeClass('active');
           $('.sidebar-wrapper .nav li.dashboard').addClass('active');
 
+          $('.btn-next-tour').click(function(e) {
+            storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi));
+            storageDate.relaodPage = 1;
+            localStorage.setItem("tournoi_"+$idTournoi, JSON.stringify(storageDate)); 
+          });
 
             function loadForm($url){
                 $.ajax({
@@ -935,69 +951,12 @@
     </script>
 
     <script type="text/javascript">
-      var startTime = 0
-      var start = 0
-      var end = 0
-      var diff = 0
-      var timerID = 0
-      function chronoT(){
-        end = new Date()
-        diff = end - start
-        diff = new Date(diff)
-        var msec = diff.getMilliseconds()
-        var sec = diff.getSeconds()
-        var min = diff.getMinutes()
-        var hr = diff.getHours()-1
-        if (min < 10){
-          min = "0" + min
-        }
-        if (sec < 10){
-          sec = "0" + sec
-        }
-        if(msec < 10){
-          msec = "00" +msec
-        }
-        else if(msec < 100){
-          msec = "0" +msec
-        }
-        document.getElementById("chronotimetour").innerHTML  = hr + ":" + min + ":" + sec/* + ":" + msec*/
-        timerID = setTimeout("chronoT()", 10)
-      }
-      function chronoStartT(){
-        document.chronoFormTour.startstop.value = "stop!"
-        document.chronoFormTour.startstop.onclick = chronoStop
-        document.chronoFormTour.reset.onclick = chronoReset
-        start = new Date()
-        chronoT()
-      }
-      function chronoContinueT(){
-        document.chronoFormTour.startstop.value = "stop!"
-        document.chronoFormTour.startstop.onclick = chronoStop
-        document.chronoFormTour.reset.onclick = chronoReset
-        start = new Date()-diff
-        start = new Date(start)
-        chrono()
-      }
-      function chronoResetT(){
-        document.getElementById("chronotimetour").innerHTML  = "0:00:00:000"
-        start = new Date()
-      }
-      function chronoStopResetT(){
-        document.getElementById("chronotimetour").innerHTML  = "0:00:00:000"
-        document.chronoFormTour.startstop.onclick = chronoStart
-      }
-      function chronoStopT(){
-        document.chronoFormTour.startstop.value = "start!"
-        document.chronoFormTour.startstop.onclick = chronoContinue
-        document.chronoFormTour.reset.onclick = chronoStopReset
-        clearTimeout(timerID)
-      }
 
       $(document).ready(function(){
         $(window).bind("load", function() {
           {% if tournoi and (tournoi.etat == "en_cours") %}
             /*chronoStartT();*/
-            chronoStart();
+            /*chronoStart();*/
           {% endif %}
         });
 

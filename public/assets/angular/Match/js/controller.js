@@ -20,7 +20,6 @@ MatchModule
                 }
                 $scope.matchs = data.matchs;
                 $scope.tournoi = data.tournoi;
-                console.log(data);
             },
             function (data) {
                 console.log(data);
@@ -39,7 +38,6 @@ MatchModule
                 }
                 $scope.matchs = data.matchs;
                 $scope.tournoi = data.tournoi;
-                console.log(data);
             },
             function (data) {
                 console.log(data);

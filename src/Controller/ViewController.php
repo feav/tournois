@@ -168,15 +168,26 @@ class ViewController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();       
         $tournoi = $this->tournoiRepository->find($id);
-       $dateFinTournoi = "";
+
+        $matchs = [];
+        $dateFinTournoi = "";
         if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
             $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
             $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
+
+            if($tournoi->getEtat() == "termine")
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
+            else{
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , 1);
+            }
         }
         
         return $this->render('website/resultat.html.twig', [
             'tournoi'=> $tournoi,
-            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi
+            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi,
+            'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
+            'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
+            'page'=>'score'
         ]);
     }
 
@@ -188,14 +199,25 @@ class ViewController extends AbstractController
         $em = $this->getDoctrine()->getManager();       
         $tournoi = $this->tournoiRepository->find($id);
         $dateFinTournoi = "";
+
+        $matchs = [];
         if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
             $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
             $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
+
+            if($tournoi->getEtat() == "termine")
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
+            else{
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , 1);
+            }
         }
         
         return $this->render('website/match_attente.html.twig', [
             'tournoi'=> $tournoi,
-            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi
+            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi,
+            'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
+            'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
+            'page'=>'match_attente'
         ]);
     }
 
@@ -208,14 +230,24 @@ class ViewController extends AbstractController
         $tournoi = $this->tournoiRepository->find($id);
 
        $dateFinTournoi = "";
+       $matchs = [];
         if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
             $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
             $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
+
+            if($tournoi->getEtat() == "termine")
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
+            else{
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , 1);
+            }
         }
         
         return $this->render('website/finale.html.twig', [
             'tournoi'=> $tournoi,
-            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi
+            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi,
+            'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
+            'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
+            'page'=>'finale'
         ]);
     }
 
@@ -227,15 +259,26 @@ class ViewController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();       
         $tournoi = $this->tournoiRepository->find($id);
+
+        $matchs = [];
         $dateFinTournoi = "";
         if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
             $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
             $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
+
+            if($tournoi->getEtat() == "termine")
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
+            else{
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , 1);
+            }
         }
         
         return $this->render('website/index.html.twig', [
             'tournoi'=> $tournoi,
-            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi
+            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi,
+            'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
+            'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
+            'page'=>'index'
         ]);
     }
 
@@ -244,6 +287,7 @@ class ViewController extends AbstractController
      */
     public function BaseUrl()
     {   
+        return $this->redirectToRoute('tableau_de_bord');
         return new Response('Bienvenue dans le tournoi de boule');
     }
 }

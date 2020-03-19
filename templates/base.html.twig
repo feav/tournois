@@ -14,6 +14,16 @@
 	    <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" />
 	    <link href="{{asset('assets/css/base.css')}}" rel="stylesheet" />
 	    <style type="text/css">
+			.blinking{
+			    animation:blinkingText 1.4s infinite;
+			}
+			@keyframes blinkingText{
+			    0%{     color: #fff;    }
+			    79%{    color: #fff; }
+			    80%{    color: transparent; }
+			    99%{    color:transparent;  }
+			    100%{   color: #fff;    }
+			}
 	    </style>
 	    {% block stylesheets %}{% endblock %}
     </head>
@@ -22,6 +32,7 @@
     	  data-tournoi-etat="{% block tournoi_etat %}{% endblock %}"
     	  data-date-end="{% block date_end %}{% endblock %}"
     	  data-date-debut="{% block date_debut %}{% endblock %}"
+    	  data-current-page="{% block current_page %}{% endblock %}"
     	 >
 
     	{% block body %}{% endblock %}
@@ -37,13 +48,14 @@
     	$dateEnd = $('body').data('date-end');
     	$dateDebut = $('body').data('date-debut');
     	$isEnd = false; // test de fin du mactch dans l'evolution du chrono
+    	$countSecond = 0;
 
 		var start = 0
 		var end = 0
 		var diff = 0
 		var timerID = 0
         var storageDate = {};
-		
+
 		{#/*localStorage.removeItem("tournoi_"+$idTournoi);*/#}
 		
 		$(window).bind("load", function() {
@@ -59,12 +71,20 @@
                 end = new Date();
             }
             else{
-                var dataInfo = {tournoi:"tournoi_"+$idTournoi, date_debut: $dateDebut, date_fin: $dateEnd};
-                localStorage.setItem("tournoi_"+$idTournoi, JSON.stringify(dataInfo)); 
-                start = $dateDebut;
+                var dataInfo = {tournoi:"tournoi_"+$idTournoi, date_debut: $dateDebut, date_fin: $dateEnd, relaodPage:0};
+                localStorage.setItem("tournoi_"+$idTournoi, JSON.stringify(dataInfo));
+                storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi)); 
+                start = new Date($dateDebut);
             }
         }
 		function chrono(){
+			storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi));
+			if(storageDate.relaodPage && ($('body').data('current-page') != "dashboard" ) ){
+				setTimeout(function(){
+					localStorage.removeItem("tournoi_"+$idTournoi);
+					window.location.reload(true);
+				},2000);
+			}
 			end = new Date()
 			diff = end - start
 			diff = new Date(diff)
@@ -88,20 +108,33 @@
 				msec = "0" +msec
 			}
 			document.getElementById("chronotime").innerHTML  = hr + ":" + min + ":" + sec/* + ":" + msec*/
-			if( (new Date() >= new Date(storageDate.date_fin)) && !$isEnd ){
+
+			var diffDeadline = new Date(new Date(storageDate.date_fin) - new Date());
+			var deadlineMinute = (diffDeadline.getHours()-1)*60 + diffDeadline.getMinutes();
+			if( new Date() >= new Date(storageDate.date_fin) ){
+				$countSecond++;
+				if(!$isEnd){
+					toastr.warning("Ce passage devrait etre terminé il y a "+Math.abs(deadlineMinute)+" minutes");
+					$isEnd = true;
+				}
+				else if($countSecond >= 45){
+					toastr.warning("Ce passage devrait etre terminé il y a "+Math.abs(deadlineMinute)+" minutes");
+					$countSecond = 0;
+				}
 				//localStorage.removeItem("tournoi_"+$idTournoi);
 				//clearInterval(intervalId);
-				$isEnd = true;
-				toastr.warning("Ce tournoi devrait etre terminé maintenant");
 				//window.location.reload(true);
+				$('#chronotime').removeClass('blinking');
+			}
+			else{
+				if( deadlineMinute >= 0 && deadlineMinute <= 2 ){
+					$('#chronotime').addClass('blinking');
+				}
 			}
 		}
 		function chronoStart(){
 			initCrono();
-			document.chronoForm.startstop.value = "stop!"
-			document.chronoForm.startstop.onclick = chronoStop
-			document.chronoForm.reset.onclick = chronoReset
-			chrono()
+			chrono();
 		}
 		function chronoContinue(){
 			document.chronoForm.startstop.value = "stop!"
