@@ -614,6 +614,14 @@
           }
         }
         .loader-form{display: block;margin: auto;}    
+
+        .match-item.no_en_cour .equipe{
+          background: gray;
+        }
+        .cart-body-content .match-item.no_en_cour .score{
+          background: #fff;
+          color: gray;
+        }
     </style>
 {% endblock %}
 {% block page_title %}
@@ -716,9 +724,9 @@
                         {% endif %}
                         <ul class="list-match">
                           {% for item in matchs %}
-                            <li class="match-item">
+                            <li class="match-item {% if item.etat != 'en_cours' %} no_en_cour {% endif %}">
                                 <div class="status-match">{{ item.etat |replace({'_': " "}) }}</div>
-                                <a class="match-content goto-update-score" href="{{path('update_score', {'id':item.id})}}" data-score="{{item.score}}" data-equipe="{{item.equipes[0].nom}}-{{item.equipes[1].nom}}" {% if tournoi.etat == "termine" %} style="pointer-events: none;" {% endif %}>
+                                <a class="match-content goto-update-score" href="{{path('update_score', {'id':item.id})}}" data-score="{{item.score}}" data-equipe="{{item.equipes[0].nom}}-{{item.equipes[1].nom}}" {% if item.etat != "en_cours" %} style="pointer-events: none; background:red" {% endif %}>
                                     <div class="equipe equipe-1">
                                         <span class="avt-equipe">{{ item.equipes[0].nom|last }}</span>
                                         <span class="nom-equipe">{{item.equipes[0].nom}}</span>
