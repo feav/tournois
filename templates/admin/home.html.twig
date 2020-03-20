@@ -615,10 +615,14 @@
         }
         .loader-form{display: block;margin: auto;}    
 
-        .match-item.no_en_cour .equipe{
-          background: gray;
+        .match-item.end_match .equipe{
+          background: grey;
         }
-        .cart-body-content .match-item.no_en_cour .score{
+        .match-item:not(.en_cours) .equipe{
+          background: #626161;
+        }
+        .cart-body-content .match-item:not(.en_cours) .score,
+        .cart-body-content .match-item.end_match .score{
           background: #fff;
           color: gray;
         }
@@ -724,7 +728,7 @@
                         {% endif %}
                         <ul class="list-match">
                           {% for item in matchs %}
-                            <li class="match-item {% if item.etat != 'en_cours' %} no_en_cour {% endif %}">
+                            <li class="match-item {{item.etat}}">
                                 <div class="status-match">{{ item.etat |replace({'_': " "}) }}</div>
                                 <a class="match-content goto-update-score" href="{{path('update_score', {'id':item.id})}}" data-score="{{item.score}}" data-equipe="{{item.equipes[0].nom}}-{{item.equipes[1].nom}}" {% if item.etat != "en_cours" %} style="pointer-events: none; background:red" {% endif %}>
                                     <div class="equipe equipe-1">

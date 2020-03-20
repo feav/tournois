@@ -249,7 +249,7 @@ class TournoiController extends AbstractController
                 $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
             else{
                 //$matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , $tournoi->getNbrTerrain());
-                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()]);
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['date_debut'=>'DESC']);
             }
 
             $nbrEquipeQualifie =  $this->equipeRepository->getNbrEquipeQualifie($tournoi->getId());
@@ -284,6 +284,29 @@ class TournoiController extends AbstractController
      * @Route("/admin/tournoi-launch/{id}", name="tournoi_launch")
      */
     public function launchTournoi(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $tournoi = $this->tournoiRepository->find($id);
+        $tournoi->setDateDebut(new \Datetime());
+        $tournoi->setEtat('en_cours');
+        $matchCurrentTour = $this->match2Repository->findBy(['num_tour'=>1, 'tournoi'=>$tournoi->getId()],null, $tournoi->getNbrTerrain());
+        foreach ($matchCurrentTour as $key => $value) {
+            $value->setEtat('en_cours');
+            $value->setDateDebut(new \Datetime());
+            $currentDate = new \Datetime();
+            $currentDate->add(new \DateInterval('PT'.$value->getDuree().'M'));
+            $dateFin = $currentDate->format('Y-m-d H:i:s');
+            $value->setDateFin((new \DateTime($dateFin)));
+        }
+
+        $em->flush();
+        return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
+    }
+
+    /**
+     * @Route("/admin/tour-launch/{id}", name="tour_launch")
+     */
+    public function launchTour(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
         $tournoi = $this->tournoiRepository->find($id);

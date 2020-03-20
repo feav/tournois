@@ -114,7 +114,7 @@
 			if( new Date() >= new Date(storageDate.date_fin) ){
 				$countSecond++;
 				if(!$isEnd){
-					toastr.warning("Ce passage devrait etre terminé il y a "+Math.abs(deadlineMinute)+" minutes");
+					toastr.warning("CE PASSAGE EST TERMINE");
 					$isEnd = true;
 				}
 				else if($countSecond >= 45){
@@ -122,7 +122,9 @@
 					$countSecond = 0;
 				}
 				//localStorage.removeItem("tournoi_"+$idTournoi);
-				//clearInterval(intervalId);
+				$('.cart-body-content .match-item').addClass('end_match');
+				$('.cart-body-content .match-item .status-match').html('Terminé');
+				clearInterval(intervalId);
 				//window.location.reload(true);
 				$('#chronotime').removeClass('blinking');
 			}
