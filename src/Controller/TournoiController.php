@@ -596,10 +596,10 @@ class TournoiController extends AbstractController
     public function calculDureePassage($tournoi){
         $miTemp =ceil($this->getNrbMatch($tournoi)/$tournoi->getNbrTerrain())-1;
         $dureePassage = ceil( ($tournoi->getDuree()-$miTemp) / ceil($this->getNrbMatch($tournoi)/$tournoi->getNbrTerrain()) );
-        if($dureePassage > 12 )
+        /*if($dureePassage > 12 )
             $dureePassage = 12;
         elseif($dureePassage < 8)
-            $dureePassage = 8;
+            $dureePassage = 8;*/
 
         return $dureePassage;
     }
