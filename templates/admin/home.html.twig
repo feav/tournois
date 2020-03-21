@@ -708,7 +708,7 @@
                             </form>
                           </span>
                           {% if matchs[0].etat == "en_cours" %}
-                            <a class="btn-next-tour" style="" href="{{path('goto_next_tour',{'id':tournoi.id})}}">
+                            <a class="btn-next-tour reload" style="" href="{{path('goto_next_tour',{'id':tournoi.id})}}">
                               {% if demieFinale_finale == "finale" %}
                                 terminer le tournois
                               {% else %}
@@ -717,7 +717,7 @@
                               <i class="nc-icon nc-stre-right" style="font-weight: bold"></i>
                             </a>
                           {% elseif matchs[0].etat == "en_attente" %}
-                            <a class="btn-next-tour demarrer" style="" href="{{path('tour_launch',{'id':tournoi.id})}}">Demarrer
+                            <a class="btn-next-tour reload" style="" href="{{path('tour_launch',{'id':tournoi.id})}}">Demarrer
                             </a>
                           {% endif %}
                         </div>
@@ -916,7 +916,7 @@
           $('.sidebar-wrapper .nav li').removeClass('active');
           $('.sidebar-wrapper .nav li.dashboard').addClass('active');
 
-          $('.btn-next-tour').click(function(e) {
+          $('.btn-next-tour.reload').click(function(e) {
             /*storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi));
             storageDate.relaodPage = 1;
             localStorage.setItem("tournoi_"+$idTournoi, JSON.stringify(storageDate)); */
