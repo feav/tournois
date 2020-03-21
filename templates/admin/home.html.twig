@@ -917,9 +917,10 @@
           $('.sidebar-wrapper .nav li.dashboard').addClass('active');
 
           $('.btn-next-tour').click(function(e) {
-            storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi));
+            /*storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi));
             storageDate.relaodPage = 1;
-            localStorage.setItem("tournoi_"+$idTournoi, JSON.stringify(storageDate)); 
+            localStorage.setItem("tournoi_"+$idTournoi, JSON.stringify(storageDate)); */
+            localStorage.removeItem("tournoi_"+$idTournoi);
           });
 
             function loadForm($url){
