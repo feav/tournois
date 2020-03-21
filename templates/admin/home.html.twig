@@ -668,7 +668,7 @@
                 </form>
               {% endif %}
               {% if tournoi.getDateDebut is null %}
-                <a href="{{path('tournoi_launch',{'id':tournoi.id})}}" class="btn-demarrer-tournoi">Demarrer le tournoi</a>
+                <a href="{{path('tournoi_launch',{'id':tournoi.id})}}" class="btn-demarrer-tournoi btn-next-tour reload">Demarrer le tournoi</a>
               {% endif %}
             {% endif %}
           </div>
