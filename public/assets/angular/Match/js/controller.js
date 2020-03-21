@@ -11,7 +11,7 @@ MatchModule
                     clearInterval(intervalId1);
                     //return false;
                 }
-                if( (data.matchs.length == 1) && $('.controller').data('page') == "index"){
+                if( (data.tournoi.demieFinale_finale == "finale") && $('.controller').data('page') == "index"){
                     window.location.href = $('body').data('base-url')+"finale-tournoi/"+$('body').data('tournoi-id');
                     return false;
                 }

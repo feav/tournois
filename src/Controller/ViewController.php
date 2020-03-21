@@ -79,10 +79,18 @@ class ViewController extends AbstractController
             ];
         }
 
+        $nbrEquipeQualifie =  $this->equipeRepository->getNbrEquipeQualifie($tournoi->getId());
+        if($nbrEquipeQualifie == 4)
+            $demieFinale_finale = "demie_finale";
+        if($nbrEquipeQualifie == 2)
+            $demieFinale_finale = "finale";
+
+
         $tournoiArr = [
           'id'=>$tournoi->getId(),
           'etat'=>$tournoi->getEtat(),
-          'num_tour'=>$tournoi->getCurrentTour()
+          'num_tour'=>$tournoi->getCurrentTour(),
+          'demieFinale_finale'=> isset($demieFinale_finale) ? $demieFinale_finale : "",
         ];
 
         return new Response(json_encode(['matchs'=>$matchsArr, "tournoi"=>$tournoiArr]));
