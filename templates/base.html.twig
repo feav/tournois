@@ -79,11 +79,11 @@
         }
 		function chrono(){
 			//storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi));
-			if(!localStorage.getItem("tournoi_"+$idTournoi) ){
+			if(!localStorage.getItem("tournoi_"+$idTournoi)  && ($('body').data('current-page') != "dashboard" )){
 				setTimeout(function(){
 					localStorage.removeItem("tournoi_"+$idTournoi);
 					window.location.reload(true);
-				},2000);
+				},1000);
 			}
 			end = new Date()
 			diff = end - start
