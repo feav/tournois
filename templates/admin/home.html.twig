@@ -650,10 +650,12 @@
         <div class="card" style="margin-bottom:6px">
           <div class="card-header" style="padding-top: 10px;">
               <h4 class="card-title" style="text-align: left;font-size: 19px; display:inline-block">Estimation initiale du tournoi</h4>
+              {% if tournoi.getDateDebut is not null %}
               <div class="group-btn-shar-to-screen">
                   <a href="{{path('client_resultat_tournoi',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecran scores<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
                   <a href="{{path('client_homepage',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecran jeu<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
               </div>
+              {% endif %}
           </div>
           <div class="card-body head-estimation">
             {% if tournoi %}
@@ -668,7 +670,7 @@
                 </form>
               {% endif %}
               {% if tournoi.getDateDebut is null %}
-                <a href="{{path('tournoi_launch',{'id':tournoi.id})}}" class="btn-demarrer-tournoi btn-next-tour reload">Demarrer le tournoi</a>
+                <a href="{{path('tournoi_launch',{'id':tournoi.id})}}" class="btn-demarrer-tournoi">Demarrer le tournoi</a>
               {% endif %}
             {% endif %}
           </div>
@@ -682,7 +684,9 @@
                     <h4 class="card-title" style="text-align: left;display: inline-block;">
                       <span>Evolution match</span>
                     </h4>
+                    {% if tournoi.getDateDebut is not null %}
                     <a href="{{path('client_match_en_attente',{'id':tournoi.id})}}" target="_blank" class="call-action" style="float: right;">Prochains matchs<i class="nc-icon nc-stre-right" style="font-weight: bold;"></i></a>
+                    {% endif %}
                     <div class="clearfix"></div>
                     {% if demieFinale_finale %}
                       <p class="card-category demiefinale-finale">
