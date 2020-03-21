@@ -109,6 +109,7 @@
 			}
 			var diffDeadline = new Date(new Date(storageDate.date_fin) - new Date());
 			var deadlineMinute = (diffDeadline.getHours()-1)*60 + diffDeadline.getMinutes();
+			var deadlineSeconde = (diffDeadline.getHours()-1)*3600 + diffDeadline.getMinutes()*60 + diffDeadline.getSeconds();
 
 			if( (new Date() >= new Date(storageDate.date_fin)) && (storageDate.date_debut != storageDate.date_fin) ){
 				var local_diff_date = new Date(new Date(storageDate.date_fin) - new Date(storageDate.date_debut));
@@ -145,7 +146,7 @@
 			}
 			else{
 				document.getElementById("chronotime").innerHTML  = hr + ":" + min + ":" + sec;
-				if( deadlineMinute >= 0 && deadlineMinute <= 2 ){
+				if( deadlineSeconde >= 0 && deadlineSeconde <= 120 ){
 					$('#chronotime').addClass('blinking');
 				}
 			}
