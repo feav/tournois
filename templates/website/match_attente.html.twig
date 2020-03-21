@@ -30,8 +30,8 @@
             <h2 class="no-beguin" ng-if="(tournoi.etat != 'en_attente') && !(matchs.length)">Pas de matchs en attentes</h2>
 
             <div class="cols-list" ng-if="(matchs.length)">
-                <div class="cols-item" ng-repeat="item in matchs | orderBy: '+terrain'  ">
-                    <h2 class="col-title" ng-cloak>TERRAIN X</h2>
+                <div class="cols-item" ng-repeat="item in matchs">
+                    <h2 class="col-title" ng-cloak>[[item.terrain]]</h2>
                     <div class="sub-col-list">
                         <div class="list-item" ng-repeat="eqp in item.equipes track by $index">
                             <h3 class="sub-title" ng-cloak>[[eqp.nom]]</h3>

@@ -249,7 +249,8 @@ class TournoiController extends AbstractController
                 $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
             else{
                 //$matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , $tournoi->getNbrTerrain());
-                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['date_debut'=>'DESC']);
+                //$matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['date_debut'=>'DESC']);
+                $matchs = $this->match2Repository->getMatchByEtat($tournoi->getId(), $tournoi->getCurrentTour(), $tournoi->getNbrTerrain());
             }
 
             $nbrEquipeQualifie =  $this->equipeRepository->getNbrEquipeQualifie($tournoi->getId());
@@ -310,20 +311,27 @@ class TournoiController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
         $tournoi = $this->tournoiRepository->find($id);
-        $tournoi->setDateDebut(new \Datetime());
-        $tournoi->setEtat('en_cours');
-        $matchCurrentTour = $this->match2Repository->findBy(['num_tour'=>1, 'tournoi'=>$tournoi->getId()],null, $tournoi->getNbrTerrain());
-        foreach ($matchCurrentTour as $key => $value) {
-            $value->setEtat('en_cours');
-            $value->setDateDebut(new \Datetime());
-            $currentDate = new \Datetime();
-            $currentDate->add(new \DateInterval('PT'.$value->getDuree().'M'));
-            $dateFin = $currentDate->format('Y-m-d H:i:s');
-            $value->setDateFin((new \DateTime($dateFin)));
+        $currentTour = $tournoi->getCurrentTour();
+   
+        $matchAttente = $this->match2Repository->findBy(['num_tour'=>$currentTour, 'tournoi'=>$tournoi->getId(), 'etat'=>'en_attente'], null, $tournoi->getNbrTerrain());
+        if(count($matchAttente)){
+            $j = 0;
+            $terrains = $this->terrain2Repository->findBy(['tournoi'=>$tournoi->getId()]);
+            foreach ($matchAttente as $key => $value) {
+                $value->setEtat('en_cours');
+                $value->setDateDebut(new \Datetime());
+                $currentDate = new \Datetime();
+                $currentDate->add(new \DateInterval('PT'.$this->calculDureePassage($tournoi).'M'));
+                $dateFin = $currentDate->format('Y-m-d H:i:s');
+                $value->setDateFin((new \DateTime($dateFin)));
+                if(isset( $terrains[$j] )){
+                    $value->setTerrain2($terrains[$j]);
+                    $j++;
+                }
+            }
+            $em->flush();
+            return $this->redirectToRoute('tableau_de_bord', ['id'=>$id]);
         }
-
-        $em->flush();
-        return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
     }
 
     /**
@@ -344,7 +352,7 @@ class TournoiController extends AbstractController
 
         $matchAttente = $this->match2Repository->findBy(['num_tour'=>$currentTour, 'tournoi'=>$tournoi->getId(), 'etat'=>'en_attente'], null, $tournoi->getNbrTerrain());
         if(count($matchAttente)){
-            $j = 0;
+            /*$j = 0;
             $terrains = $this->terrain2Repository->findBy(['tournoi'=>$tournoi->getId()]);
             foreach ($matchAttente as $key => $value) {
                 $value->setEtat('en_cours');
@@ -358,7 +366,7 @@ class TournoiController extends AbstractController
                     $j++;
                 }
             }
-            $em->flush();
+            $em->flush();*/
             return $this->redirectToRoute('tableau_de_bord', ['id'=>$id]);
         }
 
@@ -505,10 +513,10 @@ class TournoiController extends AbstractController
                 $match->addEquipe($equipes[$i]);
                 $match->addEquipe($equipes[$i+1]);
 
-                if(isset( $terrains[$j] )){
-                    $match->setTerrain2($terrains[$j]);
+                 if(!isset($terrains[$j]))
+                    $j = 0;
+                $match->setTerrain2($terrains[$j]);
                     $j++;
-                }
                 $em->persist($match);
             }
         }
@@ -525,16 +533,10 @@ class TournoiController extends AbstractController
                 $match->addEquipe($equipe1);
                 $match->addEquipe($equipe2);
 
-                if(isset( $terrains[$j] )){
-                    $match->setEtat('en_cours');
-                    $match->setDateDebut(new \Datetime());
-                    $currentDate = new \Datetime();
-                    $currentDate->add(new \DateInterval('PT'.$this->calculDureePassage($tournoi).'M'));
-                    $dateFin = $currentDate->format('Y-m-d H:i:s');
-                    $match->setDateFin((new \DateTime($dateFin)));
-                    $match->setTerrain2($terrains[$j]);
+                if(!isset($terrains[$j]))
+                    $j = 0;
+                $match->setTerrain2($terrains[$j]);
                     $j++;
-                }
                 $em->persist($match);
             }
         }
@@ -592,7 +594,8 @@ class TournoiController extends AbstractController
         return $ArrayNewEquipes;    
     }
     public function calculDureePassage($tournoi){
-        $dureePassage = ceil( $tournoi->getDuree() / ($this->getNrbMatch($tournoi)/$tournoi->getNbrTerrain()) );
+        $miTemp =ceil($this->getNrbMatch($tournoi)/$tournoi->getNbrTerrain())-1;
+        $dureePassage = ceil( ($tournoi->getDuree()-$miTemp) / ceil($this->getNrbMatch($tournoi)/$tournoi->getNbrTerrain()) );
         if($dureePassage > 12 )
             $dureePassage = 12;
         elseif($dureePassage < 8)
@@ -601,7 +604,8 @@ class TournoiController extends AbstractController
         return $dureePassage;
     }
     public function calculDureePassageEstimation($dureeTournoi, $nbrMatch, $nbrTerrain){
-        $dureePassage = ceil( $dureeTournoi / ceil(($nbrMatch/$nbrTerrain)) );
+        $miTemp =ceil($nbrMatch/$nbrTerrain)-1;
+        $dureePassage = ceil( ($dureeTournoi - $miTemp ) / ceil($nbrMatch/$nbrTerrain) );
         /*if($dureePassage > 12 )
             $dureePassage = 12;
         elseif($dureePassage < 8)

@@ -17,7 +17,9 @@ class Match2Repository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Match2::class);
+        $this->em = $this->getEntityManager()->getConnection();
     }
+
 
     // /**
     //  * @return Match2[] Returns an array of Match2 objects
@@ -47,4 +49,25 @@ class Match2Repository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getMatchByEtat($idTournoi, $currentTour, $nbrTerrain){
+        $sql = "
+            SELECT id FROM match2 
+                WHERE  tournoi_id = :idTournoi
+                AND num_tour = :currentTour
+                AND ( etat = 'en_cours' OR etat = 'en_attente') 
+                LIMIT $nbrTerrain";
+        $posts = $this->em->prepare($sql);
+        $posts->execute(['idTournoi'=>$idTournoi, 'currentTour'=> $currentTour]);
+        $posts = $posts->fetchAll();
+
+        $postsArray = [];
+        foreach ($posts as $key => $value) {
+            $qb = $this->createQueryBuilder('match')
+                ->Where('match.id = :id')
+                ->setParameter('id', $value['id']);
+            $postsArray[] = $qb->getQuery()->getOneOrNullResult();
+        }
+        return $postsArray;
+    }
 }

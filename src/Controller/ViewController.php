@@ -55,7 +55,8 @@ class ViewController extends AbstractController
           $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
         }
         else{
-          $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , $tournoi->getNbrTerrain());
+          //$matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , $tournoi->getNbrTerrain());
+          $matchs = $this->match2Repository->getMatchByEtat($tournoi->getId(), $tournoi->getCurrentTour(), $tournoi->getNbrTerrain());
         }
 
         $matchsArr = [];
@@ -71,7 +72,7 @@ class ViewController extends AbstractController
 
             $matchsArr[]= [
                 'vainqueur'=>$value->getVainqueur(),
-                'terrain'=>$value->getTerrain2()->getNom(),
+                'terrain'=> !is_null($value->getTerrain2()) ? $value->getTerrain2()->getNom() : 'TERRAIN X',
                 'equipes'=> $equipeArr,
                 'score'=> is_null($value->getScore()) ? [0,0] : explode('-', str_replace(" ", "", $value->getScore())),
                 'date_debut'=>$value->getDateDebut()
@@ -147,7 +148,7 @@ class ViewController extends AbstractController
             }
 
             $matchsArr[]= [
-                //'terrain'=>$value->getTerrain2()->getNom(),
+                'terrain'=> !is_null($value->getTerrain2()) ? $value->getTerrain2()->getNom() : 'TERRAIN X',
                 'equipes'=> $equipeArr,
             ];
         }

@@ -707,14 +707,19 @@
                               <input type="button" name="reset" value="reset!" onClick="chronoResetT()" style="display: none;" />
                             </form>
                           </span>
-                          <a class="btn-next-tour" style="" href="{{path('goto_next_tour',{'id':tournoi.id})}}">
-                            {% if demieFinale_finale == "finale" %}
-                              terminer le tournois
-                            {% else %}
-                              tour suivant 
-                            {% endif %}
-                            <i class="nc-icon nc-stre-right" style="font-weight: bold"></i>
-                          </a>
+                          {% if matchs[0].etat == "en_cours" %}
+                            <a class="btn-next-tour" style="" href="{{path('goto_next_tour',{'id':tournoi.id})}}">
+                              {% if demieFinale_finale == "finale" %}
+                                terminer le tournois
+                              {% else %}
+                                tour suivant 
+                              {% endif %}
+                              <i class="nc-icon nc-stre-right" style="font-weight: bold"></i>
+                            </a>
+                          {% elseif matchs[0].etat == "en_attente" %}
+                            <a class="btn-next-tour demarrer" style="" href="{{path('tour_launch',{'id':tournoi.id})}}">Demarrer
+                            </a>
+                          {% endif %}
                         </div>
                         {% elseif tournoi.etat == "termine" %}
                           <h2  style="color:#333;font-size: 23px;text-align: center;">Tournois terminé</h2>

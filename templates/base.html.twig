@@ -107,11 +107,25 @@
 			else if(msec < 100){
 				msec = "0" +msec
 			}
-			document.getElementById("chronotime").innerHTML  = hr + ":" + min + ":" + sec/* + ":" + msec*/
-
 			var diffDeadline = new Date(new Date(storageDate.date_fin) - new Date());
 			var deadlineMinute = (diffDeadline.getHours()-1)*60 + diffDeadline.getMinutes();
-			if( new Date() >= new Date(storageDate.date_fin) ){
+
+			if( (new Date() >= new Date(storageDate.date_fin)) && (storageDate.date_debut != storageDate.date_fin) ){
+				var local_diff_date = new Date(new Date(storageDate.date_fin) - new Date(storageDate.date_debut));
+				var sec2 = local_diff_date.getSeconds()
+				var min2 = local_diff_date.getMinutes()
+				var hr2 = local_diff_date.getHours()-1
+				if (hr2 < 10){
+					hr2 = "0" + hr2
+				}
+				if (min2 < 10){
+					min2 = "0" + min2
+				}
+				if (sec2 < 10){
+					sec2 = "0" + sec2
+				}
+				document.getElementById("chronotime").innerHTML  = hr2 + ":" + min2 + ":" + sec2;
+				
 				$countSecond++;
 				if(!$isEnd){
 					toastr.warning("CE PASSAGE EST TERMINE");
@@ -121,17 +135,22 @@
 					toastr.warning("Ce passage devrait etre terminé il y a "+Math.abs(deadlineMinute)+" minutes");
 					$countSecond = 0;
 				}
+				//clearInterval(intervalId);
 				//localStorage.removeItem("tournoi_"+$idTournoi);
-				$('.cart-body-content .match-item').addClass('end_match');
-				$('.cart-body-content .match-item .status-match').html('Terminé');
-				clearInterval(intervalId);
+				/*$('.cart-body-content .match-item').addClass('end_match');*/
+				/*$('.cart-body-content .match-item .status-match').html('Terminé');*/
+				
 				//window.location.reload(true);
 				$('#chronotime').removeClass('blinking');
 			}
 			else{
+				document.getElementById("chronotime").innerHTML  = hr + ":" + min + ":" + sec;
 				if( deadlineMinute >= 0 && deadlineMinute <= 2 ){
 					$('#chronotime').addClass('blinking');
 				}
+			}
+			if( storageDate.date_debut == storageDate.date_fin){
+				document.getElementById("chronotime").innerHTML  = "00:00:00";
 			}
 		}
 		function chronoStart(){
