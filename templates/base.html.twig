@@ -79,11 +79,11 @@
         }
 		function chrono(){
 			storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi));
-			if(storageDate.relaodPage && ($('body').data('current-page') != "dashboard" ) ){
+			if(storageDate.relaodPage /*&& ($('body').data('current-page') != "dashboard" ) */){
 				setTimeout(function(){
 					localStorage.removeItem("tournoi_"+$idTournoi);
 					window.location.reload(true);
-				},1000);
+				},2000);
 			}
 			end = new Date()
 			diff = end - start
@@ -142,7 +142,6 @@
 				/*$('.cart-body-content .match-item .status-match').html('Terminé');*/
 				
 				//window.location.reload(true);
-				$('#chronotime').removeClass('blinking');
 			}
 			else{
 				document.getElementById("chronotime").innerHTML  = hr + ":" + min + ":" + sec;
