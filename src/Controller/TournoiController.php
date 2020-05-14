@@ -102,6 +102,8 @@ class TournoiController extends AbstractController
     	if ($request->isXmlHttpRequest()) {
     		if ($request->isMethod('POST')) {
                 $typeTournoi = $this->typeTournoiRepository->findOneBy(['referent'=>$request->get('typeTournoi')]);
+                $duree = $request->get('duree') - ceil($request->get('duree')*0.15);
+
                 $tournoi->setType($typeTournoi);
                 $tournoi->setNom($request->get('nom'));
                 $tournoi->setNbrJoueur($request->get('nbrJoueur'));
@@ -110,8 +112,8 @@ class TournoiController extends AbstractController
                 $nbrEquipe = ($nbrEquipe%2 != 0) ? ($nbrEquipe+1) : $nbrEquipe ;
                 $tournoi->setNbrEquipe($nbrEquipe);
                 $tournoi->setNbrTerrain($request->get('nbrTerrain'));
-                $tournoi->setDuree($request->get('duree'));
-                $tournoi->setNbrTour( $this->getNbrTour($tournoi->getNbrEquipe()) );
+                $tournoi->setDuree($duree);
+                $tournoi->setNbrTour( $this->getNbrTour($tournoi->getNbrEquipe(), $request->get('typeTournoi')));
 
                 if( ($request->files->get('logo') instanceof UploadedFile) && 
                     (($request->files->get('logo'))->getError()=="0")){
@@ -162,18 +164,20 @@ class TournoiController extends AbstractController
             if ($request->isMethod('POST')) {
                 $typeTournois = $this->typeTournoiRepository->findAll();
                 $ESTIMATION = [];
+                $duree = $request->get('duree') - ceil($request->get('duree')*0.15);
                 foreach ($typeTournois as $key => $value) {
                     $referent = $value->getReferent();
                     $ESTIMATION[$referent] = [];
-                    for($i = 2; $i<=4; $i++){
+                    for($i = 2; $i<=4; $i++){//estimation avec 2,3 et 4 joueurs/eqp
                         $datas = [];
                         $nbrEquipe = ceil($request->get('nbrJoueur')/$i);
                         $nbrEquipe = ($nbrEquipe%2 != 0) ? ($nbrEquipe+1) : $nbrEquipe ;
                         $datas['nbr_joueur_equipe'] = $i;
                         $datas['nbr_equipe'] = $nbrEquipe;
-                        $datas['nbr_tour'] = $this->getNbrTour($nbrEquipe);
+                        $datas['nbr_tour'] = $this->getNbrTour($nbrEquipe, $referent);
                         $datas['nbr_match'] = $this->getNrbMatchEstimation($nbrEquipe, $referent);
-                        $datas['dureePassage'] = $this->calculDureePassageEstimation($request->get('duree'), $datas['nbr_match'], $request->get('nbrTerrain'));
+                        $datas['dureePassage'] = $this->calculDureePassageEstimation($duree, $request->get('nbrTerrain'), $nbrEquipe, $referent);
+                        $datas['nbr_passage'] = $this->getNbrPassage($nbrEquipe, $referent, $request->get('nbrTerrain'));
                         $ESTIMATION[$referent][] = $datas;
                     }
                 }
@@ -273,6 +277,7 @@ class TournoiController extends AbstractController
             'winner'=> (!is_null($tournoi) && $tournoi->getEtat() == "termine") ? $this->equipeRepository->findOneBy(['en_competition'=> true, 'tournoi'=>$tournoi->getId()]) : "" ,
             'demieFinale_finale'=> isset($demieFinale_finale) ? $demieFinale_finale : "",
             'dureePassage'=> is_null($tournoi) ? "" : $this->calculDureePassage($tournoi),
+            'nbr_passage' => $this->getNbrPassage($tournoi->getNbrEquipe(), $tournoi->getType()->getReferent(), $tournoi->getNbrTerrain()),
             'nbrMatch'=> is_null($tournoi) ? "" : $this->getNrbMatch($tournoi),
             'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi,
             'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
@@ -409,6 +414,25 @@ class TournoiController extends AbstractController
             return $this->deuxPoules($tournoi->getNbrEquipe());
         }
     }
+
+    public function getNbrPassage($nbrEquipe, $typeTournoi, $nbrTerrain){
+        $nbrEquipe = ceil($nbrEquipe);
+        if($typeTournoi == "ellimination-direct"){
+
+            if ($nbrEquipe <= 2){
+                return 1;
+            }
+            else{
+                if($nbrEquipe%2 != 0)
+                    $nbrEquipe = $nbrEquipe+1;
+
+                return ceil( ($nbrEquipe/2) /$nbrTerrain) + $this->getNbrPassage( ($nbrEquipe/2), $typeTournoi, $nbrTerrain );
+            }
+        }
+        elseif($typeTournoi == "deux-poules-perdant-vainqueur"){
+            return (ceil( ($nbrEquipe/2) / $nbrTerrain)*2) + $this->getNbrPassage(ceil($nbrEquipe/4), 'ellimination-direct', $nbrTerrain);
+        }
+    }
     public function getNrbMatchEstimation($nbrEquipe, $typeTournoi){
         if($typeTournoi == "ellimination-direct"){
             return $this->directIllimination($nbrEquipe);
@@ -417,13 +441,19 @@ class TournoiController extends AbstractController
             return $this->deuxPoules($nbrEquipe);
         }
     }
-    public function getNbrTour($nbrEquipe){
-        if ($nbrEquipe == 2)
-            return 1;
-        else{
-            if($nbrEquipe%2 != 0)
-                $nbrEquipe = $nbrEquipe+1;
-            return 1 + $this->getNbrTour( ($nbrEquipe/2) );
+    public function getNbrTour($nbrEquipe, $typeTournoi){
+        $nbrEquipe = ceil($nbrEquipe);
+        if($typeTournoi == "ellimination-direct"){
+            if ($nbrEquipe <= 2)
+                return 1;
+            else{
+                if($nbrEquipe%2 != 0)
+                    $nbrEquipe = $nbrEquipe+1;
+                return 1 + $this->getNbrTour( ($nbrEquipe/2), $typeTournoi );
+            }
+        }
+        elseif($typeTournoi == "deux-poules-perdant-vainqueur"){
+            return 2 + $this->getNbrTour( ($nbrEquipe/4), 'ellimination-direct' );
         }
     }
 
@@ -594,22 +624,14 @@ class TournoiController extends AbstractController
         return $ArrayNewEquipes;    
     }
     public function calculDureePassage($tournoi){
-        $miTemp =ceil($this->getNrbMatch($tournoi)/$tournoi->getNbrTerrain())-1;
-        $dureePassage = ceil( ($tournoi->getDuree()-$miTemp) / ceil($this->getNrbMatch($tournoi)/$tournoi->getNbrTerrain()) );
-        /*if($dureePassage > 12 )
-            $dureePassage = 12;
-        elseif($dureePassage < 8)
-            $dureePassage = 8;*/
+        $nbrPassage = $this->getNbrPassage($tournoi->getNbrEquipe(), $tournoi->getType()->getReferent(), $tournoi->getNbrTerrain());
+        $dureePassage = ceil( ($tournoi->getDuree() ) / $nbrPassage );
 
         return $dureePassage;
     }
-    public function calculDureePassageEstimation($dureeTournoi, $nbrMatch, $nbrTerrain){
-        $miTemp =ceil($nbrMatch/$nbrTerrain)-1;
-        $dureePassage = ceil( ($dureeTournoi - $miTemp ) / ceil($nbrMatch/$nbrTerrain) );
-        /*if($dureePassage > 12 )
-            $dureePassage = 12;
-        elseif($dureePassage < 8)
-            $dureePassage = 8;*/
+    public function calculDureePassageEstimation($dureeTournoi, $nbrTerrain, $nbrEquipe, $typeTournoi){
+        $nbrPassage = $this->getNbrPassage($nbrEquipe, $typeTournoi, $nbrTerrain);
+        $dureePassage = ceil( ($dureeTournoi ) / $nbrPassage );
 
         return $dureePassage;
     }

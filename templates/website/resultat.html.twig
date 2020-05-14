@@ -39,6 +39,21 @@
             display: block;
             height: 1px;
         }
+        .score-wrapper .score-item.separate-match-end{
+            position: relative;
+            padding-top: 50px;
+        }
+        .new-tour-separate{
+            display: none;
+            position: absolute;
+            top: 5px;
+            width: 100%;
+            text-align: center;
+        }
+        .score-wrapper .score-item.separate-match-end > .new-tour-separate{display: block}
+        .score-wrapper .score-item{
+            margin-bottom: 25px;
+        }
     </style>
 {% endblock %}
 
@@ -82,6 +97,7 @@
                     <div class="score-wrapper" style="padding-top: 0">
                         <ul class="list-score">
                             <li class="score-item" ng-repeat="item in matchsTermine" ng-class=" (item.new_tour != '' ) ? 'separate-match-end' : '' ">
+                                <h4 class="new-tour-separate">[[item.new_tour]]e tour</h4>
                                 <div class="group-equipe">
                                     <span ng-cloak>[[item.equipes[0].nom]]</span> 
                                     <span class="separate"></span>

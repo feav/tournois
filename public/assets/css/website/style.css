@@ -164,9 +164,11 @@ img.blablacar-logo{
 .score {
 	background: #95a0d2;
 	font-size: 66px;
-	padding: 1px 23px;
 	border-radius: 11px;
 	font-weight: bold;
+	width: 110px;
+    display: inline-block;
+    text-align: center;
 }
 
 

@@ -123,12 +123,14 @@ class ViewController extends AbstractController
                 'equipes'=> $equipeArr,
                 'score'=> is_null($value->getScore()) ? [0,0] : explode('-', str_replace(" ", "", $value->getScore())),
                 'date_debut'=>$value->getDateDebut(),
-                'new_tour'=> ($i == 0) ? $lastTour : ""
             ];
-            if($value->getNumTour() != $lastTour){
-              $datas['new_tour']=$lastTour;
-              $lastTour = $value->getNumTour();
-            } 
+            if( ($i == 0) || $value->getNumTour() != $lastTour )
+                $datas['new_tour'] = $value->getNumTour();
+            else{
+                $datas['new_tour'] = "";
+            }
+            $lastTour = $value->getNumTour();
+
             $matchsArr[]= $datas;
             $i++;
         }

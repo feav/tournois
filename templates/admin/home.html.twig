@@ -649,7 +649,7 @@
       <div class="col-md-12">
         <div class="card" style="margin-bottom:6px">
           <div class="card-header" style="padding-top: 10px;">
-              <h4 class="card-title" style="text-align: left;font-size: 19px; display:inline-block">Estimation initiale du tournoi</h4>
+              <h4 class="card-title" style="text-align: left;font-size: 19px; display:inline-block">Estimation initiale du tournoi <small>{{ tournoi ? tournoi.duree : ""}} minutes</small></h4>
               {% if tournoi.getDateDebut is not null %}
               <div class="group-btn-shar-to-screen">
                   <a href="{{path('client_resultat_tournoi',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecran scores<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
@@ -661,8 +661,10 @@
             {% if tournoi %}
               <div class="legend" style="font-size: 14px">
                   <i class="fa fa-circle text-danger"></i> <b>{{tournoi.getNbrTour}} Tours</b> 
+                  <i class="fa fa-circle text-info"></i> <b>{{nbr_passage}} Passages</b> 
                   <i class="fa fa-circle text-warning"></i> <b>{{dureePassage}} minutes / match </b> 
                   <i class="fa fa-circle text-info"></i> <b>{{nbrMatch}} Matchs</b> 
+                  
               </div>
               {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
                 <form name="chronoForm" class="chronotime-wrapper">
