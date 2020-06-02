@@ -301,11 +301,4 @@ class ViewController extends AbstractController
         return $this->redirectToRoute('tableau_de_bord');
         return new Response('Bienvenue dans le tournoi de boule');
     }
-    /**
-     * @Route("/chat-test", name="chat_test")
-     */
-    public function chat()
-    {   
-        return $this->render('website/index.html.twig');
-    }
 }
