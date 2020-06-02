@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr" >
+    <head>
+        <meta charset="UTF-8" />
+        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+        <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'>
+        <style type="text/css">
+            @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap');
+            *{
+                padding: 0;
+                margin: 0;
+                outline: none;
+            }
+            body{
+                font-family: 'Roboto', sans-serif !important;
+                height:100vh;
+                color: #3a3e42 !important;
+            }
+            .AppForm .AppFormLeft h1{
+                font-size: 35px;
+            }
+            .AppForm .AppFormLeft input:focus{
+                border-color: #ced4da;
+            }
+            .AppForm .AppFormLeft input::placeholder{
+               font-size: 15px;
+            }
+            .AppForm .AppFormLeft i{
+                position: absolute;
+                right: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            .AppForm .AppFormLeft a{
+                color: #3a3e42 ;
+            }
+            .AppForm .AppFormLeft button{
+                background: linear-gradient(45deg,#8D334C,#CF6964);
+                border-radius: 30px;
+            }
+            .AppForm .AppFormLeft p span{
+              color: #007bff;
+            }
+            .AppForm .AppFormRight{
+                background-image: url('https://i.ibb.co/tDLqQtj/bg.jpg');
+                height: 450px;
+                background-size: cover;
+                background-position: center;
+            }
+            .AppForm .AppFormRight:after{
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(45deg,#8D334C,#CF6964);
+                opacity: 0.5;
+            }
+            .AppForm .AppFormRight h2{
+                z-index: 1;
+            }
+            .AppForm .AppFormRight h2::after{
+              content: "";
+              position: absolute;
+              width: 100%;
+              height: 2px;
+              background-color: #fff;
+              bottom: 0;
+              left:50%;
+              transform: translateX(-50%);
+            }
+            .AppForm .AppFormRight p{
+                z-index: 1;
+            }
+        </style>
+
+        <script> (function() { var callback = function(){ MYCHATLIBRARY.init({ref:'7bb1krx6p1i1b6u17a99'});MYCHATLIBRARY.load_chat(); }; var lc = document.createElement('script'); lc.type = 'text/javascript'; lc.async = true; lc.src = ('https:' == document.location.protocol ? 'http://' : 'http://') + '51.77.230.240/cameroun/equation/chatbot/chatbot.js'; var s = document.getElementsByTagName('script')[0]; lc.onload = callback; s.parentNode.insertBefore(lc, s); })(); </script>
+    </head>
+    <body>
+        <div class="container h-100">
+            <div class="row h-100 justify-content-center align-items-center">
+                {% if app.request.hasPreviousSession %}
+                    {% for type, messages in app.session.flashbag.all() %}
+                        {% for message in messages %}
+                            <div class="flash-{{ type }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                {% endif %}
+
+                {% block fos_user_content %}
+                {% endblock fos_user_content %}
+            </div>
+        </div>
+        <script src='https://code.jquery.com/jquery-3.4.1.slim.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js'></script>
+        <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js'></script>
+    </body>
+</html>
