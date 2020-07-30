@@ -118,7 +118,12 @@ class Tournoi
     /**
      * @ORM\Column(type="integer")
      */
-    private $nbrJoueur_equipe; 
+    private $nbrJoueur_equipe;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $actif; 
 
     public function __construct()
     {
@@ -130,6 +135,7 @@ class Tournoi
         $this->date_create = new \Datetime();
         $this->matchs2 = new ArrayCollection();
         $this->terrains2 = new ArrayCollection();
+        $this->actif = 1;
     }
 
     public function getId(): ?int
@@ -468,6 +474,18 @@ class Tournoi
     public function setNbrJoueurEquipe(int $nbrJoueur_equipe): self
     {
         $this->nbrJoueur_equipe = $nbrJoueur_equipe;
+
+        return $this;
+    }
+
+    public function getActif(): ?int
+    {
+        return $this->actif;
+    }
+
+    public function setActif(?int $actif): self
+    {
+        $this->actif = $actif;
 
         return $this;
     }

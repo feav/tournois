@@ -31,7 +31,7 @@ img.blablacar-logo{
     align-items: center;
     margin: auto;
     padding: 45px 10px 0;
-    max-width: 800px;
+    max-width: 900px;
 }
 .header .blablacar-wrapper{
     width: 260px;
@@ -48,7 +48,7 @@ img.blablacar-logo{
     border-right: 2px solid #fff;
 }
 .header .timer-wrapper #chronotime{
-	font-size: 91px; 
+	font-size: 9rem; 
 	line-height: 0.7
 }
 .header #chronotime{
@@ -86,14 +86,17 @@ img.blablacar-logo{
 }
 .cols-list{
 	display: flex;
-	align-content: stretch;
+	align-items: stretch;
 	flex-wrap: wrap;
+	justify-content: center;
 }
 .cols-list .cols-item {
 	flex: 1;
 }
 .cols-list .cols-item{
-	padding: 2px 8px;
+	padding: 2px 20px;
+    max-width: 300px;
+    margin-bottom: 30px;
 }
 .cols-list .cols-item:not(:last-child){
 	border-right: 3px solid #8b8bff;
@@ -104,11 +107,12 @@ img.blablacar-logo{
 	color: #4d4a4a;
 	text-align: center;
 	margin: 0;
-	padding: 4px 22px;
+	padding: 2px 22px;
 	text-align: center;
 	height: 42px;
 	overflow-y: hidden;
 	letter-spacing: -1;
+	font-size: 38px;
 }
 .cols-list .cols-item .col-title .num{
 	font-weight: 600;
@@ -125,7 +129,7 @@ img.blablacar-logo{
 	justify-content: space-between;
 }
 .cols-list .sub-col-list .list-item:first-child{
-	border-right: 2px solid gray;
+	border-right: 2px solid #fff;
 	padding-right: 8px;
 }
 .cols-list .sub-col-list .list-item:nth-child(2){
@@ -134,7 +138,7 @@ img.blablacar-logo{
 
 .sub-col-list .sub-title {
 	text-align: center;
-	font-size: 16px;
+	font-size: 25px;
 	letter-spacing: -1px;
 	margin: 17px 0 30px;
 	font-weight: 600;
@@ -146,16 +150,19 @@ img.blablacar-logo{
 }*/
 .sub-col-list .list-elt {
 	flex:1;
-	font-family: avenir_next_regular;
+	font-size: 18px;
 }
 .sub-col-list .list-elt .item-elt {
 	text-transform: capitalize;
 	padding-bottom: 4px;
 	line-height: 31px;
-	font-weight: bold;
+	font-family: 'nunito-bold';
+}
+#toast-container, .toast, .toast-message{
+	font-family: 'nunito-regular';
 }
 .sub-col-list .list-elt .item-elt:not(:last-child){
-	border-bottom: 2px solid gray;
+	border-bottom: 1px solid #fff;
 }
 .cols-list .cols-item .sub-col-foot {
 	text-align: center;
@@ -201,7 +208,7 @@ img.blablacar-logo{
 	justify-content: space-between;
 }
 .score-item .group-equipe {
-	font-size: 30px;
+	font-size: 40px;
 	font-weight: 600;
 	max-width: 420px;
 	padding: 6px;

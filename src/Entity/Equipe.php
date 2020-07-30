@@ -12,6 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
 class Equipe
 {
     /**
+    * @ORM\OneToMany(targetEntity="Joueur", cascade={"persist", "remove"}, mappedBy="equipe")
+    */
+    protected $joueurs2; 
+
+    /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -54,6 +59,7 @@ class Equipe
         $this->matchs = new ArrayCollection();
         $this->en_competition = true;
         $this->matchs2 = new ArrayCollection();
+        $this->joueurs2 = new ArrayCollection();
     }
 
 
@@ -157,6 +163,37 @@ class Equipe
     {
         if ($this->matchs2->contains($matchs2)) {
             $this->matchs2->removeElement($matchs2);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Joueur[]
+     */
+    public function getJoueurs2(): Collection
+    {
+        return $this->joueurs2;
+    }
+
+    public function addJoueurs2(Joueur $joueurs2): self
+    {
+        if (!$this->joueurs2->contains($joueurs2)) {
+            $this->joueurs2[] = $joueurs2;
+            $joueurs2->setEquipe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJoueurs2(Joueur $joueurs2): self
+    {
+        if ($this->joueurs2->contains($joueurs2)) {
+            $this->joueurs2->removeElement($joueurs2);
+            // set the owning side to null (unless already changed)
+            if ($joueurs2->getEquipe() === $this) {
+                $joueurs2->setEquipe(null);
+            }
         }
 
         return $this;

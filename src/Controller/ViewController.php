@@ -66,7 +66,7 @@ class ViewController extends AbstractController
                 $equipeArr[] = [
                     'id'=>$eqp->getId(),
                     'nom'=>$eqp->getNom(),
-                    'joueurs'=>explode(',', $eqp->getJoueurs())
+                    'joueurs'=>$this->buildJoueurListName($eqp->getJoueurs2())
                 ];
             }
 
@@ -96,6 +96,14 @@ class ViewController extends AbstractController
         return new Response(json_encode(['matchs'=>$matchsArr, "tournoi"=>$tournoiArr]));
     }
 
+    public function buildJoueurListName($joueursArr){
+
+        $joueurs = [];
+        foreach ($joueursArr as $key => $value) {
+            $joueurs[] = $value->getNom();
+        }
+        return $joueurs;
+    }
     /**
      * @Route("/get-match-en-termine", name="get_match_en_termine_xhr")
      */
@@ -114,7 +122,7 @@ class ViewController extends AbstractController
                 $equipeArr[] = [
                     'id'=>$eqp->getId(),
                     'nom'=>$eqp->getNom(),
-                    'joueurs'=>explode(',', $eqp->getJoueurs())
+                    'joueurs'=>$this->buildJoueurListName($eqp->getJoueurs2())
                 ];
             }
             $datas = [
@@ -153,7 +161,7 @@ class ViewController extends AbstractController
                 $equipeArr[] = [
                     'id'=>$eqp->getId(),
                     'nom'=>$eqp->getNom(),
-                    'joueurs'=>explode(',', $eqp->getJoueurs())
+                    'joueurs'=>$this->buildJoueurListName($eqp->getJoueurs2())
                 ];
             }
 
@@ -179,6 +187,8 @@ class ViewController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();       
         $tournoi = $this->tournoiRepository->find($id);
+        if($tournoi->getActif() == 0)
+            return new Response('Ce tournoi a été annulé, vous ne pouvez y acceder');
 
         $matchs = [];
         $dateFinTournoi = "";
@@ -209,6 +219,9 @@ class ViewController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();       
         $tournoi = $this->tournoiRepository->find($id);
+        if($tournoi->getActif() == 0)
+            return new Response('Ce tournoi a été annulé, vous ne pouvez y acceder');
+
         $dateFinTournoi = "";
 
         $matchs = [];
@@ -239,6 +252,8 @@ class ViewController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();       
         $tournoi = $this->tournoiRepository->find($id);
+        if($tournoi->getActif() == 0)
+            return new Response('Ce tournoi a été annulé, vous ne pouvez y acceder');
 
        $dateFinTournoi = "";
        $matchs = [];
@@ -270,6 +285,8 @@ class ViewController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();       
         $tournoi = $this->tournoiRepository->find($id);
+        if($tournoi->getActif() == 0)
+            return new Response('Ce tournoi a été annulé, vous ne pouvez y acceder');
 
         $matchs = [];
         $dateFinTournoi = "";

@@ -4,19 +4,29 @@
 <style type="text/css">
 	.bootstrap-tagsinput{width: 100%;}
 </style>
-<h2 class="form-head">{{action}} d'une equipe</h2>
+<h2 class="form-head">{{action}} d'un joueur</h2>
 <form id="formEquipe" name="formEquipe">
     <div class="row">
 		<div class="col-md-12">
 		    <div class="form-group">
-		        <input type="text" name="nom" class="form-control" placeholder="nom de l'equipe" value="{{equipe.nom}}">
+		    	<label>Nom</label>
+		        <input type="text" name="nom" class="form-control" placeholder="nom" value="{{joueur is not null ? joueur.nom: '' }}" required>
 		    </div>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-12">
 		    <div class="form-group">
-		        <input type="text" name="joueurs" class="form-control" value="{{equipe.joueurs}}" data-role="tagsinput" />
+		    	<label>Email</label>
+		        <input type="text" name="email" class="form-control" placeholder="email" value="{{joueur is not null ? joueur.email: '' }}">
+		    </div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+		    <div class="form-group">
+		    	<label>Téléphone</label>
+		        <input type="text" name="telephone" class="form-control" placeholder="telephone" value="{{joueur is not null ? joueur.telephone: '' }}">
 		    </div>
 		</div>
 	</div>

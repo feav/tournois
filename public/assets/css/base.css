@@ -1,7 +1,4 @@
 
-body{
-	font-family: toms_new_romantom;
-}
 ul{
 	list-style: none;
 	padding: 0;
@@ -122,4 +119,26 @@ ul{
 .cart-body-content .match-item:nth-child(4n+4) .equipe:nth-child(2) .avt-equipe{
 	background: #95a0d2;
 }
+
+
+
+
 /* end  bg-color subs score cols-item */
+
+.cols-list .cols-item .sub-col-list .list-item .sub-title,
+.list-score .score-item .group-equipe >*,
+.cols-list.finale .cols-item .item-title{
+	color: #00b9f2!important;
+}
+
+.cols-list .cols-item .sub-col-list .list-item .sub-col-foot .score,
+.list-score .score-item .groupe-score >*{
+	background: #00b9f2!important;
+}
+
+.cart-body-content .match-item .equipe .avt-equipe{
+	background: #00b9f2!important;
+}
+.cols-list .cols-item .sub-col-list .list-item .sub-col-foot .score.winner{
+	background: #abd436!important;
+}

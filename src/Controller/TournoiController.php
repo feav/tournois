@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TypeTournoiRepository;
 use App\Repository\TournoiRepository;
 use App\Repository\EquipeRepository;
+use App\Repository\JoueurRepository;
 use App\Repository\TerrainRepository;
 use App\Repository\Match2Repository;
 use App\Repository\Terrain2Repository;
@@ -20,6 +21,7 @@ use App\Entity\TypeTournoi;
 use App\Entity\Tournoi;
 use App\Entity\Equipe;
 use App\Entity\Terrain;
+use App\Entity\Joueur;
 use App\Entity\Terrain2;
 use App\Entity\Match2;
 
@@ -135,6 +137,7 @@ class TournoiController extends AbstractController
                     $tmpPathJoueur = $request->files->get('fichier_joueurs')->getRealPath();
                     $this->addJoueursEquipe($tournoi, $tmpPathJoueur);
                 }
+
     			return new Response(json_encode(array('url'=> $this->generateUrl('tableau_de_bord', ['id'=>$tournoi->getId()], UrlGenerator::ABSOLUTE_URL))));
     		}
     		else{
@@ -153,6 +156,31 @@ class TournoiController extends AbstractController
     		}
         }
         return  new Response("passer par une requette ajax");
+    }
+
+    public function sendMailStartTournoi($tournoi, \Swift_Mailer $mailer){
+
+        $tabEmail = $this->tournoiRepository->getEmailJoueurTournois($tournoi->getId());
+        if(!count($tabEmail))
+            return 1;
+
+        $nbrPassage = $this->getNbrPassage($tournoi->getNbrEquipe(), $tournoi->getType()->getReferent(), $tournoi->getNbrTerrain());
+        $dureePassage = is_null($tournoi) ? "" : $this->calculDureePassage($tournoi);
+        $nbrMatch = is_null($tournoi) ? "" : $this->getNrbMatch($tournoi);
+        $message = "<p>Bonjour, <br>Nous vous informons que la competition du tournoi <b>".$tournoi->getNom()."</b> vient de demarrer.<h3>Estimation du tournoi</h3><ul><li>".$tournoi->getNbrTour()." Tours, en ".$nbrPassage." Passages</li><li>".$nbrMatch." Matchs</li><li>".$dureePassage." minutes / match</li></ul><a href='".$this->generateUrl('client_homepage', ['id'=>$tournoi->getId()], UrlGenerator::ABSOLUTE_URL)."'>Cliquer ici</a> pour acceder aux ecrans de jeux</p>";
+        try {
+            $mail = (new \Swift_Message('Tournoi '.$tournoi->getNom()))
+                ->setFrom(array('alexngoumo.an@gmail.com' => 'Tournoi'))
+                ->setCc(array('alexngoumo.an@gmail.com'))
+                ->setTo($tabEmail)
+                ->setBody($message,
+                    'text/html'
+                );
+            $mailer->send($mail);
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+        }      
+        return 1;
     }
 
     /**
@@ -254,7 +282,7 @@ class TournoiController extends AbstractController
             else{
                 //$matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , $tournoi->getNbrTerrain());
                 //$matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['date_debut'=>'DESC']);
-                $matchs = $this->match2Repository->getMatchByEtat($tournoi->getId(), $tournoi->getCurrentTour(), $tournoi->getNbrTerrain());
+                $matchs = $this->match2Repository->getMatchByEtat($tournoi->getId(), $tournoi->getCurrentTour());
             }
 
             $nbrEquipeQualifie =  $this->equipeRepository->getNbrEquipeQualifie($tournoi->getId());
@@ -269,7 +297,6 @@ class TournoiController extends AbstractController
             $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
             $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
         }
-        
         return $this->render('admin/home.html.twig', [
             'typeTournois' => $typeTournois,
             'matchs' => $matchs,
@@ -289,8 +316,7 @@ class TournoiController extends AbstractController
     /**
      * @Route("/admin/tournoi-launch/{id}", name="tournoi_launch")
      */
-    public function launchTournoi(Request $request, $id)
-    {
+    public function launchTournoi(Request $request, $id, \Swift_Mailer $mailer){
         $em = $this->getDoctrine()->getManager();
         $tournoi = $this->tournoiRepository->find($id);
         $tournoi->setDateDebut(new \Datetime());
@@ -304,7 +330,21 @@ class TournoiController extends AbstractController
             $dateFin = $currentDate->format('Y-m-d H:i:s');
             $value->setDateFin((new \DateTime($dateFin)));
         }
+        $this->definedDateNextMatch($tournoi);
+        $em->flush();
+        $this->sendMailStartTournoi($tournoi, $mailer);
+        return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
+    }
 
+    /**
+     * @Route("/admin/annuler-tournoi/{id}", name="annuler_tournoi")
+     */
+    public function annulerTournoi(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $tournoi = $this->tournoiRepository->find($id);
+        $tournoi->setActif(0);
+        $tournoi->setEtat('termine');
         $em->flush();
         return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
     }
@@ -335,8 +375,39 @@ class TournoiController extends AbstractController
                 }
             }
             $em->flush();
-            return $this->redirectToRoute('tableau_de_bord', ['id'=>$id]);
         }
+        $this->definedDateNextMatch($tournoi);
+        return $this->redirectToRoute('tableau_de_bord', ['id'=>$id]);
+    }
+
+    public function definedDateNextMatch($tournoi_id){
+        $em = $this->getDoctrine()->getManager();
+        $tournoi = $this->tournoiRepository->find($tournoi_id);
+        $currentTour = $tournoi->getCurrentTour();
+        $nextMatchAttente = $this->match2Repository->findBy(['num_tour'=>$currentTour, 'tournoi'=>$tournoi->getId(), 'etat'=>'en_attente']);
+
+        $nbrMatchAttente = count($nextMatchAttente);
+        for ($i=0; $i < ceil($nbrMatchAttente/$tournoi->getNbrTerrain()); $i++) { 
+            $inscrementMinute = 2*($i+1);
+            for ($j=($tournoi->getNbrTerrain()*$i); ( $j < $nbrMatchAttente  && ( ($i+1)*$tournoi->getNbrTerrain()) ); $j++) { 
+                $value = $nextMatchAttente[$j];
+                $dateStart = strtotime('now + '.($value->getDuree()*$inscrementMinute).' minutes');
+                $dateEnd = strtotime('now + '.($value->getDuree()*($inscrementMinute+1)).' minutes');
+                $value->setDateDebut( new \Datetime(date('Y-m-d H:i:s', $dateStart)) );
+                $value->setDateFin( new \Datetime(date('Y-m-d H:i:s', $dateEnd)) );
+                
+            }
+        }
+        /*
+        $nextMatchAttente = $this->match2Repository->findBy(['num_tour'=>$currentTour, 'tournoi'=>$tournoi->getId(), 'etat'=>'en_attente'], $tournoi->getNbrTerrain());
+        foreach ($nextMatchPassage as $key => $value) {
+            $dateStart = strtotime('now + '.($value->getDuree()*2).' minutes');
+            $dateEnd = strtotime('now + '.($value->getDuree()*3).' minutes');
+            $value->setDateDebut( new \Datetime(date('Y-m-d H:i:s', $dateStart)) );
+            $value->setDateFin( new \Datetime(date('Y-m-d H:i:s', $dateEnd)) );
+        }*/
+        $em->flush();
+        return 1;
     }
 
     /**
@@ -464,28 +535,30 @@ class TournoiController extends AbstractController
         $spreadsheet = $reader->load($tmpPathJoueur);
         $spreadsheet = $spreadsheet->getActiveSheet();
         $nbrRows = (int)$spreadsheet->getHighestRow();
-        $joueurs = [];
+        /*$joueurs = [];
         for($i=1; $i <= $nbrRows ; $i++) { 
             $joueurs[] = $spreadsheet->getCellByColumnAndRow(1, $i)->getValue();
-        }
-        //$joueurs = $spreadsheet->toArray(); // all datas rows and cells
+        }*/
+        $joueurs = $spreadsheet->toArray(); // all datas rows and cells
         $equipes = $this->equipeRepository->findBy(['tournoi'=>$tournoi->getId()]);
+        //dd($joueurs);
         //$nbrJoueurPerEquipe = (($nbrRows/$tournoi->getNbrEquipe()) > $tournoi->getNbrJoueurEquipe()) ? $tournoi->getNbrJoueurEquipe() : ($nbrRows/$tournoi->getNbrEquipe());
         //$nbrJoueurPerEquipe = ($nbrRows/$tournoi->getNbrEquipe()) on fait jouer tout le monde
         $nbrJoueurPerEquipe = $tournoi->getNbrJoueurEquipe();
 
         $count = 0;
         foreach ($equipes as $key => $value) {
-            $joueursEquipe = "";
             for ($i=0; $i < ceil($nbrJoueurPerEquipe); $i++) { 
-                if($count < $nbrRows)
-                    $joueursEquipe .= $joueurs[$count].",";
+                if($count < $nbrRows){
+                    $joueur = new Joueur();
+                    $joueur->setNom($joueurs[$count][0]);
+                    $joueur->setEmail($joueurs[$count][1]);
+                    $joueur->setTelephone($joueurs[$count][2]);
+                    $joueur->setEquipe($value);
+                    $em->persist($joueur);
+                }
                 $count++;
             }
-            $joueursEquipe = rtrim($joueursEquipe, ",");
-            if($joueursEquipe != "")
-                $value->setJoueurs($joueursEquipe);
-
             if($i >= $nbrRows)
                 break;
         }

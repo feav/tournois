@@ -17,6 +17,7 @@ class TournoiRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Tournoi::class);
+        $this->em = $this->getEntityManager()->getConnection();
     }
 
     // /**
@@ -47,4 +48,23 @@ class TournoiRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getEmailJoueurTournois($tournoi_id){
+        $sql = "
+            SELECT j.nom, j.email FROM joueur as j
+                inner join equipe as eq
+                inner join tournoi as tnoi
+                WHERE  j.equipe_id = eq.id
+                AND eq.tournoi_id = tnoi.id
+                AND tnoi.id = :tournoi_id
+                AND j.email IS NOT NULL";
+        $posts = $this->em->prepare($sql);
+        $posts->execute(['tournoi_id' => $tournoi_id]);
+        $posts = $posts->fetchAll();
+        $postsArray = [];
+        foreach ($posts as $key => $value) {
+            $postsArray[$value['email']] = $value['nom'];
+        }
+        return $postsArray;
+    }
 }

@@ -17,6 +17,7 @@
 {% block date_end %}{{FinPassage|date('Y-m-d H:i:s')}}{% endblock %}
 
 {% block page %}   
+    <div id="preloader"></div>
     <div ng-app="MatchModule">
         <div ng-controller="Match" class="controller" data-page="finale">  
             <h1 class="page-title-finale">FINALE</h1>

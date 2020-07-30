@@ -50,13 +50,15 @@ class Match2Repository extends ServiceEntityRepository
     }
     */
 
-    public function getMatchByEtat($idTournoi, $currentTour, $nbrTerrain){
+    public function getMatchByEtat($idTournoi, $currentTour, $nbrTerrain=null){
         $sql = "
             SELECT id FROM match2 
                 WHERE  tournoi_id = :idTournoi
                 AND num_tour = :currentTour
-                AND ( etat = 'en_cours' OR etat = 'en_attente') 
-                LIMIT $nbrTerrain";
+                AND ( etat = 'en_cours' OR etat = 'en_attente') ";
+        if(!is_null($nbrTerrain))
+            $sql .= " LIMIT $nbrTerrain";
+        
         $posts = $this->em->prepare($sql);
         $posts->execute(['idTournoi'=>$idTournoi, 'currentTour'=> $currentTour]);
         $posts = $posts->fetchAll();
