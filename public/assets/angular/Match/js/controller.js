@@ -46,7 +46,7 @@ MatchModule
     };
 
     if($('.controller').data('page') != "match_attente"){
-        //intervalId1 = setInterval($scope.getMatchCours, 15000);
+        intervalId1 = setInterval($scope.getMatchCours, 15000);
         $scope.getMatchCours();
     }
     else{

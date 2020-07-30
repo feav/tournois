@@ -139,6 +139,7 @@ ul{
 .cart-body-content .match-item .equipe .avt-equipe{
 	background: #00b9f2!important;
 }
-.cols-list .cols-item .sub-col-list .list-item .sub-col-foot .score.winner{
+.cols-list .cols-item .sub-col-list .list-item .sub-col-foot .score.winner, 
+.list-score .score-item .groupe-score > .score.winner{
 	background: #abd436!important;
 }
