@@ -1,5 +1,4 @@
-.main{margin:0;}
-.page-title-finale {
+.screen-finale .page-title-finale {
 	color: #c0ebf9;
 	max-width: 320px;
 	margin: 20px auto 0;
@@ -11,39 +10,39 @@
 	text-shadow: 2px 2px 4px #fff;
 	font-weight: 700;
 }
-.terrain-wrapper {
+.screen-finale .terrain-wrapper {
 	text-align: center;
 }
-.terrain-name {
+.screen-finale .terrain-name {
 	background: #fff;
 	color: #4f4c4c;
 	padding: 5px 54px;
 	font-size: 29px;
 }
-.cols-list {
+.screen-finale .cols-list {
 	display: flex;
 	align-content: stretch;
 	max-width: 700px;
 	margin: auto;
 	padding-top: 10px; 
 }
-.cols-list .cols-item{
+.screen-finale .cols-list .cols-item{
 	text-align: center;
 	display: flex;
 	flex-direction: column;
 }
-.cols-list .cols-item .item-title {
+.screen-finale .cols-list .cols-item .item-title {
 	font-size: 30px;
 	font-weight: 600;
 	margin-bottom: 18px;
 	letter-spacing: 1px;
 }
-.cols-list .cols-item .list-elt-container{
+.screen-finale .cols-list .cols-item .list-elt-container{
 	display: flex;
 	justify-content: center;
 	flex:1;
 }
-.cols-item .list-elt-container .list-elt{
+.screen-finale .cols-item .list-elt-container .list-elt{
 	text-align: left;
 	font-family: avenir_next_regular;
 }
@@ -55,26 +54,26 @@
 	min-width: 90px;
 	padding-right: 5px;
 }
-.cols-item .list-elt-container .item-elt:not(:last-child){
+.screen-finale .cols-item .list-elt-container .item-elt:not(:last-child){
 	border-bottom: 2px solid #bfbfbf;
 }
-.cols-item .list-elt-container .item-elt::last-letter{color: red}
-.cols-list .cols-item .sub-col-foot{
+.screen-finale .cols-item .list-elt-container .item-elt::last-letter{color: red}
+.screen-finale .cols-list .cols-item .sub-col-foot{
 	text-align: center;
 	margin-top: 10px;
 }
-.score{
+.screen-finale .score{
 	font-size: 83px;
-	padding: 6px 41px;
+	/*padding: 6px 41px;*/
 }
 @media(max-width: 400px){
-	.cols-list .cols-item .item-title{font-size: 20px;}
+	.screen-finale .cols-list .cols-item .item-title{font-size: 20px;}
 }
 @media(max-width: 309px){
-	.terrain-name{
+	.screen-finale .terrain-name{
 		padding: 5px 22px;
 	}
-	.cols-list .cols-item:not(:last-child){
+	.screen-finale .cols-list .cols-item:not(:last-child){
 		border:none;
 	}
 }

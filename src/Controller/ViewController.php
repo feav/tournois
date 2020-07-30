@@ -43,20 +43,16 @@ class ViewController extends AbstractController
       $this->match2Repository = $match2Repository;
     }
 
-
-    /**
-     * @Route("/get-match-en-cours", name="get_match_en_cours_xhr")
-     */
-    public function getMatchEncoursXhr(Request $request)
+    public function getMatchEncoursXhr($tournoi_id)
     {
         $em = $this->getDoctrine()->getManager();       
-        $tournoi = $this->tournoiRepository->find($request->get('id'));
+        $tournoi = $this->tournoiRepository->find($tournoi_id);
         if($tournoi->getEtat() == "termine"){
           $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
         }
         else{
-          //$matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , $tournoi->getNbrTerrain());
-          $matchs = $this->match2Repository->getMatchByEtat($tournoi->getId(), $tournoi->getCurrentTour(), $tournoi->getNbrTerrain());
+          $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , $tournoi->getNbrTerrain());
+          /*$matchs = $this->match2Repository->getMatchByEtat($tournoi->getId(), $tournoi->getCurrentTour(), $tournoi->getNbrTerrain());*/
         }
 
         $matchsArr = [];
@@ -93,27 +89,19 @@ class ViewController extends AbstractController
           'demieFinale_finale'=> isset($demieFinale_finale) ? $demieFinale_finale : "",
         ];
 
-        return new Response(json_encode(['matchs'=>$matchsArr, "tournoi"=>$tournoiArr]));
+        return ['matchs'=>$matchsArr, "tournoi"=>$tournoiArr];
     }
-
-    public function buildJoueurListName($joueursArr){
-
-        $joueurs = [];
-        foreach ($joueursArr as $key => $value) {
-            $joueurs[] = $value->getNom();
-        }
-        return $joueurs;
-    }
-    /**
-     * @Route("/get-match-en-termine", name="get_match_en_termine_xhr")
-     */
-    public function getMatchTermineXhr(Request $request)
+    
+    public function getMatchTermineXhr($tournoi_id)
     {
         $em = $this->getDoctrine()->getManager();       
-        $tournoi = $this->tournoiRepository->find($request->get('id'));
+        $tournoi = $this->tournoiRepository->find($tournoi_id);
         $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'etat'=>'termine']);
-        $matchsArr = [];
 
+        if(!count($matchs))
+            return [];
+        
+        $matchsArr = [];
         $lastTour = $matchs[0]->getNumTour();
         $i = 0;
         foreach ($matchs as $key => $value) {
@@ -142,16 +130,13 @@ class ViewController extends AbstractController
             $matchsArr[]= $datas;
             $i++;
         }
-        return new Response(json_encode($matchsArr));
+        return $matchsArr;
     }
 
-    /**
-     * @Route("/get-match-en-attente", name="get_match_en_attente_xhr")
-     */
-    public function getMatchAttenteXhr(Request $request)
+    public function getMatchAttenteXhr($tournoi_id)
     {
         $em = $this->getDoctrine()->getManager();       
-        $tournoi = $this->tournoiRepository->find($request->get('id'));
+        $tournoi = $this->tournoiRepository->find($tournoi_id);
         $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_attente']);
         
         $matchsArr = [];
@@ -177,7 +162,74 @@ class ViewController extends AbstractController
           'num_tour'=>$tournoi->getCurrentTour()
         ];
 
-        return new Response(json_encode(['matchs'=>$matchsArr, "tournoi"=>$tournoiArr]));
+        return ['matchs'=>$matchsArr, "tournoi"=>$tournoiArr];
+    }
+
+    /**
+     * @Route("/get-all-match", name="get_all_match_xhr")
+     */
+    public function getAllMatch(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();               
+        $matchsEncour = $this->getMatchEncoursXhr($request->get('id'));
+        $matchsEnattente = $this->getMatchAttenteXhr($request->get('id'));
+        $matchsTermine = $this->getMatchTermineXhr($request->get('id'));
+
+        $tournoi = $this->tournoiRepository->find($request->get('id'));
+        $tournoiArr = [
+          'id'=>$tournoi->getId(),
+          'etat'=>$tournoi->getEtat(),
+          'num_tour'=>$tournoi->getCurrentTour(),
+        ];
+        return new Response(json_encode([
+            'data_tournoi'=>$tournoiArr,
+            'datas_encour'=> $matchsEncour,
+            'datas_enattente'=> $matchsEnattente,
+            'datas_termine'=> $matchsTermine
+        ]));
+    }
+
+    /**
+     * @Route("/tournois-screen/{id}", name="tournois_screen")
+     */
+    public function screen( Request $Request, $id = null)
+    {
+        $em = $this->getDoctrine()->getManager();       
+        $tournoi = $this->tournoiRepository->find($id);
+        if($tournoi->getActif() == 0)
+            return new Response('Ce tournoi a été annulé, vous ne pouvez y acceder');
+
+        $matchs = [];
+        $dateFinTournoi = "";
+        if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
+            $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
+            $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
+
+            if($tournoi->getEtat() == "termine")
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
+            else{
+                /* limite à 1  car sert juste à initialiser les date de passage */
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , 1);
+            }
+        }
+        
+        return $this->render('website/games.html.twig', [
+            'tournoi'=> $tournoi,
+            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi,
+            'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
+            'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
+            'page'=>'index'
+        ]);
+    }
+    
+
+    public function buildJoueurListName($joueursArr){
+
+        $joueurs = [];
+        foreach ($joueursArr as $key => $value) {
+            $joueurs[] = $value->getNom();
+        }
+        return $joueurs;
     }
 
     /**
@@ -277,7 +329,6 @@ class ViewController extends AbstractController
         ]);
     }
 
-
     /**
      * @Route("/tournois/{id}", name="client_homepage")
      */
@@ -309,6 +360,8 @@ class ViewController extends AbstractController
             'page'=>'index'
         ]);
     }
+
+
 
     /**
      * @Route("/", name="base_url")

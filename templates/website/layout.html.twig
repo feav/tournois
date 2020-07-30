@@ -43,7 +43,16 @@
             height: 100%;
             overflow: visible;
             background: #fff url('{{asset('images/eclipse-loader.gif')}}') no-repeat center center;
-          }
+        }
+        h2.screen-title {
+            text-align: center;
+            margin-bottom: 31px;
+        }
+
+        /* owl carousel style */
+        .owl-theme .owl-nav.disabled+.owl-dots{
+            display: none;
+        }
     </style>
 {% endblock %}
 
@@ -52,7 +61,7 @@
         <header class="header">
             <div class="header-wrapper">
                 <div class="blablacar-wrapper">
-                    <img src="{{asset('images/logo/')}}{% block logo_compagnie %}{% endblock %}" class="blablacar-logo img-responsive" alt="logo BlaBlaCar">
+                    <img src="{{asset('images/logo/')}}{% block logo_compagnie %}{% endblock %}" class="blablacar-logo img-responsive" alt="logo entreprise">
                 </div>
                 <img src="{{asset('images/logo-boevent-small.png')}}" class="logo-v-mobile img-responsive" alt="logo compagnie">
                 <div class="timer-wrapper">

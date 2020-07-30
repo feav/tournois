@@ -30,15 +30,17 @@
               <h4 class="card-title" style="text-align: left;font-size: 19px; display:inline-block">Estimation initiale du tournoi <small>{{ tournoi ? tournoi.duree : ""}} minutes</small></h4>
               <div class="group-btn-shar-to-screen">
                   {% if tournoi.actif == 1 %}
-                    <a href="{{path('annuler_tournoi',{'id':tournoi.id})}}" target="_blank" class="call-action">Annuler tournoi<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
+                    <a href="{{path('annuler_tournoi',{'id':tournoi.id})}}" target="_blank" class="call-action" style="background: #35426d;">Annuler tournoi<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
                   {% else %}
                     <span class="alert alert-warning">Tournoi annulé</span>
                   {% endif %}
-                  <a href="{{path('client_homepage',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecran jeu<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
+                  
+                  <a href="{{path('tournois_screen',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecrans jeux<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
+                  {#<!--
                   <a href="{{path('client_resultat_tournoi',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecran scores<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
                   {% if tournoi.getDateDebut is not null %}
                     <a href="{{path('client_match_en_attente',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecran matchs en attente<i class="nc-icon nc-stre-right" style="font-weight: bold;"></i></a>
-                  {% endif %}
+                  {% endif %}-->#}
                   
               </div>
           </div>

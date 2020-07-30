@@ -9,18 +9,10 @@
             controller: 'Match',
         }   
     ];
-    var REQUEST_URL_MATCH = [     
+    var REQUEST_URL_MATCH = [   
         {
-            relativeUrl: "match_playing",
-            absoluteUrl: "{{path('get_match_en_cours_xhr')}}"
-        },
-        {
-            relativeUrl: "match_termine",
-            absoluteUrl: "{{path('get_match_en_termine_xhr')}}"
-        },
-        {
-            relativeUrl: "match_attente",
-            absoluteUrl: "{{path('get_match_en_attente_xhr')}}"
+            relativeUrl: "get_all_match_xhr",
+            absoluteUrl: "{{path('get_all_match_xhr')}}"
         }
     ];
 
