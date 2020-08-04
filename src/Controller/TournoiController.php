@@ -158,6 +158,80 @@ class TournoiController extends AbstractController
         return  new Response("passer par une requette ajax");
     }
 
+    /**
+     * @Route("/admin/tournoi-libre/add/{id}", name="admin_add_tournoi_libre")
+     */
+    public function newLibre(Request $request, $id = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $tournoi = new Tournoi();
+        if(!is_null($id))
+            $tournoi = $this->tournoiRepository->find($id);
+
+        if ($request->isXmlHttpRequest()) {
+            if ($request->isMethod('POST')) {
+                $typeTournoi = $this->typeTournoiRepository->findOneBy(['referent'=>'libre']);
+                $duree = $request->get('duree') - ceil($request->get('duree')*0.15);
+
+                $nbrRows = 2;
+                if( ($request->files->get('fichier_joueurs') instanceof UploadedFile) && 
+                    (($request->files->get('fichier_joueurs'))->getError()=="0")){
+                    $tmpPathJoueur = $request->files->get('fichier_joueurs')->getRealPath();
+                    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+                    $reader->setReadDataOnly(true);
+                    $spreadsheet = $reader->load($tmpPathJoueur);
+                    $spreadsheet = $spreadsheet->getActiveSheet();
+                    $nbrRows = (int)$spreadsheet->getHighestRow();
+                }
+
+                $tournoi->setType($typeTournoi);
+                $tournoi->setNom($request->get('nom'));
+                $tournoi->setNbrJoueur($nbrRows);
+                $tournoi->setNbrJoueurEquipe($request->get('nbrJoueurEquipe'));
+                $nbrEquipe = ceil($tournoi->getNbrJoueur()/$request->get('nbrJoueurEquipe'));
+                $nbrEquipe = ($nbrEquipe%2 != 0) ? ($nbrEquipe+1) : $nbrEquipe ;
+                $tournoi->setNbrEquipe($nbrEquipe);
+
+                if( ($request->files->get('logo') instanceof UploadedFile) && 
+                    (($request->files->get('logo'))->getError()=="0")){
+                    $assetFile = "/public/images/logo/";
+                    if (!file_exists($this->params->get('kernel.project_dir'). $assetFile)) {
+                        mkdir($this->params->get('kernel.project_dir') . $assetFile, 0755);
+                    }
+
+                    $fullAssetFile = $this->params->get('kernel.project_dir') . $assetFile;
+                    $tournoi->setLogo( $this->buildFiles([$request->files->get('logo')], ['jpg', 'png', 'jpeg'], 100000000, $fullAssetFile, false)[0] );
+                }
+                $em->persist($tournoi);
+                $em->flush();
+                $this->createEquipe($tournoi);
+                //$this->createTerrain($tournoi);
+                $this->generateMatchLibre($tournoi);
+                if( ($request->files->get('fichier_joueurs') instanceof UploadedFile) && 
+                    (($request->files->get('fichier_joueurs'))->getError()=="0")){
+                    $tmpPathJoueur = $request->files->get('fichier_joueurs')->getRealPath();
+                    $nbrJoueur =  $this->addJoueursEquipe($tournoi, $tmpPathJoueur);
+                }
+
+                return new Response(json_encode(array('url'=> $this->generateUrl('tableau_de_bord_libre', ['id'=>$tournoi->getId()], UrlGenerator::ABSOLUTE_URL))));
+            }
+            else{
+                $action = is_null($id) ? "Ajout" : "Edition";
+                $typeTournois = $this->typeTournoiRepository->findAll();
+                $html = $this->renderView('admin/formulaires/add_tournoi_libre.html.twig', [
+                    'action'=>$action,
+                    'typeTournois' => $typeTournois,
+                    'url'=> $this->generateUrl('admin_add_tournoi_libre', ['id'=>$id], UrlGenerator::ABSOLUTE_URL)
+                ]);
+                $response = new Response(json_encode($html));
+                $response->headers->set('Content-Type', 'application/json');
+
+                return $response;
+            }
+        }
+        return  new Response("passer par une requette ajax");
+    }
+
     public function sendMailStartTournoi($tournoi, \Swift_Mailer $mailer){
 
         $tabEmail = $this->tournoiRepository->getEmailJoueurTournois($tournoi->getId());
@@ -170,6 +244,28 @@ class TournoiController extends AbstractController
         $message = "<p>Bonjour, <br>Nous vous informons que la competition du tournoi <b>".$tournoi->getNom()."</b> vient de demarrer.<h3>Estimation du tournoi</h3><ul><li>".$tournoi->getNbrTour()." Tours, en ".$nbrPassage." Passages</li><li>".$nbrMatch." Matchs</li><li>".$dureePassage." minutes / match</li></ul><a href='".$this->generateUrl('client_homepage', ['id'=>$tournoi->getId()], UrlGenerator::ABSOLUTE_URL)."'>Cliquer ici</a> pour acceder aux ecrans de jeux</p>";
         try {
             $mail = (new \Swift_Message('Tournoi '.$tournoi->getNom()))
+                ->setFrom(array('alexngoumo.an@gmail.com' => 'Tournoi'))
+                ->setCc(array('alexngoumo.an@gmail.com'))
+                ->setTo($tabEmail)
+                ->setBody($message,
+                    'text/html'
+                );
+            $mailer->send($mail);
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+        }      
+        return 1;
+    }
+
+    public function sendMailStartTournoiLibre($tournoi, \Swift_Mailer $mailer){
+
+        $tabEmail = $this->tournoiRepository->getEmailJoueurTournois($tournoi->getId());
+        if(!count($tabEmail))
+            return 1;
+
+        $message = "<p>Bonjour, <br>Nous vous informons que la competition en partie libre <b>".$tournoi->getNom()."</b> vient de demarrer <a href='".$this->generateUrl('client_homepage', ['id'=>$tournoi->getId()], UrlGenerator::ABSOLUTE_URL)."'>Cliquer ici</a> pour acceder aux ecrans de jeux</p>";
+        try {
+            $mail = (new \Swift_Message('Competition '.$tournoi->getNom()))
                 ->setFrom(array('alexngoumo.an@gmail.com' => 'Tournoi'))
                 ->setCc(array('alexngoumo.an@gmail.com'))
                 ->setTo($tabEmail)
@@ -314,6 +410,30 @@ class TournoiController extends AbstractController
     }
 
     /**
+     * @Route("/admin/tournoi-libre/{id}", name="tableau_de_bord_libre")
+     */
+    public function indexLibre(Request $request, $id=null)
+    {   
+        $em = $this->getDoctrine()->getManager();
+        
+        if(!is_null($id))
+            $tournoi = $this->tournoiRepository->find($id);
+        else{
+            $tournoi = $this->tournoiRepository->findOneBy([], ['id'=>'DESC'], 0);
+            return $this->redirectToRoute('tableau_de_bord_libre', ['id'=>$tournoi->getId()]);
+        }
+
+        $matchs = $this->match2Repository->getMatchLibreByEtat($tournoi->getId());
+        return $this->render('admin/home_libre.html.twig', [
+            'matchs' => $matchs,
+            'tournoi'=> $tournoi,
+            'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
+            'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
+            'page'=>'dashboard'
+        ]);
+    }
+
+    /**
      * @Route("/admin/tournoi-launch/{id}", name="tournoi_launch")
      */
     public function launchTournoi(Request $request, $id, \Swift_Mailer $mailer){
@@ -337,6 +457,35 @@ class TournoiController extends AbstractController
     }
 
     /**
+     * @Route("/admin/launch-match-libre/{id}", name="demarrer_match_libre")
+     */
+    public function launchPartieLibre(Request $request, $id, \Swift_Mailer $mailer){
+        $em = $this->getDoctrine()->getManager();
+        $tournoi = $this->tournoiRepository->find($id);
+        $tournoi->setDateDebut(new \Datetime());
+        $tournoi->setEtat('en_cours');
+
+        $matchEnCour = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'etat'=>'en_cours']);
+        foreach ($matchEnCour as $key => $value) {
+            $value->setEtat('termine');
+        }
+
+        $matchCurrentTour = $this->match2Repository->findBy(['etat'=>'en_attente', 'tournoi'=>$tournoi->getId()], null, 1);
+        foreach ($matchCurrentTour as $key => $value) {
+            $value->setEtat('en_cours');
+            $value->setDateDebut(new \Datetime());
+            $currentDate = new \Datetime();
+            $currentDate->add(new \DateInterval('PT'.$value->getDuree().'M'));
+            $dateFin = $currentDate->format('Y-m-d H:i:s');
+            $value->setDateFin((new \DateTime($dateFin)));
+        }
+        $this->definedDateNextMatchLibre($tournoi);
+        $em->flush();
+        $this->sendMailStartTournoiLibre($tournoi, $mailer);
+        return $this->redirectToRoute('tableau_de_bord_libre',['id'=>$id]);
+    }
+
+    /**
      * @Route("/admin/annuler-tournoi/{id}", name="annuler_tournoi")
      */
     public function annulerTournoi(Request $request, $id)
@@ -347,6 +496,18 @@ class TournoiController extends AbstractController
         $tournoi->setEtat('termine');
         $em->flush();
         return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
+    }
+
+    /**
+     * @Route("/admin/cloturer-tournoi/{id}", name="cloturer_tournois")
+     */
+    public function cloturerTournoi(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $tournoi = $this->tournoiRepository->find($id);
+        $tournoi->setEtat('termine');
+        $em->flush();
+        return $this->redirectToRoute('tableau_de_bord_libre',['id'=>$id]);
     }
 
     /**
@@ -394,18 +555,28 @@ class TournoiController extends AbstractController
                 $dateStart = strtotime('now + '.($value->getDuree()*$inscrementMinute).' minutes');
                 $dateEnd = strtotime('now + '.($value->getDuree()*($inscrementMinute+1)).' minutes');
                 $value->setDateDebut( new \Datetime(date('Y-m-d H:i:s', $dateStart)) );
-                $value->setDateFin( new \Datetime(date('Y-m-d H:i:s', $dateEnd)) );
-                
+                $value->setDateFin( new \Datetime(date('Y-m-d H:i:s', $dateEnd)) );   
             }
         }
-        /*
-        $nextMatchAttente = $this->match2Repository->findBy(['num_tour'=>$currentTour, 'tournoi'=>$tournoi->getId(), 'etat'=>'en_attente'], $tournoi->getNbrTerrain());
-        foreach ($nextMatchPassage as $key => $value) {
-            $dateStart = strtotime('now + '.($value->getDuree()*2).' minutes');
-            $dateEnd = strtotime('now + '.($value->getDuree()*3).' minutes');
+        $em->flush();
+        return 1;
+    }
+
+    public function definedDateNextMatchLibre($tournoi_id){
+        $em = $this->getDoctrine()->getManager();
+        $tournoi = $this->tournoiRepository->find($tournoi_id);
+        $currentTour = $tournoi->getCurrentTour();
+        $nextMatchAttente = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'etat'=>'en_attente']);
+
+        $nbrMatchAttente = count($nextMatchAttente);
+        for ($i=0; $i < $nbrMatchAttente; $i++) { 
+            $inscrementMinute = $i+1;
+            $value = $nextMatchAttente[$i];
+            $dateStart = strtotime('now + '.($value->getDuree()*$inscrementMinute).' minutes');
+            $dateEnd = strtotime('now + '.($value->getDuree()*($inscrementMinute+1)).' minutes');
             $value->setDateDebut( new \Datetime(date('Y-m-d H:i:s', $dateStart)) );
             $value->setDateFin( new \Datetime(date('Y-m-d H:i:s', $dateEnd)) );
-        }*/
+        }
         $em->flush();
         return 1;
     }
@@ -563,7 +734,7 @@ class TournoiController extends AbstractController
                 break;
         }
         $em->flush();
-        return 1;
+        return $nbrRows;
     }
 
     public function createEquipe($tournoi){
@@ -599,6 +770,19 @@ class TournoiController extends AbstractController
         return 1;
     }
 
+    public function generateMatchLibre($tournoi){
+        $em = $this->getDoctrine()->getManager();
+        $equipes = $this->equipeRepository->findBy(['tournoi'=>$tournoi->getId()]);
+        for ($i=0; $i< count($equipes); ($i=$i+2) ) { 
+            $match = new Match2();
+            $match->setDuree(10);
+            $match->setTournoi($tournoi);
+            $match->addEquipe($equipes[$i]);
+            $match->addEquipe($equipes[$i+1]);
+            $em->persist($match);
+        }
+    }
+
     public function generateMatch($tournoi, $arrJoeurQualifie = null){
         $em = $this->getDoctrine()->getManager();
         $currentTour = $tournoi->getCurrentTour();
@@ -616,7 +800,7 @@ class TournoiController extends AbstractController
                 $match->addEquipe($equipes[$i]);
                 $match->addEquipe($equipes[$i+1]);
 
-                 if(!isset($terrains[$j]))
+                if(!isset($terrains[$j]))
                     $j = 0;
                 $match->setTerrain2($terrains[$j]);
                     $j++;

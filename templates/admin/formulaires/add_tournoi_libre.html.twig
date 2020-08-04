@@ -1,0 +1,183 @@
+<style type="text/css">
+	.estimation-wrapper {
+		max-height: 90vh;
+		max-width: 589px;
+		background: #fff;
+		position: fixed;
+		z-index: 9999;
+		top: 50%;
+		transform: translateY(-50%);
+		left: 0;
+		right: 0;
+		margin: auto;
+		padding: 19px;
+		border-radius: 9px;
+		box-shadow: 2px 2px 2px 1px rgba(140, 140, 140, 0.2);
+		overflow-y: auto;
+		text-align: center;
+		color: #666;
+		display: none;
+	}
+	.estimation-wrapper {
+		text-align: center;
+		color: #666;
+	}
+	.delimit {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 26px 0 12px;
+	}
+	.tiret {
+		height: 1px;
+		display: block;
+		width: 13%;
+		background: grey;
+	}
+	.type-name {
+		padding: 0 11px;
+		font-weight: bold;
+	}
+	.estimation-wrapper .item-option {
+		font-weight: bold;
+		font-size: 14px;
+	}
+	.point {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		background: green;
+		border-radius: 50%;
+		margin-left: 14px;
+		margin-right: 3px;
+	}
+	.wrap-validate {
+		border-bottom: 1px solid #c6c2c2;
+		padding-bottom: 5px;
+		max-width: 469px;
+		margin: auto;
+		margin-bottom: 25px;
+	}
+	.wrap-validate .validate {
+		margin-top: 20px;
+		padding: 5px 48px;
+		background: green;
+		border: none;
+		color: #fff;
+		cursor: pointer;
+		font-size: 14px;
+		margin-bottom: ;
+	}
+	.btn.annuler {
+		margin: 0px 0 29px;
+		padding: 11px 55px;
+		background: #2d2929;
+		color: #fff;
+		border: none;
+		cursor: pointer;
+	}
+	input.no-select{
+		background: #F5F5F5;
+		color: #a6a3a3;
+		pointer-events: none;
+	}
+</style>
+<h2 class="form-head">{{action}} d'une partie libre</h2>
+<form id="formTournoi" name="formTournoi" method="POST">
+    <div class="row">
+		<div class="col-md-12">
+		    <div class="form-group">
+		    	<label>Nom</label>
+		        <input type="text" name="nom" class="form-control" placeholder="nom" value="">
+		    </div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+		    <div class="form-group">
+		    	<label>Logo compagnie</label>
+		        <input type="file" name="logo" class="form-control" value="" accept="image/png, image/jpeg">
+		    </div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+		    <div class="form-group">
+		    	<label>Fichier de joueurs <small>xls</small></label>
+		        <input type="file" name="fichier_joueurs" class="form-control" value="" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+		    </div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+		    <div class="form-group">
+		    	<label>Nombre de joueur par equipe</label>
+		        <input type="number" name="nbrJoueurEquipe" class="form-control" min="0"  placeholder="nombre de joueurs par equipe" value="">
+		    </div>
+		</div>
+	</div>
+    <button class="submit enregistrer">Enregistrer</button>
+</form>
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		var form = document.forms.namedItem("formTournoi");
+		function validate(){
+	        try{
+	            var validator = $('#formTournoi').validate({
+	                rules:{
+	                    'nom':{
+	                    	required:true
+	                    },
+	                    'nbrJoueurEquipe':{
+	                    	required:true
+	                    }
+	                }
+	            });
+	            
+	            var $validated = $('#formTournoi').valid();
+	            return $validated;
+	        }catch(error){
+	            console.log(error)
+	        }
+	    }
+
+		$url = "{{url}}";
+
+		form.addEventListener('submit', function(ev) {
+			if( !validate()){
+				demo.showNotification.error("Veuillez remplir correctement les champs");
+		        ev.preventDefault();
+		        return false;
+		    }
+			$('.lds-ripple').css('display', 'block');
+			
+			$.ajax({
+		        url:$url,
+		        type:"POST",
+		        data: new FormData(this),
+	            dataType: 'json',
+	            contentType: false,
+	            cache: false,
+	            processData:false,
+		        //data:$('#formTournoi').serialize(),
+		        success:function(response) {
+		        	$('.lds-ripple').css('display', 'none');
+		        	$(".success-checkmark").show().delay(3000).fadeOut();
+                	$(".check-icon").show().show().delay(3000).fadeOut();
+				    $('#formTournoi')[0].reset();
+                	demo.showNotification.success("Enregistrement effectué avec success");
+                	window.location.href = response.url;	
+		        },
+		        error:function(){
+		        	demo.showNotification.error("echec enregistrement");
+		        	$('.lds-ripple').css('display', 'none');
+			    }
+		   	});
+				
+			ev.preventDefault();
+		}, false);
+
+	});
+</script>

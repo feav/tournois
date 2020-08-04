@@ -44,7 +44,7 @@ class Match2
     private $vainqueur;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $num_tour;
 

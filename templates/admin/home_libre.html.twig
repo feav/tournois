@@ -27,14 +27,8 @@
       <div class="col-md-12">
         <div class="card" style="margin-bottom:6px">
           <div class="card-header" style="padding-top: 10px;">
-              <h4 class="card-title" style="text-align: left;font-size: 19px; display:inline-block">Estimation initiale du tournoi <small>{{ tournoi ? tournoi.duree : ""}} minutes</small></h4>
+              <h4 class="card-title" style="text-align: left;font-size: 19px; display:inline-block">Partie libre</h4>
               <div class="group-btn-shar-to-screen">
-                  {% if tournoi.actif == 1 %}
-                    <a href="{{path('annuler_tournoi',{'id':tournoi.id})}}" target="_blank" class="call-action" style="background: #35426d;">Annuler tournoi<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
-                  {% else %}
-                    <span class="alert alert-warning">Tournoi annulé</span>
-                  {% endif %}
-                  
                   <a href="{{path('tournois_screen',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecrans jeux<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
                   {#<!--
                   <a href="{{path('client_resultat_tournoi',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecran scores<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
@@ -44,22 +38,15 @@
                   
               </div>
           </div>
-          <div class="card-body head-estimation">
+          <div class="card-body head-estimation" style="display:block; text-align:right">
             {% if tournoi %}
-              <div class="legend" style="font-size: 14px">
-                  <i class="fa fa-circle text-danger"></i> <b>{{tournoi.getNbrTour}} Tours</b> 
-                  <i class="fa fa-circle text-info"></i> <b>{{nbr_passage}} Passages</b> 
-                  <i class="fa fa-circle text-warning"></i> <b>{{dureePassage}} minutes / match </b> 
-                  <i class="fa fa-circle text-info"></i> <b>{{nbrMatch}} Matchs</b> 
-                  
-              </div>
               {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
                 <form name="chronoForm" class="chronotime-wrapper">
                   <h3 id="chronotime" style="margin-top: 5px">0:00:00</h3>
                 </form>
               {% endif %}
               {% if tournoi.getDateDebut is null %}
-                <a href="{{path('tournoi_launch',{'id':tournoi.id})}}" class="btn-demarrer-tournoi">Demarrer le tournoi</a>
+                <a href="{{path('demarrer_match_libre',{'id':tournoi.id})}}" class="btn-demarrer-tournoi" style="margin-top: 13px;display: inline-block;">Demarrer la partie</a>
               {% endif %}
             {% endif %}
           </div>
@@ -73,54 +60,29 @@
                     <h4 class="card-title" style="text-align: left;display: inline-block;">
                       <span>Evolution match</span>
                     </h4>
-                    <div class="clearfix"></div>
-                    {% if demieFinale_finale %}
-                      <p class="card-category demiefinale-finale">
-                        {{ demieFinale_finale|replace({'_': " "})}}
-                      </p>
+                    <a class="btn-next-tour reload call-action" href="{{path('cloturer_tournois',{'id':tournoi.id})}}" style="float: right;margin-right: 4px;">Cloturer le tournois</a>
+                    {% if matchs|length >= 2 %}
+                    <a class="btn-next-tour reload call-action" href="{{path('demarrer_match_libre',{'id':tournoi.id})}}" style="float: right;">Demarrer prochain match</a>
+                    {% endif %}
+                    {% if matchs|length == 1 %}
+                    <a class="btn-next-tour reload call-action" href="{{path('demarrer_match_libre',{'id':tournoi.id})}}" style="float: right;">Fin de la partie</a>
                     {% endif %}
                 </div>
-                <div class="card-body ">
+                <div class="card-body">
                     <div class="cart-body-content">
-                      {% if tournoi %}
-                        {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
-                        <div class="timmer-tour-wrapper chronotime-wrapper">
-                          <span style="font-size: 17px;">
-                          <span class="current-tour">
-                            {{tournoi.getCurrentTour}}<sup class="rang">e</sup>
-                          </span>/ {{tournoi.getNbrTour}}<span style="font-size: 12px;">tours</span>
-                          </span><br>
-                          <span class="timmer-tour" style="display:none">
-                            <form name="chronoFormTour" class="chronotime">
-                              <h3 id="chronotimetour" style="margin-top: 5px;font-size: 20px;">0:00:00</h3>
-                              <input type="button" name="startstop" value="start!" onClick="chronoStartT()" style="display: none;" />
-                              <input type="button" name="reset" value="reset!" onClick="chronoResetT()" style="display: none;" />
-                            </form>
-                          </span>
-                          {% if matchs[0].etat == "en_cours" %}
-                            <a class="btn-next-tour reload" style="" href="{{path('goto_next_tour',{'id':tournoi.id})}}">
-                              {% if demieFinale_finale == "finale" %}
-                                terminer le tournois
-                              {% else %}
-                                Valider ce passage 
-                              {% endif %}
-                              <i class="nc-icon nc-stre-right" style="font-weight: bold"></i>
-                            </a>
-                          {% elseif matchs[0].etat == "en_attente" %}
-                            <a class="btn-next-tour reload" style="" href="{{path('tour_launch',{'id':tournoi.id})}}">Demarrer
-                            </a>
-                          {% endif %}
+                      {% if tournoi.getDateDebut is not null and matchs|length == 0 and tournoi.etat != "termine" %}
+                        <h3 style="text-align:center; color:#333333">Aucun match en attente</h3>
+                      {% elseif tournoi.etat == "termine" %}
+                        <h3 style="text-align:center; color:#333333">Partie Terminée</h3>
+                      {% endif %}
+
+                      {% if tournoi.etat != "termine" and tournoi.type.referent == 'libre' %}
+                        <div style="text-align: center;margin-top: 40px;">
+                          <a href="{{path('admin_add_equipe')}}" class="call-action add-new">+ Plus d'équipes</a>    
                         </div>
-                        {% elseif tournoi.etat == "termine" %}
-                          <h2  style="color:#333;font-size: 23px;text-align: center;">Tournois terminé</h2>
-                          <div class="winner-wrapper" style="color: #333333">
-                            <img src="{{asset('images/trophee.png')}}" style="display: block;margin: auto;max-width: 200px;">
-                            <div class="equipe-winner-name" style="font-size: 18px; text-align: center;">
-                              Vainqueur: <b style="text-transform: uppercase;">{{ winner.nom }}</b>
-                              <div class="score"></div>
-                            </div>
-                          </div>
-                        {% endif %}
+                      {% endif %}
+
+                      {% if tournoi %}
                         <ul class="list-match">
                           {% for item in matchs %}
                             <li class="match-item {{item.etat}}">
@@ -160,7 +122,7 @@
             <div class="card ">
                 <div class="card-header ">
                     <h4 class="card-title">Equipes</h4>
-                    <a href="javascript:void()" class="add-new" style="pointer-events: none;">+</a>
+                    <a href="javascript:void()" class="add-new" style="pointer-events:none">+</a>
                 </div>
                 <div class="card-body ">
                   {% if tournoi %}
@@ -228,68 +190,6 @@
                     <hr>
                     <div class="legend">
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card ">
-                <div class="card-header ">
-                    <h4 class="card-title">Terrains</h4>
-                    <a href="{{path('admin_add_terrain')}}" class="add-new" style="pointer-events: none;">+</a>
-                </div>
-                <div class="card-body ">
-                  {% if tournoi %}
-                    <ul class="cart-list-elt">
-                      {% for item in tournoi.terrains2 %}
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <span title="" class="link-item">
-                                    <div>
-                                        <span class="panel_texte">{{item.nom}}</span>
-                                        {#<span class="status">
-                                          {{ (item.occupe == 1) ? "":"occupé" }}
-                                        </span>#}
-                                    </div>
-                                    <a href="{{path('admin_add_terrain',{'id':item.id})}}" class="sa_alert_value btn-action btn-edit">editer</a>
-                                </span>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                            </div>
-                        </li>
-                      {% endfor %}
-                    </ul>
-                  {% endif %}
-                </div>
-                <div class="card-footer ">
-                    <hr>
-                    <div class="legend">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card  card-tasks">
-                <div class="card-header ">
-                    <h4 class="card-title">Types tournois</h4>
-                    <a href="{{path('admin_add_type_tournoi')}}" class="add-new">+</a>
-                </div>
-                <div class="card-body ">
-                    <ul class="cart-list-elt">
-                      {% for item in typeTournois %}
-                        <li class="cart_list_item">
-                            <div class="cart_list_item_title">
-                                <span title="" class="link-item">
-                                    <span class="panel_texte">{{item.nom}}</span>
-                                    <a href="{{path('admin_add_type_tournoi', {'id':item.id})}}" class="sa_alert_value btn-action btn-edit">editer</a>
-                                </span>
-                            </div>
-                            <div class="cart_list_item_content" style="display:none;">
-                            </div>
-                        </li>
-                      {% endfor %}
-                    </ul>
                 </div>
             </div>
         </div>
@@ -388,9 +288,6 @@
           {% endif %}
         });
 
-        {% if demieFinale_finale %}
-          demo.showNotification.info("{{ demieFinale_finale|replace({'_': " "})}}");
-        {% endif %}
         {% if tournoi and (tournoi.etat == "termine") %}
           toastr.info("Ce tournoi est terminé");
         {% endif %}

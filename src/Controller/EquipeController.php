@@ -23,9 +23,9 @@ class EquipeController extends AbstractController
     }
 
     /**
-     * @Route("/admin/equipe/add/{equipe_id}/{id}", name="admin_add_equipe")
+     * @Route("/admin/joueur/add/{equipe_id}/{id}", name="admin_add_joueur_equipe")
      */
-    public function new(Request $request, $equipe_id, $id = null)
+    public function newJoueur(Request $request, $equipe_id, $id = null)
     {
         $em = $this->getDoctrine()->getManager();
         $equipe = $this->equipeRepository->find($equipe_id);
@@ -50,7 +50,7 @@ class EquipeController extends AbstractController
     			$html = $this->renderView('admin/formulaires/add_equipe.html.twig', [
                     'action'=>$action,
                     'joueur'=>$joueur,
-                    'url'=> $this->generateUrl('admin_add_equipe', ['equipe_id'=>$equipe_id, 'id'=>$id], UrlGenerator::ABSOLUTE_URL)
+                    'url'=> $this->generateUrl('admin_add_joueur_equipe', ['equipe_id'=>$equipe_id, 'id'=>$id], UrlGenerator::ABSOLUTE_URL)
             	]);
             	$response = new Response(json_encode($html));
 	            $response->headers->set('Content-Type', 'application/json');

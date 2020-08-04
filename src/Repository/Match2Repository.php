@@ -72,4 +72,26 @@ class Match2Repository extends ServiceEntityRepository
         }
         return $postsArray;
     }
+
+    public function getMatchLibreByEtat($idTournoi, $limit=null){
+        $sql = "
+            SELECT id FROM match2 
+                WHERE  tournoi_id = :idTournoi
+                AND ( etat = 'en_cours' OR etat = 'en_attente') ";
+        if(!is_null($limit))
+            $sql .= " LIMIT $limit";
+        
+        $posts = $this->em->prepare($sql);
+        $posts->execute(['idTournoi'=>$idTournoi]);
+        $posts = $posts->fetchAll();
+
+        $postsArray = [];
+        foreach ($posts as $key => $value) {
+            $qb = $this->createQueryBuilder('match')
+                ->Where('match.id = :id')
+                ->setParameter('id', $value['id']);
+            $postsArray[] = $qb->getQuery()->getOneOrNullResult();
+        }
+        return $postsArray;
+    }
 }
