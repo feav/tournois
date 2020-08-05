@@ -32,6 +32,11 @@
                   {% if tournoi.etat != "termine" %}
                     <a class="btn-next-tour reload call-action" href="{{path('cloturer_tournois',{'id':tournoi.id})}}" style="margin-right: 4px;color:#dc3545">Cloturer le tournois</a>
                   {% endif %}
+                  {% if tournoi.actif == 1 %}
+                    <a href="{{path('annuler_tournoi',{'id':tournoi.id})}}" target="_blank" class="call-action" style="background: #35426d;">Annuler tournoi<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
+                  {% else %}
+                    <span class="alert alert-warning">Tournoi annulé</span>
+                  {% endif %}
                   <a href="{{path('tournois_screen',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecrans jeux<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
                   {#<!--
                   <a href="{{path('client_resultat_tournoi',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecran scores<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>

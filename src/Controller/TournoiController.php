@@ -525,7 +525,10 @@ class TournoiController extends AbstractController
         $tournoi->setActif(0);
         $tournoi->setEtat('termine');
         $em->flush();
-        return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
+        if($tournoi->getType()->getReferent() == 'libre')
+            return $this->redirectToRoute('tableau_de_bord_libre',['id'=>$id]);
+        else
+            return $this->redirectToRoute('tableau_de_bord',['id'=>$id]);
     }
 
     /**
