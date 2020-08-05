@@ -165,7 +165,7 @@ class ViewController extends AbstractController
             $matchsArr[]= [
                 'terrain'=> !is_null($value->getTerrain2()) ? $value->getTerrain2()->getNom() : 'TERRAIN X',
                 'equipes'=> $equipeArr,
-                'date_debut'=>$value->getDateDebut()->format('H:i'),
+                'date_debut'=> is_null($value->getDateDebut()) ? '' : $value->getDateDebut()->format('H:i'),
                 'duree'=>$value->getDuree(),
             ];
         }
