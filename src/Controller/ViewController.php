@@ -47,11 +47,17 @@ class ViewController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();       
         $tournoi = $this->tournoiRepository->find($tournoi_id);
+        $matchs = [];
         if($tournoi->getEtat() == "termine"){
           $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
         }
         else{
-          $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , $tournoi->getNbrTerrain());
+            if($tournoi->getType()->getReferent() != 'libre' ){
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , $tournoi->getNbrTerrain());
+            }
+            else{
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'etat'=>'en_cours']);
+            }
           /*$matchs = $this->match2Repository->getMatchByEtat($tournoi->getId(), $tournoi->getCurrentTour(), $tournoi->getNbrTerrain());*/
         }
 
@@ -115,7 +121,7 @@ class ViewController extends AbstractController
             }
             $datas = [
                 'vainqueur'=>$value->getVainqueur(),
-                'terrain'=>$value->getTerrain2()->getNom(),
+                'terrain'=>!is_null($value->getTerrain2()) ? $value->getTerrain2()->getNom() : 'TERRAIN X',
                 'equipes'=> $equipeArr,
                 'score'=> is_null($value->getScore()) ? [0,0] : explode('-', str_replace(" ", "", $value->getScore())),
                 'date_debut'=>$value->getDateDebut(),
@@ -137,7 +143,13 @@ class ViewController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();       
         $tournoi = $this->tournoiRepository->find($tournoi_id);
-        $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_attente']);
+
+        if($tournoi->getType()->getReferent() != 'libre' ){
+            $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_attente']);
+        }
+        else{
+            $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'etat'=>'en_attente']);
+        }
         
         $matchsArr = [];
         foreach ($matchs as $key => $value) {
@@ -153,6 +165,8 @@ class ViewController extends AbstractController
             $matchsArr[]= [
                 'terrain'=> !is_null($value->getTerrain2()) ? $value->getTerrain2()->getNom() : 'TERRAIN X',
                 'equipes'=> $equipeArr,
+                'date_debut'=>$value->getDateDebut()->format('H:i'),
+                'duree'=>$value->getDuree(),
             ];
         }
 

@@ -100,10 +100,10 @@ MatchModule
                 $scope.matchsEnattente = data.datas_enattente.matchs;
 
                 $scope.matchsTermine = data.datas_termine;
-
-                if( ($scope.tournoi.demieFinale_finale == "finale")){
-                   $('.screen-item.screen-finale .finale-container').css('display', 'block');
-                }
+                if( ($scope.tournoi.demieFinale_finale == "finale"))
+                   $('.screen-item .screen-jeux').css('display', 'block');
+                else
+                    $('.screen-item .screen-finale').css('display', 'block');
             },
             function (data) {
                 console.log(data);

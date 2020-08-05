@@ -29,6 +29,9 @@
           <div class="card-header" style="padding-top: 10px;">
               <h4 class="card-title" style="text-align: left;font-size: 19px; display:inline-block">Partie libre</h4>
               <div class="group-btn-shar-to-screen">
+                  {% if tournoi.etat != "termine" %}
+                    <a class="btn-next-tour reload call-action" href="{{path('cloturer_tournois',{'id':tournoi.id})}}" style="margin-right: 4px;color:#dc3545">Cloturer le tournois</a>
+                  {% endif %}
                   <a href="{{path('tournois_screen',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecrans jeux<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
                   {#<!--
                   <a href="{{path('client_resultat_tournoi',{'id':tournoi.id})}}" target="_blank" class="call-action">Ecran scores<i class="nc-icon nc-stre-right" style="font-weight: bold"></i></a>
@@ -60,12 +63,11 @@
                     <h4 class="card-title" style="text-align: left;display: inline-block;">
                       <span>Evolution match</span>
                     </h4>
-                    <a class="btn-next-tour reload call-action" href="{{path('cloturer_tournois',{'id':tournoi.id})}}" style="float: right;margin-right: 4px;">Cloturer le tournois</a>
-                    {% if matchs|length >= 2 %}
-                    <a class="btn-next-tour reload call-action" href="{{path('demarrer_match_libre',{'id':tournoi.id})}}" style="float: right;">Demarrer prochain match</a>
+                    {% if tournoi.getDateDebut is not null and matchs|length >= 2 %}
+                    <a class="btn-next-tour reload call-action" href="{{path('demarrer_match_next_libre',{'id':tournoi.id})}}" style="float: right;margin-right: 6px;">Demarrer prochain match</a>
                     {% endif %}
-                    {% if matchs|length == 1 %}
-                    <a class="btn-next-tour reload call-action" href="{{path('demarrer_match_libre',{'id':tournoi.id})}}" style="float: right;">Fin de la partie</a>
+                    {% if tournoi.getDateDebut is not null and matchs|length == 1 %}
+                    <a class="btn-next-tour reload call-action" href="{{path('demarrer_match_next_libre',{'id':tournoi.id})}}" style="float: right;">Fin de la partie</a>
                     {% endif %}
                 </div>
                 <div class="card-body">
@@ -73,12 +75,12 @@
                       {% if tournoi.getDateDebut is not null and matchs|length == 0 and tournoi.etat != "termine" %}
                         <h3 style="text-align:center; color:#333333">Aucun match en attente</h3>
                       {% elseif tournoi.etat == "termine" %}
-                        <h3 style="text-align:center; color:#333333">Partie Terminée</h3>
+                        <h3 style="text-align:center; color:#333333">Competition Terminée</h3>
                       {% endif %}
 
                       {% if tournoi.etat != "termine" and tournoi.type.referent == 'libre' %}
                         <div style="text-align: center;margin-top: 40px;">
-                          <a href="{{path('admin_add_equipe')}}" class="call-action add-new">+ Plus d'équipes</a>    
+                          <a href="{{path('admin_add_joueur_tournois',{'tournoi_id':tournoi.id})}}" class="call-action add-new" style="display:none">+ Plus de joueurs</a>    
                         </div>
                       {% endif %}
 

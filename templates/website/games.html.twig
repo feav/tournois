@@ -80,38 +80,65 @@
             <h2 class="no-beguin" ng-if="tournoi.etat == 'en_attente' ">Ce Tournoi n'a pas encore commencé</h2>
 
             <div class="owl-carousel owl-theme">
-                <div class="item screen-item screen-jeux">
-                    <h2 class="screen-title">Matchs en cours</h2>
-                    <h3 class="cols-list" ng-if="(!matchsEncour.length)" style="text-align:center">
-                        Aucun match en cours
-                    </h3>
-                    <div class="cols-list">
-                        <div class="cols-item" ng-repeat="item in matchsEncour | orderBy: '+terrain'  ">
-                            <h2 class="col-title" ng-cloak>[[item.terrain]]</h2>
-                            <div class="sub-col-list">
-                                <div class="list-item" ng-repeat="eqp in item.equipes track by $index">
-                                    <h3 class="sub-title" ng-cloak>[[eqp.nom]]</h3>
-                                    <ul class="list-elt">
-                                        <li class="item-elt" ng-repeat="joueur in eqp.joueurs" ng-cloak>
-                                            [[joueur]]
-                                        </li>
-                                    </ul>
+                <div class="item screen-item">
+                    <div class="screen-jeux" style="display:none">
+                        <h2 class="screen-title">Matchs en cours</h2>
+                        <h3 class="cols-list" ng-if="(!matchsEncour.length)" style="text-align:center">
+                            Aucun match en cours
+                        </h3>
+                        <div class="cols-list">
+                            <div class="cols-item" ng-repeat="item in matchsEncour | orderBy: '+terrain'  ">
+                                <h2 class="col-title" ng-cloak>[[item.terrain]]</h2>
+                                <div class="sub-col-list">
+                                    <div class="list-item" ng-repeat="eqp in item.equipes track by $index">
+                                        <h3 class="sub-title" ng-cloak>[[eqp.nom]]</h3>
+                                        <ul class="list-elt">
+                                            <li class="item-elt" ng-repeat="joueur in eqp.joueurs" ng-cloak>
+                                                [[joueur]]
+                                            </li>
+                                        </ul>
+                                        <div class="sub-col-foot">
+                                            <span class="score" ng-class="(item.vainqueur == eqp.id) ? 'winner' : ''" ng-cloak>
+                                                [[ item.score[$index] ]]
+                                            </span>
+                                        </div>  
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="screen-finale" style="display:none">
+                        <h1 class="page-title-finale">FINALE</h1>
+                        <div class="finale-container">
+                            <div class="terrain-wrapper">
+                                <span class="terrain-name">[[ matchsEncour[0].terrain ]]</span>
+                            </div>
+                            <div class="cols-list finale">
+                                <div class="cols-item" ng-repeat="item in matchsEncour[0].equipes track by $index">
+                                    <h3 class="item-title" ng-cloak>[[item.nom]]</h3>
+                                    <div class="list-elt-container">
+                                        <ul class="list-elt">
+                                            <li class="item-elt" ng-repeat="joueur in item.joueurs" ng-cloak>
+                                                [[joueur]]
+                                            </li>
+                                        </ul>
+                                    </div>
                                     <div class="sub-col-foot">
-                                        <span class="score" ng-class="(item.vainqueur == eqp.id) ? 'winner' : ''" ng-cloak>
-                                            [[ item.score[$index] ]]
-                                        </span>
+                                        <span class="score" ng-cloak>[[ matchsEncour[0].score[$index] ]]</span>
                                     </div>  
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="item screen-item screen-jeux">
+                <div class="item screen-item screen-jeux match-attente">
                     <h2 class="screen-title">Matchs en attentes</h2>
                     <h2 class="no-beguin" ng-if="(tournoiEnattente.etat != 'en_attente') && !(matchsEnattente.length)">Pas de matchs en attentes</h2>
 
                     <div class="cols-list" ng-if="(matchsEnattente.length)">
                         <div class="cols-item" ng-repeat="item in matchsEnattente">
+                            <center>[[item.date_debut]]</center>
                             <h2 class="col-title" ng-cloak>[[item.terrain]]</h2>
                             <div class="sub-col-list">
                                 <div class="list-item" ng-repeat="eqp in item.equipes track by $index">
@@ -170,29 +197,6 @@
                                     </div>
                                 </li>
                             </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="item screen-item screen-finale">
-                    <h1 class="page-title-finale">FINALE</h1>
-                    <div class="finale-container" style="display:none">
-                        <div class="terrain-wrapper">
-                            <span class="terrain-name">[[ matchsEncour[0].terrain ]]</span>
-                        </div>
-                        <div class="cols-list finale">
-                            <div class="cols-item" ng-repeat="item in matchsEncour[0].equipes track by $index">
-                                <h3 class="item-title" ng-cloak>[[item.nom]]</h3>
-                                <div class="list-elt-container">
-                                    <ul class="list-elt">
-                                        <li class="item-elt" ng-repeat="joueur in item.joueurs" ng-cloak>
-                                            [[joueur]]
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="sub-col-foot">
-                                    <span class="score" ng-cloak>[[ matchsEncour[0].score[$index] ]]</span>
-                                </div>  
-                            </div>
                         </div>
                     </div>
                 </div>
