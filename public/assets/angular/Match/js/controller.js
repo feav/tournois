@@ -102,7 +102,7 @@ MatchModule
                 $scope.matchsTermine = data.datas_termine;
                 if( ($scope.tournoi.demieFinale_finale == "finale"))
                    $('.screen-item .screen-jeux').css('display', 'block');
-                else
+                else if($scope.tournoi.etat == "en_cour")
                     $('.screen-item .screen-finale').css('display', 'block');
             },
             function (data) {
