@@ -101,9 +101,9 @@ MatchModule
 
                 $scope.matchsTermine = data.datas_termine;
                 if( ($scope.tournoi.demieFinale_finale == "finale"))
-                   $('.screen-item .screen-jeux').css('display', 'block');
-                else if($scope.tournoi.etat == "en_cour")
-                    $('.screen-item .screen-finale').css('display', 'block');
+                   $('.screen-item .screen-finale').css('display', 'block');
+                else if($scope.tournoi.etat == "en_cours")
+                    $('.screen-item .screen-jeux').css('display', 'block');
             },
             function (data) {
                 console.log(data);
