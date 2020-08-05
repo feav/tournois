@@ -53,10 +53,8 @@
                   <i class="fa fa-circle text-info"></i> <b>{{nbrMatch}} Matchs</b> 
                   
               </div>
-              {% if (tournoi.getDateDebut is not null) and (tournoi.etat != "termine") %}
-                <form name="chronoForm" class="chronotime-wrapper">
-                  <h3 id="chronotime" style="margin-top: 5px">0:00:00</h3>
-                </form>
+              {% if (tournoi.getDateDebut is not null) %}
+                <h3 id="chronotime" style="margin-top: 5px">00:00:00</h3>
               {% endif %}
               {% if tournoi.getDateDebut is null %}
                 <a href="{{path('tournoi_launch',{'id':tournoi.id})}}" class="btn-demarrer-tournoi">Demarrer le tournoi</a>

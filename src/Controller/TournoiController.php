@@ -371,7 +371,10 @@ class TournoiController extends AbstractController
             $tournoi = $this->tournoiRepository->find($id);
         else{
             $tournoi = $this->tournoiRepository->findOneBy([], ['id'=>'DESC'], 0);
-            return $this->redirectToRoute('tableau_de_bord', ['id'=>$tournoi->getId()]);
+            if($tournoi->getReferent() == 'libre')
+                return $this->redirectToRoute('tableau_de_bord_libre', ['id'=>$tournoi->getId()]);
+            else
+                return $this->redirectToRoute('tableau_de_bord', ['id'=>$tournoi->getId()]);
         }
 
         $matchs = [];
