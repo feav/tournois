@@ -49,7 +49,10 @@ class ViewController extends AbstractController
         $tournoi = $this->tournoiRepository->find($tournoi_id);
         $matchs = [];
         if($tournoi->getEtat() == "termine"){
-          $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
+            if($tournoi->getType()->getReferent() != 'libre' )
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId()], ['id'=> 'DESC'], 1);
+            else
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
         }
         else{
             if($tournoi->getType()->getReferent() != 'libre' ){
