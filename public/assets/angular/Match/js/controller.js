@@ -100,10 +100,14 @@ MatchModule
                 $scope.matchsEnattente = data.datas_enattente.matchs;
 
                 $scope.matchsTermine = data.datas_termine;
-                if( ($scope.tournoi.demieFinale_finale == "finale") || $scope.tournoi.etat == "termine")
+                if( ($scope.tournoi.demieFinale_finale == "finale") || $scope.tournoi.etat == "termine"){
                    $('.screen-item .screen-finale').css('display', 'block');
-                else if($scope.tournoi.etat == "en_cours")
+                   $('.screen-item .screen-jeux').css('display', 'none');
+                }
+                else if($scope.tournoi.etat == "en_cours"){
                     $('.screen-item .screen-jeux').css('display', 'block');
+                    $('.screen-item .screen-finale').css('display', 'none');
+                }
             },
             function (data) {
                 console.log(data);
