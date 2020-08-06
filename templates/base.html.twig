@@ -108,7 +108,7 @@
 		                tournoi_id: idTournoi,
 		            },
 		            success : function(resultat, statut) {
-		                if(resultat.statut == 200 && !isObjectEmpty(resultat.data) && resultat.data.id != $firstMatchPlayingId){
+		                if( (resultat.statut == 200 && !isObjectEmpty(resultat.data) && $firstMatchPlayingId != resultat.data.id ) || (resultat.statut == 200 && $firstMatchPlayingId != "" && isObjectEmpty(resultat.data)) ){
 		                	if(resultat.data.etat_tournoi == "termine")
 		                		clearInterval(y);
 
