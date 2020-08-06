@@ -367,12 +367,16 @@ class TournoiController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $typeTournois = $this->typeTournoiRepository->findAll();
         
-        if(!is_null($id))
+        if(!is_null($id)){
             $tournoi = $this->tournoiRepository->find($id);
+            if($tournoi->getType()->getReferent() == 'libre')
+                return $this->redirectToRoute('tableau_de_bord_libre', ['id'=>$tournoi->getId()]);
+        }
         else{
             $tournoi = $this->tournoiRepository->findOneBy([], ['id'=>'DESC'], 0);
-            if($tournoi->getReferent() == 'libre')
+            if($tournoi->getType()->getReferent() == 'libre'){
                 return $this->redirectToRoute('tableau_de_bord_libre', ['id'=>$tournoi->getId()]);
+            }
             else
                 return $this->redirectToRoute('tableau_de_bord', ['id'=>$tournoi->getId()]);
         }
@@ -394,11 +398,6 @@ class TournoiController extends AbstractController
                 $demieFinale_finale = "finale";
         }
 
-       $dateFinTournoi = "";
-        if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
-            $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
-            $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
-        }
         return $this->render('admin/home.html.twig', [
             'typeTournois' => $typeTournois,
             'matchs' => $matchs,
@@ -408,9 +407,10 @@ class TournoiController extends AbstractController
             'dureePassage'=> is_null($tournoi) ? "" : $this->calculDureePassage($tournoi),
             'nbr_passage' => $this->getNbrPassage($tournoi->getNbrEquipe(), $tournoi->getType()->getReferent(), $tournoi->getNbrTerrain()),
             'nbrMatch'=> is_null($tournoi) ? "" : $this->getNrbMatch($tournoi),
-            'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi,
+            'dateFinTournoi'=> (is_null($tournoi) || is_null($tournoi->getDateFin())) ? "" : $tournoi->getDateFin(),
             'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
             'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
+            'first_match_playing_id'=> "",
             'page'=>'dashboard'
         ]);
     }
@@ -424,9 +424,13 @@ class TournoiController extends AbstractController
         
         if(!is_null($id))
             $tournoi = $this->tournoiRepository->find($id);
+            if($tournoi->getType()->getReferent() != 'libre')
+                return $this->redirectToRoute('tableau_de_bord', ['id'=>$tournoi->getId()]);
         else{
             $tournoi = $this->tournoiRepository->findOneBy([], ['id'=>'DESC'], 0);
-            return $this->redirectToRoute('tableau_de_bord_libre', ['id'=>$tournoi->getId()]);
+            if($tournoi->getType()->getReferent() != 'libre')
+                return $this->redirectToRoute('tableau_de_bord', ['id'=>$tournoi->getId()]);
+            
         }
 
         $matchs = $this->match2Repository->getMatchLibreByEtat($tournoi->getId());
@@ -447,6 +451,11 @@ class TournoiController extends AbstractController
         $tournoi = $this->tournoiRepository->find($id);
         $tournoi->setDateDebut(new \Datetime());
         $tournoi->setEtat('en_cours');
+        $dateFinTournoi = "";
+        $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
+        $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
+        $tournoi->setDateFin(new \Datetime($dateFinTournoi));
+
         $matchCurrentTour = $this->match2Repository->findBy(['num_tour'=>1, 'tournoi'=>$tournoi->getId()],null, $tournoi->getNbrTerrain());
         foreach ($matchCurrentTour as $key => $value) {
             $value->setEtat('en_cours');

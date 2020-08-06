@@ -16,10 +16,11 @@
 {% block id_tournoi %}{{tournoi.id}}{% endblock %}
 {% block tournoi_etat %}{{tournoi.etat}}{% endblock %}
 {% block current_page %}{{page}}{% endblock %}
-{#{% block date_debut %}{{tournoi.dateDebut|date('Y-m-d H:i:s')}}{% endblock %}
-{% block date_end %}{{dateFin}}{% endblock %}#}
+{#{% block date_debut %}{{tournoi.dateDebut|date('Y-m-d H:i:s')}}{% endblock %}#}
+{% block date_end_tournoi %}{{dateFinTournoi|date('Y-m-d H:i:s')}}{% endblock %}
 {% block date_debut %}{{debutPassage|date('Y-m-d H:i:s')}}{% endblock %}
 {% block date_end %}{{FinPassage|date('Y-m-d H:i:s')}}{% endblock %}
+{% block first_match_playing_id %}{{first_match_playing_id}}{% endblock %}
 
 {% block admin_content %}
   
@@ -230,7 +231,7 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="display:none">
         <div class="col-md-6">
             <div class="card ">
                 <div class="card-header ">
@@ -377,12 +378,9 @@
     </script>
 
     <script type="text/javascript">
-
       $(document).ready(function(){
         $(window).bind("load", function() {
           {% if tournoi and (tournoi.etat == "en_cours") %}
-            /*chronoStartT();*/
-            /*chronoStart();*/
           {% endif %}
         });
 
@@ -393,5 +391,6 @@
           toastr.info("Ce tournoi est terminé");
         {% endif %}
       });
+    </script>
     </script>
 {% endblock %}

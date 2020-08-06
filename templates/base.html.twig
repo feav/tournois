@@ -32,9 +32,11 @@
     <body data-base-url="{{url('base_url')}}" 
     	  data-tournoi-id="{% block id_tournoi %}{% endblock %}"
     	  data-tournoi-etat="{% block tournoi_etat %}{% endblock %}"
-    	  data-date-end="{% block date_end %}{% endblock %}"
+    	  data-date-end="{% block date_end %}{% endblock %}" {# Fin partie #}
+    	  data-date-end-tournoi="{% block date_end_tournoi %}{% endblock %}"
     	  data-date-debut="{% block date_debut %}{% endblock %}"
     	  data-current-page="{% block current_page %}{% endblock %}"
+    	  data-first-match-playing-id="{% block first_match_playing_id %}{% endblock %}"
     	 >
 
     	{% block body %}{% endblock %}
@@ -42,144 +44,89 @@
     </body>    
 
     <script src="{{ asset('assets/toastr/toastr.min.js') }}"></script>
-    <script type="text/javascript">
-
-    	$idTournoi = $('body').data('tournoi-id');
-    	$etatTournoi = $('body').data('tournoi-etat');
-    	$dateEnd = $('body').data('date-end');
-    	$dateDebut = $('body').data('date-debut');
-    	$isEnd = false; // test de fin du mactch dans l'evolution du chrono
-    	$countSecond = 0;
-
-		var start = 0
-		var end = 0
-		var diff = 0
-		var timerID = 0
-        var storageDate = {};
-
-		{#/*localStorage.removeItem("tournoi_"+$idTournoi);*/#}
-		
-		$(window).bind("load", function() {
-		   	if($etatTournoi == "en_cours"){
-		   		chronoStart();
-		   		intervalId = setInterval(chrono, 1000);
-		   	}
-		});
-        function initCrono(){
-            if(localStorage.getItem("tournoi_"+$idTournoi)){
-                storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi));
-                start = new Date(storageDate.date_debut);
-                end = new Date();
-            }
-            else{
-                var dataInfo = {tournoi:"tournoi_"+$idTournoi, date_debut: $dateDebut, date_fin: $dateEnd, relaodPage:0};
-                localStorage.setItem("tournoi_"+$idTournoi, JSON.stringify(dataInfo));
-                storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi)); 
-                start = new Date($dateDebut);
-            }
-        }
-		function chrono(){
-			//storageDate = JSON.parse(localStorage.getItem("tournoi_"+$idTournoi));
-			if(!localStorage.getItem("tournoi_"+$idTournoi)  && ($('body').data('current-page') != "dashboard" )){
-				setTimeout(function(){
-					localStorage.removeItem("tournoi_"+$idTournoi);
-					window.location.reload(true);
-				},2000);
-			}
-			end = new Date()
-			diff = end - start
-			diff = new Date(diff)
-			var msec = diff.getMilliseconds()
-			var sec = diff.getSeconds()
-			var min = diff.getMinutes()
-			var hr = diff.getHours()-1
-			if (hr < 10){
-				hr = "0" + hr
-			}
-			if (min < 10){
-				min = "0" + min
-			}
-			if (sec < 10){
-				sec = "0" + sec
-			}
-			if(msec < 10){
-				msec = "00" +msec
-			}
-			else if(msec < 100){
-				msec = "0" +msec
-			}
-			var diffDeadline = new Date(new Date(storageDate.date_fin) - new Date());
-			var deadlineMinute = (diffDeadline.getHours()-1)*60 + diffDeadline.getMinutes();
-			var deadlineSeconde = (diffDeadline.getHours()-1)*3600 + diffDeadline.getMinutes()*60 + diffDeadline.getSeconds();
-
-			if( (new Date() >= new Date(storageDate.date_fin)) && (storageDate.date_debut != storageDate.date_fin) ){
-				var local_diff_date = new Date(new Date(storageDate.date_fin) - new Date(storageDate.date_debut));
-				var sec2 = local_diff_date.getSeconds()
-				var min2 = local_diff_date.getMinutes()
-				var hr2 = local_diff_date.getHours()-1
-				if (hr2 < 10){
-					hr2 = "0" + hr2
-				}
-				if (min2 < 10){
-					min2 = "0" + min2
-				}
-				if (sec2 < 10){
-					sec2 = "0" + sec2
-				}
-				document.getElementById("chronotime").innerHTML  = hr2 + ":" + min2 + ":" + sec2;
-				
-				$countSecond++;
-				if(!$isEnd){
-					toastr.warning("CE PASSAGE EST TERMINE");
-					$isEnd = true;
-				}
-				else if($countSecond >= 45){
-					toastr.warning("Ce passage devrait etre terminé il y a "+Math.abs(deadlineMinute)+" minutes");
-					$countSecond = 0;
-				}
-				//clearInterval(intervalId);
-				//localStorage.removeItem("tournoi_"+$idTournoi);
-				/*$('.cart-body-content .match-item').addClass('end_match');*/
-				/*$('.cart-body-content .match-item .status-match').html('Terminé');*/
-				
-				//window.location.reload(true);
-			}
-			else{
-				document.getElementById("chronotime").innerHTML  = hr + ":" + min + ":" + sec;
-				if( deadlineSeconde >0 && deadlineSeconde <= 90 ){
-					$('#chronotime').addClass('blinking');
-				}
-			}
-			if( storageDate.date_debut == storageDate.date_fin){
-				document.getElementById("chronotime").innerHTML  = "00:00:00";
-			}
-		}
-		function chronoStart(){
-			initCrono();
-			chrono();
-		}
-		function chronoContinue(){
-			document.chronoForm.startstop.value = "stop!"
-			document.chronoForm.startstop.onclick = chronoStop
-			document.chronoForm.reset.onclick = chronoReset
-			start = new Date()-diff
-			start = new Date(start)
-			chrono()
-		}
-		function chronoReset(){
-			document.getElementById("chronotime").innerHTML  = "0:00:00:000"
-			start = new Date()
-		}
-		function chronoStopReset(){
-			document.getElementById("chronotime").innerHTML  = "0:00:00:000"
-			document.chronoForm.startstop.onclick = chronoStart
-		}
-		function chronoStop(){
-			document.chronoForm.startstop.value = "start!"
-			document.chronoForm.startstop.onclick = chronoContinue
-			document.chronoForm.reset.onclick = chronoStopReset
-			clearInterval(intervalId);
-		}
-    </script>
+    
     {% block javascripts %}{% endblock %}
+
+    <script type="text/javascript">
+    	isObjectEmpty = function(obj) {
+            for(var key in obj) {
+                if(obj.hasOwnProperty(key))
+                    return false;
+            }
+            return true;
+        };
+
+		$idTournoi = $('body').data('tournoi-id');
+		$etatTournoi = $('body').data('tournoi-etat');
+		$dateEnd = $('body').data('date-end');
+		$firstMatchPlayingId = $('body').data('first-match-playing-id');
+		var countDownDate = new Date($dateEnd).getTime();  
+		var stopCrono = 0;    
+		{#/*localStorage.removeItem("tournoi_"+$idTournoi);*/#}
+		$(window).bind("load", function() {
+		  if($etatTournoi == "en_cours"){
+		    runCrono(countDownDate);
+		    if(($('body').data('current-page') != "dashboard"))
+		    	getFirstMatchPlayingId($idTournoi);
+		  }
+		  else if($etatTournoi == "en_attente"){
+		  	getFirstMatchPlayingId($idTournoi);
+		  }
+		});
+	    function runCrono(countDownDate){
+	        var x = setInterval(function() {
+	          var now = new Date().getTime();
+	          var distance = countDownDate - now;
+	          var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+	          var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+	          var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+	          document.getElementById("chronotime").innerHTML = hours + ":"
+	          + minutes + ":" + seconds;
+
+	          var distanceDate = new Date(distance);
+	          var deadlineSeconde = (distanceDate.getHours()-1)*3600 + distanceDate.getMinutes()*60 + distanceDate.getSeconds();
+	          if( !$('#chronotime').hasClass('blinking') && deadlineSeconde >0 && deadlineSeconde <= 90){
+	            $('#chronotime').addClass('blinking');
+	          }
+
+	          if (distance < 0) {
+	            clearInterval(x);
+	            toastr.warning("CE PASSAGE EST TERMINE");
+	            document.getElementById("chronotime").innerHTML = "00:00:00";
+	            stopCrono = 1;
+	          }
+	        }, 1000);        
+	    }
+	    
+	    function getFirstMatchPlayingId(idTournoi){
+	    	var y = setInterval(function() {
+		    	$.ajax({
+		            type: "GET",
+		            url: $('body').data('base-url')+"first-match-playing-id",
+		            data:{
+		                tournoi_id: idTournoi,
+		            },
+		            success : function(resultat, statut) {
+		                if(resultat.statut == 200 && !isObjectEmpty(resultat.data) && resultat.data.id != $firstMatchPlayingId){
+		                	if(resultat.data.etat_tournoi == "termine")
+		                		clearInterval(y);
+
+		                	$firstMatchPlayingId = resultat.data.id;
+		                	window.location.reload(true);
+		                	/*countDownDate = new Date($resultat.data.dateEnd).getTime();
+		                	if (!stopCrono)
+		                		runCrono(countDownDate);*/
+		                }
+		            },
+		            error:function(resultat, statut, erreur){
+		                console.log('error get data');
+		            }
+		        });
+		        /*if (stopCrono) {
+		        	clearInterval(y);
+		        }*/
+		    }, 10000);
+	    }
+
+    </script>
 </html>

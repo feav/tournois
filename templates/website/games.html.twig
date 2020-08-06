@@ -67,10 +67,11 @@
 {% block id_tournoi %}{{tournoi.id}}{% endblock %}
 {% block tournoi_etat %}{{tournoi.etat}}{% endblock %}
 {% block logo_compagnie %}{{tournoi.logo}}{% endblock %}
-{#{% block date_debut %}{{tournoi.dateDebut|date('Y-m-d H:i:s')}}{% endblock %}
-{% block date_end %}{{dateFin}}{% endblock %}#}
+{#{% block date_debut %}{{tournoi.dateDebut|date('Y-m-d H:i:s')}}{% endblock %}#}
+{% block date_end_tournoi %}{{dateFinTournoi|date('Y-m-d H:i:s')}}{% endblock %}
 {% block date_debut %}{{debutPassage|date('Y-m-d H:i:s')}}{% endblock %}
 {% block date_end %}{{FinPassage|date('Y-m-d H:i:s')}}{% endblock %}
+{% block first_match_playing_id %}{{first_match_playing_id}}{% endblock %}
 
 {% block page %}        
     <div id="preloader"></div>
@@ -138,7 +139,7 @@
 
                     <div class="cols-list" ng-if="(matchsEnattente.length)">
                         <div class="cols-item" ng-repeat="item in matchsEnattente">
-                            <center>[[item.date_debut]]</center>
+                            <center>[[item.date_debut]] - [[item.date_fin]]</center>
                             <h2 class="col-title" ng-cloak>[[item.terrain]]</h2>
                             <div class="sub-col-list">
                                 <div class="list-item" ng-repeat="eqp in item.equipes track by $index">
@@ -225,7 +226,7 @@
             autoplayTimeout:10000,
             items:1,
             autoHeight:true
-        })
+        });
         /*$('.owl-carousel .owl-nav button.owl-prev >span').html("<img src='https://www.howard-avocats.com/assets/images/static/chevron-right.png' style='transform:rotate(180deg);margin-left: -14px;'>");
         $('.owl-carousel .owl-nav button.owl-next >span').html("<img src='https://www.howard-avocats.com/assets/images/static/chevron-right.png' style='margin-right: -14px;'>");*/
     </script>

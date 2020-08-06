@@ -80,7 +80,7 @@ class ViewController extends AbstractController
                 'terrain'=> !is_null($value->getTerrain2()) ? $value->getTerrain2()->getNom() : 'TERRAIN X',
                 'equipes'=> $equipeArr,
                 'score'=> is_null($value->getScore()) ? [0,0] : explode('-', str_replace(" ", "", $value->getScore())),
-                'date_debut'=>$value->getDateDebut()
+                'date_debut'=>$value->getDateDebut(),
             ];
         }
 
@@ -96,6 +96,7 @@ class ViewController extends AbstractController
           'etat'=>$tournoi->getEtat(),
           'num_tour'=>$tournoi->getCurrentTour(),
           'demieFinale_finale'=> isset($demieFinale_finale) ? $demieFinale_finale : "",
+          'first_match_playing_id'=> count($matchs) ? ($matchs[0])->getId() : "",
         ];
 
         return ['matchs'=>$matchsArr, "tournoi"=>$tournoiArr];
@@ -169,6 +170,7 @@ class ViewController extends AbstractController
                 'terrain'=> !is_null($value->getTerrain2()) ? $value->getTerrain2()->getNom() : 'TERRAIN X',
                 'equipes'=> $equipeArr,
                 'date_debut'=> is_null($value->getDateDebut()) ? '' : $value->getDateDebut()->format('H:i'),
+                'date_fin'=> is_null($value->getDateFin()) ? '' : $value->getDateFin()->format('H:i'),
                 'duree'=>$value->getDuree(),
             ];
         }
@@ -217,6 +219,7 @@ class ViewController extends AbstractController
             return new Response('Ce tournoi a été annulé, vous ne pouvez y acceder');
 
         $matchs = [];
+        $first_match_playing_id = ""; 
         $dateFinTournoi = "";
         if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
             $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
@@ -228,13 +231,20 @@ class ViewController extends AbstractController
                 /* limite à 1  car sert juste à initialiser les date de passage */
                 $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , 1);
             }
+
+            $lastMatch = $this->match2Repository->findOneBy(['tournoi'=>$tournoi->getId(), 'etat'=>'en_cours'], null, 1);
+            if(!is_null($lastMatch)){
+                $first_match_playing_id = $lastMatch->getId();
+            }
         }
-        
+       
         return $this->render('website/games.html.twig', [
             'tournoi'=> $tournoi,
             'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi,
             'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
             'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
+            'dateFinTournoi'=> (is_null($tournoi) || is_null($tournoi->getDateFin())) ? "" : $tournoi->getDateFin(),
+            'first_match_playing_id'=> $first_match_playing_id,
             'page'=>'index'
         ]);
     }
@@ -292,7 +302,6 @@ class ViewController extends AbstractController
             return new Response('Ce tournoi a été annulé, vous ne pouvez y acceder');
 
         $dateFinTournoi = "";
-
         $matchs = [];
         if( !is_null($tournoi) && !is_null($tournoi->getDateDebut()) ){
             $newtimestamp = strtotime($tournoi->getDateDebut()->format('Y-m-d H:i:s').' '.$tournoi->getDuree().' minute');           
@@ -378,7 +387,26 @@ class ViewController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/first-match-playing-id", name="first_match_playing_id")
+     */
+    public function getFirstMatchPlayingId( Request $request){
+        $idTournoi = $request->query->get('tournoi_id');
+        $em = $this->getDoctrine()->getManager();       
+        $match = $this->match2Repository->findOneBy(['tournoi'=>$idTournoi, 'etat'=>'en_cours'], null, 1);
 
+        $matchArr = [];
+        if(!is_null($match)){
+            $matchArr = [
+                'etat_tournoi'=>$match->getTournoi()->getEtat(),
+                'id'=>$match->getId(),
+                'dateEnd'=>$match->getDateFin()->format('Y-m-d H:i:s')
+            ];
+        }
+        $response = new Response(json_encode(['statut'=>200, 'data'=>$matchArr]));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
 
     /**
      * @Route("/", name="base_url")
