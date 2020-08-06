@@ -86,6 +86,7 @@
                       {% if tournoi.etat != "termine" and tournoi.type.referent == 'libre' %}
                         <div style="text-align: center;margin-top: 40px;">
                           <a href="{{path('admin_add_joueur_tournois',{'tournoi_id':tournoi.id})}}" class="call-action add-new" style="display:none">+ Plus de joueurs</a>    
+                          <a class="btn-next-tour reload call-action" href="{{path('cloturer_tournois',{'id':tournoi.id})}}" style="margin-right: 4px;color:#dc3545">Cloturer le tournois</a>
                         </div>
                       {% endif %}
 
