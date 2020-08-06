@@ -400,13 +400,14 @@ class ViewController extends AbstractController
      */
     public function getFirstMatchPlayingId( Request $request){
         $idTournoi = $request->query->get('tournoi_id');
+        $tournoi = $this->tournoiRepository->find($idTournoi);
         $em = $this->getDoctrine()->getManager();       
         $match = $this->match2Repository->findOneBy(['tournoi'=>$idTournoi, 'etat'=>'en_cours'], null, 1);
 
         $matchArr = [];
+        $matchArr['etat_tournoi'] = $tournoi->getEtat();
         if(!is_null($match)){
             $matchArr = [
-                'etat_tournoi'=>$match->getTournoi()->getEtat(),
                 'id'=>$match->getId(),
                 'dateEnd'=>$match->getDateFin()->format('Y-m-d H:i:s')
             ];
