@@ -50,7 +50,7 @@
         <tr>
           <td>{{item.getDateDebut|date('Y-i-d H:i')}}</td>
           <td>{{item.nom}}</td>
-          <td>{{item.type.nom}}</td>
+          <td>{{ (item.type is null) ? "" : item.type.nom}}</td>
           <td>{{item.getNbrEquipe}}</td>
           <td>{{item.getNbrTerrain}}</td>
           <td>{{item.getDuree}}</td>
