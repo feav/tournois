@@ -436,15 +436,31 @@ class TournoiController extends AbstractController
             $tournoi = $this->tournoiRepository->findOneBy([], ['id'=>'DESC'], 0);
             if($tournoi->getType()->getReferent() != 'libre')
                 return $this->redirectToRoute('tableau_de_bord', ['id'=>$tournoi->getId()]);
-            
         }
 
-        $matchs = $this->match2Repository->getMatchLibreByEtat($tournoi->getId());
+        $matchs = [];
+        $first_match_playing_id = "";
+        if(!is_null($tournoi)){
+            if($tournoi->getEtat() == "termine"){
+                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId()], ['id'=> 'DESC'], 1);
+            }
+            else{
+                $matchs = $this->match2Repository->getMatchLibreByEtat($tournoi->getId());
+            }
+
+            $lastMatch = $this->match2Repository->findOneBy(['tournoi'=>$tournoi->getId(), 'etat'=>'en_cours'], null, 1);
+            if(!is_null($lastMatch)){
+                $first_match_playing_id = $lastMatch->getId();
+            }
+        }
+        
         return $this->render('admin/home_libre.html.twig', [
             'matchs' => $matchs,
             'tournoi'=> $tournoi,
             'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
             'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
+            'dateFinTournoi'=> (is_null($tournoi) || is_null($tournoi->getDateFin())) ? "" : $tournoi->getDateFin(),
+            'first_match_playing_id'=> $first_match_playing_id,
             'page'=>'dashboard'
         ]);
     }

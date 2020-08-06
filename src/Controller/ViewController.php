@@ -226,10 +226,18 @@ class ViewController extends AbstractController
             $dateFinTournoi = date('Y-m-d H:i:s', $newtimestamp);
 
             if($tournoi->getEtat() == "termine")
-                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
+                /* limite à 1  car sert juste à initialiser les date de passage */
+                if($tournoi->getType()->getReferent() == 'libre')
+                    $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId()], ['id'=> 'DESC'], 1);
+                else{
+                    $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
+                }
             else{
                 /* limite à 1  car sert juste à initialiser les date de passage */
-                $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , 1);
+                if($tournoi->getType()->getReferent() == 'libre')
+                    $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'etat'=>'en_cours'],null , 1);
+                else
+                    $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour(), 'etat'=>'en_cours'],null , 1);
             }
 
             $lastMatch = $this->match2Repository->findOneBy(['tournoi'=>$tournoi->getId(), 'etat'=>'en_cours'], null, 1);
