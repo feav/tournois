@@ -381,7 +381,7 @@ class TournoiController extends AbstractController
                 return $this->redirectToRoute('tableau_de_bord', ['id'=>$tournoi->getId()]);
         }
 
-        $matchs = $matchsHistorique = [],
+        $matchs = $matchsHistorique = [];
         $first_match_playing_id = "";
         if(!is_null($tournoi)){
             if($tournoi->getEtat() == "termine")
