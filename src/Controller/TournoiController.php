@@ -455,10 +455,13 @@ class TournoiController extends AbstractController
             if(!is_null($lastMatch)){
                 $first_match_playing_id = $lastMatch->getId();
             }
+
+            $matchsHistorique = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'etat'=>'termine']);
         }
         
         return $this->render('admin/home_libre.html.twig', [
             'matchs' => $matchs,
+            'matchsHistorique'=>$matchsHistorique,
             'tournoi'=> $tournoi,
             'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
             'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
