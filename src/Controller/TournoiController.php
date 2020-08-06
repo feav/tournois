@@ -381,7 +381,7 @@ class TournoiController extends AbstractController
                 return $this->redirectToRoute('tableau_de_bord', ['id'=>$tournoi->getId()]);
         }
 
-        $matchs = [];
+        $matchs = $matchsHistorique = [],
         $first_match_playing_id = "";
         if(!is_null($tournoi)){
             if($tournoi->getEtat() == "termine")
@@ -402,11 +402,14 @@ class TournoiController extends AbstractController
             if(!is_null($lastMatch)){
                 $first_match_playing_id = $lastMatch->getId();
             }
+
+            $matchsHistorique = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'etat'=>'termine']);
         }
 
         return $this->render('admin/home.html.twig', [
             'typeTournois' => $typeTournois,
             'matchs' => $matchs,
+            'matchsHistorique'=>$matchsHistorique,
             'tournoi'=> $tournoi,
             'winner'=> (!is_null($tournoi) && $tournoi->getEtat() == "termine") ? $this->equipeRepository->findOneBy(['en_competition'=> true, 'tournoi'=>$tournoi->getId()]) : "" ,
             'demieFinale_finale'=> isset($demieFinale_finale) ? $demieFinale_finale : "",
