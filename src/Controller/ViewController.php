@@ -350,7 +350,7 @@ class ViewController extends AbstractController
             'tournoi'=> $tournoi,
             'dateFin'=> is_null($tournoi) ? "" : $dateFinTournoi,
             'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
-            'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
+            'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : null,
             'page'=>'finale'
         ]);
     }

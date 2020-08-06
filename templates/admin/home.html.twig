@@ -19,7 +19,7 @@
 {#{% block date_debut %}{{tournoi.dateDebut|date('Y-m-d H:i:s')}}{% endblock %}#}
 {% block date_end_tournoi %}{{dateFinTournoi|date('Y-m-d H:i:s')}}{% endblock %}
 {% block date_debut %}{{debutPassage|date('Y-m-d H:i:s')}}{% endblock %}
-{% block date_end %}{{FinPassage|date('Y-m-d H:i:s')}}{% endblock %}
+{% block date_end %}{{ (FinPassage is null) ?  "" : FinPassage|date('Y-m-d H:i:s') }}{% endblock %}
 {% block first_match_playing_id %}{{first_match_playing_id}}{% endblock %}
 
 {% block admin_content %}

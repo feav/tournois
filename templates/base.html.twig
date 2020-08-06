@@ -65,7 +65,8 @@
 		{#/*localStorage.removeItem("tournoi_"+$idTournoi);*/#}
 		$(window).bind("load", function() {
 		  if($etatTournoi == "en_cours"){
-		    runCrono(countDownDate);
+		  	if($('body').data('date-end') != "")
+		    	runCrono(countDownDate);
 		    if(($('body').data('current-page') != "dashboard"))
 		    	getFirstMatchPlayingId($idTournoi);
 		  }
