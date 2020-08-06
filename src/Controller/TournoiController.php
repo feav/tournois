@@ -382,6 +382,7 @@ class TournoiController extends AbstractController
         }
 
         $matchs = [];
+        $first_match_playing_id = "";
         if(!is_null($tournoi)){
             if($tournoi->getEtat() == "termine")
                 $matchs = $this->match2Repository->findBy(['tournoi'=>$tournoi->getId(), 'num_tour'=>$tournoi->getCurrentTour()], ['id'=> 'DESC'], 1);
@@ -396,6 +397,11 @@ class TournoiController extends AbstractController
                 $demieFinale_finale = "demie_finale";
             if($nbrEquipeQualifie == 2)
                 $demieFinale_finale = "finale";
+
+            $lastMatch = $this->match2Repository->findOneBy(['tournoi'=>$tournoi->getId(), 'etat'=>'en_cours'], null, 1);
+            if(!is_null($lastMatch)){
+                $first_match_playing_id = $lastMatch->getId();
+            }
         }
 
         return $this->render('admin/home.html.twig', [
@@ -410,7 +416,7 @@ class TournoiController extends AbstractController
             'dateFinTournoi'=> (is_null($tournoi) || is_null($tournoi->getDateFin())) ? "" : $tournoi->getDateFin(),
             'debutPassage'=> count($matchs) ? ($matchs[0])->getDateDebut() : "",
             'FinPassage'=> count($matchs) ? ($matchs[0])->getDateFin() : "",
-            'first_match_playing_id'=> "",
+            'first_match_playing_id'=> $first_match_playing_id,
             'page'=>'dashboard'
         ]);
     }
