@@ -418,6 +418,16 @@ class ViewController extends AbstractController
     }
 
     /**
+     * @Route("/classement-final/{tournoi_id}", name="classement_final")
+    */
+    public function classementFinal($tournoi_id = null)
+    {   
+        return $this->render('website/classement.html.twig', [
+            'page'=>'classement'
+        ]);
+    }
+
+    /**
      * @Route("/", name="base_url")
      */
     public function BaseUrl()

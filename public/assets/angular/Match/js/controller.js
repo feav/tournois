@@ -114,6 +114,7 @@ MatchModule
             }
         );
     };
+    //intervalSocket = setInterval($scope.getAllMatch, 15000);
     intervalSocket = setInterval($scope.getAllMatch, 15000);
     $scope.getAllMatch();
 

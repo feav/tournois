@@ -13,6 +13,13 @@
             font-style: normal;
         }
         @font-face {
+            font-family: 'ds-digitalregular';
+            src: url('{{asset('assets/fonts/ds-digi-webfont.woff2')}}') format('woff2'),
+                 url('ds-digi-webfont.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
             font-family: 'nunito-regular';
             src: url('{{asset('assets/fonts/nunito-regular-webfont.woff2')}}') format('woff2'),
                  url('{{asset('assets/fonts/nunito-regular-webfont.woff')}}') format('woff');
@@ -66,7 +73,7 @@
                 <img src="{{asset('images/logo-boevent-small.png')}}" class="logo-v-mobile img-responsive" alt="logo compagnie">
                 <div class="timer-wrapper">
                     <form name="chronoForm">
-                        <h3 id="chronotime">0:00:00</h3>
+                        <h3 id="chronotime">00:00:00</h3>
                         <input type="button" name="startstop" value="start!" onClick="chronoStart()" style="display: none;" />
                         <input type="button" name="reset" value="reset!" onClick="chronoReset()" style="display: none;" />
                     </form>

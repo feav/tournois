@@ -1,0 +1,66 @@
+.screen-classement .table-responsive{
+	max-width: 1340px;
+	margin: auto;
+}
+.screen-classement .col-title{
+	background: #fff;
+    color: #000;
+    padding: 8px 25px 3px;
+    text-align: center;
+    display: block;
+    font-size: 2.8em;
+    line-height: normal;
+    font-family: ds-digitalregular;
+    width: calc(1340px / 4);
+}
+.screen-classement .col-title sup{
+	font-family: ds-digitalregular;
+}
+.screen-classement .equipe-nom{
+	color: #00b9f2;
+	line-height: normal;
+	padding-right: .5em;
+    font-size: 3.5em;
+}
+.screen-classement .score{
+	background: #00b9f2;
+    width: 59px;
+    font-size: 58px;
+    line-height: normal;
+}
+.screen-classement .score.winner{
+	background: #80c747;
+	box-shadow: 0px 0px 10px 5px rgb(255, 255, 255);
+}
+.screen-classement .table td{
+	border-top: 3px solid #fff;
+    border-top-style: dotted;
+}
+.screen-classement .table tr:nth-child(2) td{
+	border-top: 0;
+}
+.screen-classement .table tr:first-child td {
+    border-top: 0;
+}
+.screen-classement .table .name-score{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 1em;
+    padding-left: .3em;
+}
+.screen-classement .name-score .noms{
+	flex: 1;
+    display: flex;
+    justify-content: space-between;
+    padding-right: 1.5em;
+}
+.screen-classement .list-noms > * {
+    font-family: 'nunito-regular';
+}
+.timer-wrapper .classement-title{
+	font-size: 6em;
+    line-height: .8em;
+    font-family: ds-digitalregular;
+}
+

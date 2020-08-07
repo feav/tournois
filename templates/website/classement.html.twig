@@ -1,0 +1,400 @@
+{% extends 'base.html.twig' %}
+{% block title %} Tournoi de boule {% endblock %}
+
+{% block stylesheets %}
+    <link href="{{asset('assets/css/website/style.css')}}" rel="stylesheet" />
+    <style type="text/css">
+
+        @font-face {
+            font-family: 'ds-digitalbold';
+            src: url('{{asset('assets/fonts/ds-digib-webfont.woff2')}}') format('woff2'),
+                 url('ds-digib-webfont.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'ds-digitalregular';
+            src: url('{{asset('assets/fonts/ds-digi-webfont.woff2')}}') format('woff2'),
+                 url('ds-digi-webfont.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'nunito-regular';
+            src: url('{{asset('assets/fonts/nunito-regular-webfont.woff2')}}') format('woff2'),
+                 url('{{asset('assets/fonts/nunito-regular-webfont.woff')}}') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+         @font-face {
+            font-family: 'nunito-bold';
+            src: url('{{asset('assets/fonts/nunito-bold-webfont.woff2')}}') format('woff2'),
+                 url('{{asset('assets/fonts/nunito-bold-webfont.woff')}}') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body, *{
+            font-family: ds-digitalbold;
+        }
+        .blablacar-logo{
+            max-width: 100%;
+            margin: auto;
+            max-height: 82px;
+        }
+        #preloader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 999;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            background: #fff url('{{asset('images/eclipse-loader.gif')}}') no-repeat center center;
+        }
+        h2.screen-title {
+            text-align: center;
+            margin-bottom: 31px;
+        }
+    </style>
+    <link href="{{asset('assets/css/website/classement.css')}}" rel="stylesheet" />
+{% endblock %}
+
+{% block body %}
+    <div class="body-container">
+        <header class="header">
+            <div class="header-wrapper">
+                <div class="blablacar-wrapper">
+                    <img src="{{asset('images/logo/')}}{% block logo_compagnie %}{% endblock %}" class="blablacar-logo img-responsive" alt="logo entreprise">
+                </div>
+                <img src="{{asset('images/logo-boevent-small.png')}}" class="logo-v-mobile img-responsive" alt="logo compagnie">
+                <div class="timer-wrapper">
+                    <div class="classement-title">
+                        CLASSEMENT FINAL
+                    </div>
+                </div>
+                <div class="logo-wrapper">
+                    <div class="logo-wrapper-content">
+                        <img src="{{asset('images/LOGO-BOEVENT.png')}}" class="logo" alt="notre logo">
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="main">
+            <div class="pop-end-tournoi animated slideInDown" style="display: none;">CE TOURNOI EST TERMINE</div>
+            <div class="middle-container">
+                <div class="middle-content">
+                    <div class="item screen-item screen-classement">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <td></td>
+                                    <td><span class="col-title">1<sup>ER</sup> TOUR</span></td>
+                                    <td><span class="col-title">1/2 FINALE</span></td>
+                                    <td><span class="col-title">FINALE</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="equipe-nom">EQUIPE A</td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="equipe-nom">EQUIPE A</td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="equipe-nom">EQUIPE A</td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="equipe-nom">EQUIPE A</td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="equipe-nom">EQUIPE A</td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="equipe-nom">EQUIPE A</td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="name-score">
+                                            <div class="noms">
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                                <div class="list-noms">
+                                                    <div>Martine</div>
+                                                    <div>Martine</div>
+                                                </div>
+                                            </div>
+                                            <span class="score winner">0</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {#<script type="text/javascript" src="{{('assets/js/timmer.js')}}"></script>#}
+    <script type="text/javascript">
+        window.addEventListener("load",function(){
+          $('#preloader').fadeOut('slow',function(){$(this).remove();}); 
+        });
+    </script>
+{% endblock %}
