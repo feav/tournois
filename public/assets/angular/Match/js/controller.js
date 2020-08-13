@@ -89,6 +89,9 @@ MatchModule
                 if(data.data_tournoi.etat == "termine"){
                     $('.pop-end-tournoi').css('display','block');
                     clearInterval(intervalSocket);
+
+                    if(data.data_tournoi.type != "libre")
+                        window.location.href = $('body').data('base-url')+"classement-final/"+$('body').data('tournoi-id');
                     //return false;
                 }
 
@@ -114,7 +117,6 @@ MatchModule
             }
         );
     };
-    //intervalSocket = setInterval($scope.getAllMatch, 15000);
     intervalSocket = setInterval($scope.getAllMatch, 15000);
     $scope.getAllMatch();
 

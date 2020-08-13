@@ -76,6 +76,11 @@ class Match2
      */
     private $terrain2;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $etape;
+
     public function __construct()
     {
         $this->etat = "en_attente";
@@ -231,6 +236,18 @@ class Match2
     public function setTerrain2(?Terrain2 $terrain2): self
     {
         $this->terrain2 = $terrain2;
+
+        return $this;
+    }
+
+    public function getEtape(): ?string
+    {
+        return $this->etape;
+    }
+
+    public function setEtape(?string $etape): self
+    {
+        $this->etape = $etape;
 
         return $this;
     }

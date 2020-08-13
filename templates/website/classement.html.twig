@@ -92,294 +92,77 @@
                                     <td><span class="col-title">1/2 FINALE</span></td>
                                     <td><span class="col-title">FINALE</span></td>
                                 </tr>
-                                <tr>
-                                    <td class="equipe-nom">EQUIPE A</td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
+                                {% for data in datas %}
+                                    <tr>
+                                        <td class="equipe-nom">{{ data.equipe.nom|upper }}</td>
+                                        <td>
+                                            {% if data.score_premier_tour is defined %}
+                                            <div class="name-score">
+                                                <div class="noms">
+                                                    {% for joueur in data.equipe.joueurs2 %}
+                                                        {% if loop.index % 2 != 0 %}
+                                                        <div class="list-noms">
+                                                            <div>{{joueur.nom}}</div>
+                                                        </div>
+                                                        {% else %}
+                                                        <div class="list-noms">
+                                                            <div>{{joueur.nom}}</div>
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %}
                                                 </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
+                                                <span class="score {% if data.score_premier_tour.winner == data.equipe.id %}winner{% endif %}">
+                                                    {{data.score_premier_tour.score}}
+                                                </span>
                                             </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if data.score_demie_final is defined %}
+                                            <div class="name-score">
+                                                <div class="noms">
+                                                    {% for joueur in data.equipe.joueurs2 %}
+                                                        {% if loop.index % 2 != 0 %}
+                                                        <div class="list-noms">
+                                                            <div>{{joueur.nom}}</div>
+                                                        </div>
+                                                        {% else %}
+                                                        <div class="list-noms">
+                                                            <div>{{joueur.nom}}</div>
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %}
                                                 </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
+                                                <span class="score {% if data.score_demie_final.winner == data.equipe.id %}winner{% endif %}">
+                                                    {{data.score_premier_tour.score}}
+                                                </span>
                                             </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if data.score_final is defined %}
+                                            <div class="name-score">
+                                                <div class="noms">
+                                                    {% for joueur in data.equipe.joueurs2 %}
+                                                        {% if loop.index % 2 != 0 %}
+                                                        <div class="list-noms">
+                                                            <div>{{joueur.nom}}</div>
+                                                        </div>
+                                                        {% else %}
+                                                        <div class="list-noms">
+                                                            <div>{{joueur.nom}}</div>
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %}
                                                 </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
+                                                <span class="score {% if data.score_final.winner == data.equipe.id %}winner{% endif %}">
+                                                    {{data.score_premier_tour.score}}
+                                                </span>
                                             </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="equipe-nom">EQUIPE A</td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="equipe-nom">EQUIPE A</td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="equipe-nom">EQUIPE A</td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="equipe-nom">EQUIPE A</td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="equipe-nom">EQUIPE A</td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="name-score">
-                                            <div class="noms">
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                                <div class="list-noms">
-                                                    <div>Martine</div>
-                                                    <div>Martine</div>
-                                                </div>
-                                            </div>
-                                            <span class="score winner">0</span>
-                                        </div>
-                                    </td>
-                                </tr>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
                             </table>
                         </div>
                     </div>

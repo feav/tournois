@@ -48,7 +48,7 @@ class TournoiController extends AbstractController
 
     /**
      * @Route("/admin/match/update-score/{id}", name="update_score")
-     */
+    */
     public function updateScore(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
@@ -873,8 +873,12 @@ class TournoiController extends AbstractController
                 $match->setNumTour($currentTour);
                 $match->setTournoi($tournoi);
                 $match->addEquipe($equipes[$i]);
-                $match->addEquipe($equipes[$i+1]);
-
+                $match->addEquipe($equipes[$i+1]); 
+                if($tournoi->getNbrEquipe() <=4)
+                    $match->setEtape("demie_finale");
+                else
+                    $match->setEtape("premier_tour");
+                
                 if(!isset($terrains[$j]))
                     $j = 0;
                 $match->setTerrain2($terrains[$j]);
@@ -894,6 +898,12 @@ class TournoiController extends AbstractController
                 $equipe2 = $this->equipeRepository->find($arrJoeurQualifie[$i+1]);
                 $match->addEquipe($equipe1);
                 $match->addEquipe($equipe2);
+
+                $nbrEquipeQualifie =  $this->equipeRepository->getNbrEquipeQualifie($tournoi->getId());
+                if($nbrEquipeQualifie == 4)
+                    $match->setEtape("demie_finale");
+                if($nbrEquipeQualifie == 2)
+                    $match->setEtape("finale");
 
                 if(!isset($terrains[$j]))
                     $j = 0;
