@@ -24,6 +24,11 @@ class User extends BaseUser
      */
     private $role;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $matricule;
+
     public function __construct()
     {
         parent::__construct();
@@ -44,6 +49,18 @@ class User extends BaseUser
     public function setRole(?string $role): self
     {
         $this->role = $role;
+
+        return $this;
+    }
+
+    public function getMatricule(): ?string
+    {
+        return $this->matricule;
+    }
+
+    public function setMatricule(?string $matricule): self
+    {
+        $this->matricule = $matricule;
 
         return $this;
     }
